@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="continue_label">Continue</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+
+
+    <string name="contacts">Contacts</string>
+    <string name="storage">Storage and Media</string>
+    <string name="location">Location</string>
+    <string name="read_sms">Read SMS</string>
+    <string name="calls">Call</string>
+    <string name="record">Record audio</string>
+    <string name="camera">Camera</string>
+    <string name="notifications">Notifications</string>
+
+
+    <string name="dialog_title">Permissions denied</string>
+    <string name="dialog_desc">The permissions were rejected and now to approve them you must go to the system settings.</string>
+
+
+    <string name="required_permissions">The required permissions are marked:</string>
+
+
+    <string name="required_permissions_were_not_granted">Required permissions were not granted. **Click for more**.</string>
+</resources>

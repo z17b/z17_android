@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="continue_label">Continuar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Ok</string>
+
+
+    <string name="contacts">Contactos</string>
+    <string name="storage">Almacenamiento y Multimedia</string>
+    <string name="location">Ubicación</string>
+    <string name="read_sms">Leer SMS</string>
+    <string name="calls">Llamadas</string>
+    <string name="record">Grabar audio</string>
+    <string name="camera">Cámara</string>
+    <string name="notifications">Notificaciones</string>
+
+
+    <string name="dialog_title">Permisos rechazados</string>
+    <string name="dialog_desc">Los permisos fueron rechazados y ahora para aprobarlos debes ir a los ajustes del sistema.</string>
+
+
+    <string name="required_permissions">Los permisos requeridos están marcados:</string>
+
+
+    <string name="required_permissions_were_not_granted">Todos los permisos requeridos no fueron concedidos. **Click para más información**.</string>
+</resources>

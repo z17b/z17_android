@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.37.41.83</domain>
+        <domain includeSubdomains="true">10.37.41.85</domain>
+        <domain includeSubdomains="true">10.37.41.159</domain>
+        <domain includeSubdomains="true">10.37.41.180</domain>
+        <domain includeSubdomains="true">10.37.41.184</domain>
+        <domain includeSubdomains="true">10.37.41.190</domain>
+        <domain includeSubdomains="true">10.37.41.191</domain>
+        <domain includeSubdomains="true">10.37.41.194</domain>
+        <domain includeSubdomains="true">10.37.41.195</domain>
+        <domain includeSubdomains="true">10.37.41.199</domain>
+    </domain-config>
+</network-security-config>

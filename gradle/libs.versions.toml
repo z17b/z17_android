@@ -1,0 +1,219 @@
+[versions]
+# Configs
+compileSdk = "34"
+buildTools = "34.0.0"
+minSdk = "21"
+targetSdk = "34"
+versionCode = "30005"
+versionName = "2.0.5-BETA"
+
+ksp = "1.9.20-1.0.14"
+
+agp = "8.1.4"
+
+# Libraries
+kotlin = "1.9.20"
+
+coreKtx = "1.12.0"
+material = "1.10.0"
+appCompat = "1.6.1"
+junit = "4.13.2"
+extJunit = "1.1.5"
+espressoCore = "3.5.1"
+
+fragment = "1.6.2"
+activity = "1.8.1"
+
+lifecycle = "2.6.2"
+
+room = "2.6.1"
+
+coroutines = "1.7.3"
+
+retrofit = "2.9.0"
+
+okhttp = "4.11.0"
+
+multidex = "2.0.1"
+
+annotation = "1.7.0"
+
+kotlinSerialization = "1.5.1"
+
+composeBom = "2023.10.01"
+composeCompiler = "1.5.4"
+composePaging = "3.2.1"
+composeNavigation = "2.7.5"
+composeViewModel = "2.6.2"
+composeActivity = "1.8.1"
+composeThemeAdapter = "1.2.1"
+
+composeCoil = "2.4.0"
+
+accompanist = "0.32.0"
+
+constraintlayout = "1.0.1"
+
+dataStore = "1.0.0"
+crypto = "1.1.0-alpha06"
+
+splash = "1.0.1"
+
+workManager = "2.9.0"
+
+lottie = "6.1.0"
+
+paging = "3.2.1"
+
+markdown = "4.6.2"
+
+camera2 = "1.3.0"
+
+gson = "2.10.1"
+
+downloaderHerlper = "1.0.2"
+
+zxingEmbedded = "4.3.0"
+zxingCore = "3.5.0"
+
+media3 = "1.2.0"
+
+[libraries]
+kotlin = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+app-compat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appCompat" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "extJunit" }
+espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
+activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activity" }
+
+lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+lifecycle-viewmodel-savedstate = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "lifecycle" }
+lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime", version.ref = "lifecycle" }
+lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
+
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+
+coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+
+okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
+logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp" }
+
+multidex = { group = "androidx.multidex", name = "multidex", version.ref = "multidex" }
+annotation = { group = "androidx.annotation", name = "annotation", version.ref = "annotation" }
+
+compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+compose-animation = { group = "androidx.compose.animation", name = "animation" }
+compose-animation-core = { group = "androidx.compose.animation", name = "animation-core" }
+compose-animation-graphics = { group = "androidx.compose.animation", name = "animation-graphics" }
+compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout" }
+compose-material = { group = "androidx.compose.material", name = "material" }
+compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+compose-material-ripple = { group = "androidx.compose.material", name = "material-ripple" }
+compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+compose-material-size-window = { group = "androidx.compose.material3", name = "material3-window-size-class" }
+compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+compose-runtime-live-data = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+compose-runtime-saveable = { group = "androidx.compose.runtime", name = "runtime-saveable" }
+compose-ui = { group = "androidx.compose.ui", name = "ui" }
+compose-geometry = { group = "androidx.compose.ui", name = "ui-geometry" }
+compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+compose-ui-text = { group = "androidx.compose.ui", name = "ui-text" }
+compose-ui-google-font = { group = "androidx.compose.ui", name = "ui-text-google-fonts" }
+compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+compose-ui-tooling-data = { group = "androidx.compose.ui", name = "ui-tooling-data" }
+compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+compose-unit = { group = "androidx.compose.ui", name = "ui-unit" }
+compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+compose-view-binding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
+compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+compose-ui-test = { group = "androidx.compose.ui", name = "ui-test" }
+compose-ui-test-junit = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
+compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
+compose-material-theme = { group = "com.google.android.material", name = "compose-theme-adapter", version.ref = "composeThemeAdapter" }
+compose-activity = { group = "androidx.activity", name = "activity-compose", version.ref = "composeActivity" }
+compose-view-model = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "composeViewModel" }
+compose-paging = { group = "androidx.paging", name = "paging-compose", version.ref = "composePaging" }
+
+compose-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "composeCoil" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif", version.ref = "composeCoil" }
+coil-video = { group = "io.coil-kt", name = "coil-video", version.ref = "composeCoil" }
+
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
+
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout" }
+
+data-store = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+crypto = { group = "androidx.security", name = "security-crypto", version.ref = "crypto" }
+
+splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "splash" }
+
+work-manager-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workManager" }
+
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+
+kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
+downloader-herlper = { group = "io.github.lizhangqu", name = "coreprogress", version.ref = "downloaderHerlper" }
+
+paging-runtime = { group = "androidx.paging", name = "paging-runtime", version.ref = "paging" }
+paging-common = { group = "androidx.paging", name = "paging-common", version.ref = "paging" }
+
+markdown-core = { group = "io.noties.markwon", name = "core", version.ref = "markdown" }
+markdown-editor = { group = "io.noties.markwon", name = "editor", version.ref = "markdown" }
+markdown-linkify = { group = "io.noties.markwon", name = "linkify", version.ref = "markdown" }
+markdown-ext-strikethrough = { group = "io.noties.markwon", name = "ext-strikethrough", version.ref = "markdown" }
+markdown-ext-tasklist = { group = "io.noties.markwon", name = "ext-tasklist", version.ref = "markdown" }
+markdownhtml = { group = "io.noties.markwon", name = "html", version.ref = "markdown" }
+markdown-ext-tables = { group = "io.noties.markwon", name = "ext-tables", version.ref = "markdown" }
+markdown-ext-latex = { group = "io.noties.markwon", name = "ext-latex", version.ref = "markdown" }
+markdown-ext-glide = { group = "io.noties.markwon", name = "image-glide", version.ref = "markdown" }
+
+camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camera2" }
+camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camera2" }
+camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camera2" }
+camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camera2" }
+camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camera2" }
+camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "camera2" }
+
+zxing-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingEmbedded" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxingCore" }
+
+media3 = { module = "androidx.media3:media3-exoplayer", version.ref = "media3" }
+media3-mediasession = { module = "androidx.media3:media3-session", version.ref = "media3" }
+media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3" }
+
+media3-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3" }
+media3-hls = { module = "androidx.media3:media3-exoplayer-hls", version.ref = "media3" }
+
+gson = { module = "com.google.code.gson:gson", version.ref = "gson"}
+
+gradle = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+
+[plugins]
+com-android-application = { id = "com.android.application", version.ref = "agp" }
+com-android-library = { id = "com.android.library", version.ref = "agp" }
+org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+
+[bundles]
+
