@@ -1,11 +1,18 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("maven-publish")
 }
 
+val moduleName = "singledi"
+
 android {
-    namespace = "cu.z17.singledi"
-    resourcePrefix("singledi")
+    namespace = libs.versions.libName.get() + "." + moduleName
+
+    group = libs.versions.libName.get()
+    version = libs.versions.versionName.get()
+
+    resourcePrefix(moduleName)
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -30,4 +37,16 @@ android {
 dependencies {
     implementation(libs.core.ktx)
     implementation(libs.kotlin)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>(moduleName) {
+                groupId = libs.versions.libName.get()
+                artifactId = moduleName
+                version = libs.versions.versionName.get()
+            }
+        }
+    }
 }

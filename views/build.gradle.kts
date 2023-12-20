@@ -2,12 +2,18 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("maven-publish")
 }
 
-android {
-    namespace = "cu.z17.views"
-    resourcePrefix("views")
+val moduleName = "views"
 
+android {
+    namespace = libs.versions.libName.get() + "." + moduleName
+
+    group = libs.versions.libName.get()
+    version = libs.versions.versionName.get()
+
+    resourcePrefix(moduleName)
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -128,4 +134,16 @@ dependencies {
     implementation(libs.gson)
 
     api(project(":singledi"))
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>(moduleName) {
+                groupId = libs.versions.libName.get()
+                artifactId = moduleName
+                version = libs.versions.versionName.get()
+            }
+        }
+    }
 }
