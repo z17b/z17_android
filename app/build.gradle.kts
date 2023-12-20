@@ -23,16 +23,7 @@ android {
         versionName = libs.versions.versionName.get()
         multiDexEnabled = true
 
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments["room.schemaLocation"] = "$projectDir/schemas"
-            }
-        }
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -65,39 +56,12 @@ android {
         abortOnError = false
         checkReleaseBuilds = false
     }
-
-    buildFeatures {
-        viewBinding = true
-        compose = true
-        buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
-    }
-
-    ksp {
-        arg("room.schemaLocation", "$projectDir/schemas")
-    }
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-
     implementation(libs.kotlin)
     implementation(libs.kotlin.reflect)
     implementation(libs.core.ktx)
     implementation(libs.app.compat)
     implementation(libs.material)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.ext.junit)
-
-    implementation(libs.fragment.ktx)
-    implementation(libs.activity.ktx)
-
-    api(project(":views"))
-    api(project(":singledi"))
-    api(project(":preferences"))
 }

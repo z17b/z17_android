@@ -26,9 +26,9 @@ import kotlinx.serialization.serializer
 import java.io.IOException
 
 
-class PreferencesRepositoryImpl(
-    private val storage: DataStore<Preferences>,
+open class PreferencesRepositoryImpl(
     private val context: Context,
+    private val storage: DataStore<Preferences>,
 ) {
 
     private val TAG = this.javaClass.simpleName
