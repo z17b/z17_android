@@ -5,16 +5,12 @@ plugins {
     id("kotlin-kapt")
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.7.20"
-    id("maven-publish")
 }
 
 val moduleName = "app"
 
 android {
     namespace = libs.versions.libName.get() + "." + moduleName
-
-    group = libs.versions.libName.get()
-    version = libs.versions.versionName.get()
 
     compileSdk = libs.versions.compileSdk.get().toInt()
     buildToolsVersion = libs.versions.buildTools.get()
@@ -104,17 +100,4 @@ dependencies {
     api(project(":views"))
     api(project(":singledi"))
     api(project(":preferences"))
-}
-
-
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>(moduleName) {
-                groupId = libs.versions.libName.get()
-                artifactId = moduleName
-                version = libs.versions.versionName.get()
-            }
-        }
-    }
 }
