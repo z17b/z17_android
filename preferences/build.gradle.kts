@@ -6,10 +6,11 @@ plugins {
 
 val moduleName = "preferences"
 
+group = libs.versions.libName.get()
+
 android {
     namespace = libs.versions.libName.get() + "." + moduleName
 
-    group = libs.versions.libName.get()
     version = libs.versions.versionName.get()
 
     resourcePrefix(moduleName)
