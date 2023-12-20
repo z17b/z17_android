@@ -39,7 +39,7 @@ fun PictureFromUri(
     contentScale: ContentScale = ContentScale.Crop,
     description: String,
     filterQuality: FilterQuality = FilterQuality.Low,
-    context: Context = LocalContext.current,
+    context: Context = LocalContext.current
 ) {
     val source = remember {
         val imageRequest = ImageRequest.Builder(context)
@@ -78,7 +78,7 @@ fun PictureFromUrl(
     description: String,
     filterQuality: FilterQuality = FilterQuality.Low,
     customHeaders: Headers? = null,
-    size: Int? = null,
+    size: Int? = null
 ) {
     val context = LocalContext.current
 
@@ -147,7 +147,7 @@ fun PictureFromUrl(
         contentDescription = description,
         contentScale = contentScale,
         colorFilter = colorFilter,
-        imageLoader = Z17CoilDecoders.createInstance { Z17CoilDecoders(context) }.imageLoader
+        imageLoader = Z17CoilDecoders.getInstance().imageLoader
     )
 }
 
@@ -159,7 +159,7 @@ fun PictureWithBlurHash(
     description: String = "",
     filterQuality: FilterQuality = FilterQuality.High,
     blurHash: String,
-    context: Context = LocalContext.current,
+    context: Context = LocalContext.current
 ) {
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
@@ -213,7 +213,7 @@ fun PictureFromBitmap(
     description: String = "",
     filterQuality: FilterQuality = FilterQuality.High,
     bitmap: Bitmap,
-    context: Context = LocalContext.current,
+    context: Context = LocalContext.current
 ) {
     AsyncImage(
         modifier = modifier,

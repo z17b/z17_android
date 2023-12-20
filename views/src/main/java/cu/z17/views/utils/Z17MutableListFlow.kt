@@ -57,6 +57,15 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
         mutableList.value = newArr.toList()
     }
 
+    fun removeAll() {
+        val newArr = arrayListOf<T>()
+        newArr.addAll(mutableList.value)
+
+        newArr.clear()
+
+        mutableList.value = newArr.toList()
+    }
+
     fun removeAt(index: Int) {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
@@ -73,6 +82,21 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
 
         if (0 < newArr.size) {
             val removed = newArr.removeAt(newArr.size - 1)
+
+            mutableList.value = newArr.toList()
+
+            return removed
+        }
+
+        return null
+    }
+
+    fun removeFirst(): T? {
+        val newArr = arrayListOf<T>()
+        newArr.addAll(mutableList.value)
+
+        if (0 < newArr.size) {
+            val removed = newArr.removeAt(0)
 
             mutableList.value = newArr.toList()
 

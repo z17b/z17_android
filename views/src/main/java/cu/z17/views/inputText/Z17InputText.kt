@@ -1,5 +1,6 @@
 package cu.z17.views.inputText
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,6 +12,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -181,4 +184,70 @@ fun Z17PasswordText(
         ),
         visualTransformation = if (!isShowIn) PasswordVisualTransformation() else VisualTransformation.None
     )
+}
+
+@Composable
+fun Z17InputTextFlat(
+    modifier: Modifier = Modifier,
+    value: String,
+    maxLines: Int = 1,
+    minLines: Int = 1,
+    labelText: String = "",
+    error: String = "",
+    onTextChange: (String) -> Unit,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    maxLength: Int = 100,
+    inputType: KeyboardType = KeyboardType.Text,
+    errorColor: Color = Color(0xFFc62828),
+    style: TextStyle = MaterialTheme.typography.bodyMedium,
+    readOnly: Boolean = false,
+    shape: Shape = RoundedCornerShape(15.dp),
+    enabled: Boolean = true
+) {
+    TextField(
+        value = value,
+        onValueChange = { if (it.length <= maxLength) onTextChange(it) },
+        keyboardOptions = KeyboardOptions(keyboardType = inputType),
+        placeholder = if (labelText.isEmpty()) null else {
+            {
+                Z17Label(
+                    text = labelText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.background
+                )
+            }
+        },
+        isError = error.isNotEmpty(),
+        supportingText = if (error.isNotEmpty()) {
+            {
+                Z17Label(
+                    text = error,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = errorColor
+                )
+            }
+        } else null,
+        maxLines = maxLines,
+        minLines = minLines,
+        readOnly = readOnly,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        modifier = modifier,
+        textStyle = style,
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
+            disabledIndicatorColor = Color.Transparent,
+            focusedTextColor = MaterialTheme.colorScheme.onBackground,
+            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
+            errorCursorColor = errorColor,
+            errorLabelColor = errorColor,
+            errorLeadingIconColor = errorColor,
+            errorSupportingTextColor = errorColor,
+            errorTrailingIconColor = errorColor
+        ),
+        visualTransformation = if (inputType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None)
 }

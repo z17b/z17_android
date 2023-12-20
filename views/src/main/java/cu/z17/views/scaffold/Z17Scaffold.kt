@@ -19,7 +19,6 @@ fun Z17BaseScaffold(
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     scaffoldState: ScaffoldState,
-    bottomBar: @Composable () -> Unit = {},
     content: @Composable (modifier: Modifier) -> Unit
 ) {
     Box {
@@ -39,7 +38,6 @@ fun Z17BaseScaffold(
                 drawerContent = drawerContent,
                 backgroundColor = backgroundColor,
                 drawerGesturesEnabled = true,
-                bottomBar = bottomBar
             ) {
                 content(Modifier.padding(it))
             }

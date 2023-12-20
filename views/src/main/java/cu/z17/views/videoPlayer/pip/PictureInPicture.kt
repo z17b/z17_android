@@ -30,7 +30,7 @@ import cu.z17.views.utils.findActivity
  * @param defaultPlayerView Current video player controller.
  */
 @Suppress("DEPRECATION")
-internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView) {
+internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView, onEnterPIP: () -> Unit = {}) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
     ) {
@@ -49,6 +49,7 @@ internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView) {
         } else {
             context.findActivity().enterPictureInPictureMode()
         }
+        onEnterPIP()
     }
 }
 

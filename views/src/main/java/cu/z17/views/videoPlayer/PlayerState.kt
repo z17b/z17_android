@@ -10,6 +10,7 @@ data class PlayerState(
     val isFullscreen: Boolean = false,
     val isPlaying: Boolean = false,
     val isLoading: Boolean = false,
+    val isPIP: Boolean = false,
     val playbackState: Int = STATE_IDLE,
     val bufferedPercentage: Int = 0,
     val currentPosition: Long = 0L,

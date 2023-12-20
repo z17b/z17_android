@@ -186,6 +186,10 @@ fun Z17HLSVideoPlayer(
         defaultPlayerView.useController = usePlayerController
     }
 
+    LaunchedEffect(player) {
+        defaultPlayerView.player = player
+    }
+
     LaunchedEffect(player, playerState) {
         defaultPlayerView.player = player
 
@@ -291,19 +295,6 @@ fun Z17HLSVideoPlayer(
         player.playWhenReady = autoPlay
     }
 
-    /*LaunchedEffect(controllerConfig) {
-        controllerConfig.applyToExoPlayerView(defaultPlayerView) {
-            updatePlayerState(
-                playerState.copy(isFullscreen = it),
-                player
-            )
-
-            if (it) {
-                onFullScreenEnter()
-            }
-        }
-    }*/
-
     LaunchedEffect(controllerConfig, repeatMode) {
         defaultPlayerView.setRepeatToggleModes(
             if (controllerConfig.showRepeatModeButton) {
@@ -359,7 +350,11 @@ fun Z17HLSVideoPlayer(
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {
-        enterPIPMode(context, defaultPlayerView)
-        player.play()
+        if (playerState.isPlaying) {
+            enterPIPMode(context, defaultPlayerView) {
+                updatePlayerState(playerState.copy(isPIP = true), player)
+            }
+            player.play()
+        }
     }
 }

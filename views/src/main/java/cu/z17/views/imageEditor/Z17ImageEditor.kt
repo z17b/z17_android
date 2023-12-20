@@ -17,6 +17,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import cu.z17.views.imageEditor2.sections.cropper.Cropper
+import cu.z17.views.imageEditor2.sections.filter.Filter
+import cu.z17.views.imageEditor2.sections.text.Text
+import cu.z17.views.imageEditor2.sections.viewer.Viewer
 import cu.z17.views.loader.Z17SimpleCircleLoader
 import cu.z17.views.picture.Z17BlurImage
 
@@ -50,7 +54,7 @@ fun Z17ImageEditor(
             Z17ImageEditorState.VIEW -> {
                 onStateChange(Z17ImageEditorState.VIEW)
                 history.lastOrNull()?.let {
-                    View(
+                    Viewer(
                         source = it.asAndroidBitmap(),
                         count = history.size,
                         requestStepBack = {
@@ -66,10 +70,12 @@ fun Z17ImageEditor(
             Z17ImageEditorState.CROP -> {
                 onStateChange(Z17ImageEditorState.CROP)
                 history.lastOrNull()?.let {
-                    Crop(
-                        imageBitmap = it, onCropSuccess = {
+                    Cropper(
+                        imageBitmap = it,
+                        onCropSuccess = {
                             viewModel.setBitmap(it, source.path!!)
-                        }, onCancel = viewModel::returnToView
+                        },
+                        onCancel = viewModel::returnToView
                     )
                 }
             }

@@ -28,6 +28,7 @@ import kotlin.math.sign
 @Composable
 fun Z17PagerIndicator(
     pagerState: PagerState,
+    pageCount: Int,
     modifier: Modifier = Modifier,
     pageIndexMapping: (Int) -> Int = { it },
     activeColor: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
@@ -52,7 +53,7 @@ fun Z17PagerIndicator(
                 .size(width = indicatorWidth, height = indicatorHeight)
                 .background(color = inactiveColor, shape = indicatorShape)
 
-            repeat(pagerState.pageCount) {
+            repeat(pageCount) {
                 Box(indicatorModifier)
             }
         }
@@ -66,7 +67,7 @@ fun Z17PagerIndicator(
                     val scrollPosition = ((next - position) * offset.absoluteValue + position)
                         .coerceIn(
                             0f,
-                            (pagerState.pageCount - 1)
+                            (pageCount - 1)
                                 .coerceAtLeast(0)
                                 .toFloat()
                         )
@@ -78,7 +79,7 @@ fun Z17PagerIndicator(
                 }
                 .size(width = indicatorWidth, height = indicatorHeight)
                 .then(
-                    if (pagerState.pageCount > 0) Modifier.background(
+                    if (pageCount > 0) Modifier.background(
                         color = activeColor,
                         shape = indicatorShape,
                     )

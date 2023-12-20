@@ -154,7 +154,7 @@ fun Z17SecondaryButton(
         Z17Label(
             text = text,
             style = MaterialTheme.typography.titleSmall,
-            color = Color.White
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }
@@ -224,7 +224,7 @@ fun Z17SecondaryDialogButton(
                 Z17Label(
                     text = text,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onBackground
                 )
             }
     }
