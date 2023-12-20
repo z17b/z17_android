@@ -61,7 +61,7 @@ dependencies {
 afterEvaluate {
     publishing {
         publications {
-            create<MavenPublication>("maven") {
+            create<MavenPublication>(moduleName) {
                 groupId = libs.versions.libName.get()
                 artifactId = moduleName
                 version = libs.versions.versionName.get()
