@@ -20,9 +20,7 @@ dependencyResolutionManagement {
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
-include(
-    ":app",
-    ":views",
-    ":singledi",
-    ":preferences"
-)
+include(":app")
+include(":views")
+include(":singledi")
+include(":preferences")
