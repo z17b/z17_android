@@ -52,6 +52,15 @@ android {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
+    }
+    
     lint {
         abortOnError = false
         checkReleaseBuilds = false
@@ -64,4 +73,41 @@ dependencies {
     implementation(libs.core.ktx)
     implementation(libs.app.compat)
     implementation(libs.material)
+
+    implementation(libs.activity.ktx)
+
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
+    implementation(libs.compose.animation)
+    implementation(libs.compose.animation.core)
+    implementation(libs.compose.animation.graphics)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.foundation.layout)
+    implementation(libs.compose.material)
+    implementation(libs.compose.material.icons.core)
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.compose.material.ripple)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.material.size.window)
+    implementation(libs.compose.runtime)
+    implementation(libs.compose.runtime.live.data)
+    implementation(libs.compose.runtime.saveable)
+    implementation(libs.compose.ui)
+    implementation(libs.compose.geometry)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.compose.ui.text)
+    implementation(libs.compose.ui.google.font)
+    implementation(libs.compose.ui.tooling)
+    implementation(libs.compose.ui.tooling.data)
+    implementation(libs.compose.ui.tooling.preview)
+    implementation(libs.compose.unit)
+    implementation(libs.compose.ui.util)
+    implementation(libs.compose.view.binding)
+    implementation(libs.compose.lifecycle)
+
+    implementation(libs.compose.navigation)
+    implementation(libs.compose.material.theme)
+    implementation(libs.compose.activity)
+    implementation(libs.compose.view.model)
+    implementation(libs.compose.paging)
 }
