@@ -27,7 +27,7 @@ fun Z17MultipleView(
     items: List<Z17MultipleFabObj>,
     modifier: Modifier = Modifier,
     baseIcon: Any = Icons.Outlined.Add,
-    buttonColor: Color = MaterialTheme.colorScheme.surface,
+    buttonColor: Color = MaterialTheme.colorScheme.primary,
     iconColor: Color = MaterialTheme.colorScheme.background
 ) {
 

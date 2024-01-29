@@ -2,7 +2,12 @@ package cu.z17.views.camera
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
+import androidx.annotation.OptIn
+import androidx.camera.camera2.interop.Camera2CameraInfo
+import androidx.camera.camera2.interop.ExperimentalCamera2Interop
+import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCapture.FLASH_MODE_OFF
 import androidx.camera.core.ImageCapture.FLASH_MODE_ON
@@ -24,7 +29,7 @@ import java.io.FileOutputStream
 class Z17CameraViewModel(private val imagePathToSave: String, private val videoPathToSave: String) :
     ViewModel() {
 
-    private val z17CamaraModule: Z17CamaraModule = Z17CamaraModule.getInstance()
+    private val z17CameraModule: Z17CameraModule = Z17CameraModule.getInstance()
 
     private val _captureResult = MutableStateFlow(CaptureState.NOT_REQUESTED)
     val captureResult = _captureResult.asStateFlow()
@@ -42,81 +47,42 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
     }
 
     fun handleFlashMode(on: Boolean) {
-        if (on) z17CamaraModule.imageCapture.flashMode = FLASH_MODE_ON
-        else z17CamaraModule.imageCapture.flashMode = FLASH_MODE_OFF
+        if (on) z17CameraModule.imageCapture.flashMode = FLASH_MODE_ON
+        else z17CameraModule.imageCapture.flashMode = FLASH_MODE_OFF
     }
 
-    fun showBackCamera(
+    fun showCamera(
         previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
     ) {
-        z17CamaraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
+        z17CameraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
         try {
-            z17CamaraModule.processCameraProvider.unbindAll()
-            z17CamaraModule.processCameraProvider.bindToLifecycle(
+            z17CameraModule.processCameraProvider.unbindAll()
+            z17CameraModule.processCameraProvider.bindToLifecycle(
                 lifecycleOwner,
-                z17CamaraModule.cameraSelectorBack,
-                z17CamaraModule.preview,
-                z17CamaraModule.imageAnalysis,
-                z17CamaraModule.imageCapture
+                z17CameraModule.cameraSelector,
+                z17CameraModule.preview,
+                z17CameraModule.imageAnalysis,
+                z17CameraModule.imageCapture
             )
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    fun showFrontCamera(
+    fun showVideoCamera(
         previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
+        lifecycleOwner: LifecycleOwner,
     ) {
-        z17CamaraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
-        try {
-            z17CamaraModule.processCameraProvider.unbindAll()
-            z17CamaraModule.processCameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                z17CamaraModule.cameraSelectorFront,
-                z17CamaraModule.preview,
-                z17CamaraModule.imageAnalysis,
-                z17CamaraModule.imageCapture
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun showBackVideoCamera(
-        previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
-    ) {
-        z17CamaraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
-        videoCapture = z17CamaraModule.provideVideoCapture()
+        z17CameraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
+        videoCapture = z17CameraModule.provideVideoCapture()
 
         try {
-            z17CamaraModule.processCameraProvider.unbindAll()
-            z17CamaraModule.processCameraProvider.bindToLifecycle(
+            z17CameraModule.processCameraProvider.unbindAll()
+            z17CameraModule.processCameraProvider.bindToLifecycle(
                 lifecycleOwner,
-                z17CamaraModule.cameraSelectorBack,
-                z17CamaraModule.preview,
-                videoCapture
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun showFrontVideoCamera(
-        previewView: PreviewView,
-        lifecycleOwner: LifecycleOwner
-    ) {
-        z17CamaraModule.preview.setSurfaceProvider(previewView.surfaceProvider)
-        videoCapture = z17CamaraModule.provideVideoCapture()
-
-        try {
-            z17CamaraModule.processCameraProvider.unbindAll()
-            z17CamaraModule.processCameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                z17CamaraModule.cameraSelectorFront,
-                z17CamaraModule.preview,
+                z17CameraModule.cameraSelector,
+                z17CameraModule.preview,
                 videoCapture
             )
         } catch (e: Exception) {
@@ -125,7 +91,7 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
     }
 
     fun captureAndSaveImage(
-        context: Context
+        context: Context,
     ) {
         // for capture output
         val file = File(imagePathToSave)
@@ -134,14 +100,13 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
             .Builder(fos)
             .build()
 
-        z17CamaraModule.imageCapture.takePicture(
+        z17CameraModule.imageCapture.takePicture(
             outputOptions,
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     // stop image
-                    z17CamaraModule.processCameraProvider.unbindAll()
-
+                    z17CameraModule.processCameraProvider.unbindAll()
                     _captureResult.value = CaptureState.RESULT
                 }
 
@@ -152,7 +117,7 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
         )
     }
 
-    @SuppressLint("MissingPermission")
+    @OptIn(ExperimentalCamera2Interop::class) @SuppressLint("MissingPermission")
     fun startVideoRecord(context: Context) {
         _recordingResult.value = RecordingState.RECORDING
         val outputOptions = FileOutputOptions.Builder(File(videoPathToSave)).build()
@@ -162,13 +127,15 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
             .start(
                 ContextCompat.getMainExecutor(context)
             ) { event ->
-                if (event is VideoRecordEvent.Finalize) {
+                if (event is VideoRecordEvent.Finalize && _recordingResult.value != RecordingState.CANCEL) {
                     val uri = event.outputResults.outputUri
                     if (uri != Uri.EMPTY) {
                         _recordingResult.value = RecordingState.RESULT
                     }
                 }
             }
+
+
     }
 
     fun resumeRecord() {
@@ -186,4 +153,11 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
         recording?.stop()
         recording?.close()
     }
+
+    fun cancelRecord() {
+        _recordingResult.value = RecordingState.CANCEL
+        recording?.stop()
+        recording?.close()
+    }
+
 }

@@ -8,7 +8,7 @@ data class TrackElement(
     val index: Int = 0,
     val trackItem: Int = 0,
     val trackStringData: String = "",
-    val trackFormatData: FormatData,
+    val trackFormatData: FormatData?,
 ) {
     override fun toString(): String {
         return "trackType: $trackType, index: $index, trackItem: $trackItem, trackStringData: $trackStringData, trackFormatData: $trackFormatData"

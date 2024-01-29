@@ -6,22 +6,25 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import cu.z17.views.picture.Z17BasePicture
 
 @Composable
 fun Z17Check(
+    modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Box(modifier = Modifier.clickable { onCheckedChange(!checked) }) {
+    Box(modifier = modifier.clip(CircleShape).clickable { onCheckedChange(!checked) }) {
         AnimatedVisibility(
             visible = checked,
             enter = fadeIn(),

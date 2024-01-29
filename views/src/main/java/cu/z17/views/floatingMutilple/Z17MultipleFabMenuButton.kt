@@ -28,7 +28,7 @@ fun Z17MultipleFabMenuButton(
         },
         elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 0.dp),
         shape = CircleShape,
-        containerColor = containerColor ?: MaterialTheme.colorScheme.surface
+        containerColor = containerColor ?: MaterialTheme.colorScheme.primary
     ) {
         Z17BasePicture(
             source = item.icon,

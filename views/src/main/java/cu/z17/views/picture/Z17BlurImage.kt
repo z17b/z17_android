@@ -80,8 +80,6 @@ private fun LegacyBlurImage(
         null
     }
 
-
-
     Z17BasePicture(
         modifier = modifier,
         source = source,

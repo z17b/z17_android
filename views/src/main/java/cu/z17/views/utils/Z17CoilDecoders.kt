@@ -1,18 +1,15 @@
 package cu.z17.views.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Build
 import android.util.Log
 import coil.ImageLoader
-import coil.ImageLoaderFactory
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.VideoFrameDecoder
-import coil.disk.DiskCache
-import coil.imageLoader
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
-import coil.request.ImageRequest
 import cu.z17.singledi.SingletonInitializer
 import kotlinx.coroutines.Dispatchers
 
@@ -42,4 +39,8 @@ class Z17CoilDecoders(private val context: Context) {
 
         Log.d("COIL_CACHE", "Cache clear for $url")
     }
+
+    fun getInCache(key: String) = imageLoader.memoryCache?.get(MemoryCache.Key(key))?.bitmap
+    fun setInCache(key: String, bitmap: Bitmap) =
+        imageLoader.memoryCache?.set(MemoryCache.Key(key), MemoryCache.Value(bitmap))
 }

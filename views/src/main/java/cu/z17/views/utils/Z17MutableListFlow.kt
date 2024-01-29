@@ -12,49 +12,70 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
         }
     }
 
-    fun change(element: T, index: Int) {
+    fun contains(condition: (T) -> Boolean): Boolean {
+        var isIn = false
+        mutableList.value.forEach {
+            isIn = condition(it)
+            if (isIn) return@forEach
+        }
+        return isIn
+    }
+
+    fun change(element: T, index: Int): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
 
         newArr[index] = element
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
-    fun set(element: T) {
+    fun set(element: T): List<T> {
         val newArr = arrayListOf(element)
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
-    fun set(elements: List<T>) {
+    fun set(elements: List<T>): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(elements)
 
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
-    fun add(element: T) {
+    fun add(element: T): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
         newArr.add(element)
 
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
-    fun addAll(elements: List<T>) {
+    fun addAll(elements: List<T>): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
         newArr.addAll(elements)
 
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
-    fun removeAll(condition: (T) -> Boolean) {
+    fun removeAll(condition: (T) -> Boolean): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
 
         newArr.removeAll { condition(it) }
 
         mutableList.value = newArr.toList()
+
+        return mutableList.value
     }
 
     fun removeAll() {
@@ -66,7 +87,7 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
         mutableList.value = newArr.toList()
     }
 
-    fun removeAt(index: Int) {
+    fun removeAt(index: Int): List<T> {
         val newArr = arrayListOf<T>()
         newArr.addAll(mutableList.value)
         if (index < newArr.size) {
@@ -74,6 +95,8 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
 
             mutableList.value = newArr.toList()
         }
+
+        return mutableList.value
     }
 
     fun removeLast(): T? {

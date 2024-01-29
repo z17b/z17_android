@@ -54,18 +54,24 @@ class TrackSelectorHelper(
 
                     when (trackType) {
                         C.TRACK_TYPE_VIDEO -> {
+                            val formatVideoResolution = try {
+                                FormatVideoResolution(
+                                    width = trackStringData.split(",")[0].split(" × ")[0].toIntOrNull()
+                                        ?: 100,
+                                    height = trackStringData.split(",")[0].split(" × ")[1].toIntOrNull()
+                                        ?: 100
+                                )
+                            } catch (e: Exception) {
+                                null
+                            }
+
                             _tripleTrackSave = _tripleTrackSave.addVideoTrack(
                                 TrackElement(
                                     trackType = C.TRACK_TYPE_VIDEO,
                                     index = trackIndex,
                                     trackItem = groupIndex,
                                     trackStringData = trackStringData,
-                                    trackFormatData = FormatVideoResolution(
-                                        width = trackStringData.split(",")[0].split(" × ")[0].toIntOrNull()
-                                            ?: 100,
-                                        height = trackStringData.split(",")[0].split(" × ")[1].toIntOrNull()
-                                            ?: 100
-                                    )
+                                    trackFormatData = formatVideoResolution
                                 )
                             )
                         }

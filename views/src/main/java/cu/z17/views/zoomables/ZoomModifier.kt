@@ -11,7 +11,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import cu.z17.views.imageEditor2.sections.cropper.components.detectTransformGestures
+import cu.z17.views.imageEditor.sections.cropper.components.detectTransformGestures
 import kotlinx.coroutines.launch
 
 /**

@@ -3,6 +3,9 @@ package cu.z17.views.utils
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -19,6 +22,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import java.util.Locale
 import java.util.regex.Pattern
 
 fun String.isAnUrl(): Boolean {
@@ -170,4 +174,111 @@ fun String.hasHtml(): Boolean {
             .find()
 
     return isMatch1
+}
+
+private fun nameInitials(text: String): String {
+    if (text.isEmpty())
+        return "?"
+
+    var result = ""
+
+    var ascii = text
+
+    val re = Regex("[^A-Za-z0-9 ]")
+    ascii = re.replace(ascii, "")
+
+    val list = ascii.split(" ")
+    if (list.size > 1) {
+        list.asSequence()
+            .filterNot { it.isEmpty() }
+            .map {
+
+                return@map it.get(0).toString()
+
+            }
+            .forEach {
+                result += it
+            }
+
+    } else {
+        result = ascii
+    }
+
+    return if (result.length > 2) result.substring(0, 2)
+        .uppercase(Locale.ROOT) else result.uppercase(
+        Locale.ROOT
+    )
+}
+
+fun String.asBitmap(
+    textColor: Long,
+    height: Int,
+    width: Int,
+    circle: Boolean = true,
+): Bitmap {
+    try {
+        val textInitials = nameInitials(this)
+
+        // text paint settings
+        val fontSize = (width.coerceAtMost(height) / 3)
+        val textPaint = Paint()
+        textPaint.color = android.graphics.Color.WHITE
+        textPaint.isAntiAlias = true
+        textPaint.isFakeBoldText = false
+        textPaint.style = Paint.Style.FILL
+        textPaint.textSize = fontSize.toFloat()
+        textPaint.textAlign = Paint.Align.CENTER
+
+        val image = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+
+        val canvas = Canvas(image)
+
+        if (circle)
+            canvas.drawCircle(
+                (width / 2).toFloat(),
+                (height / 2).toFloat(),
+                (width / 2).toFloat(),
+                Paint().apply {
+                    color = textColor.toInt()
+                })
+        else
+            canvas.drawRect(
+                (width / 2).toFloat(),
+                (height / 2).toFloat(),
+                (width / 2).toFloat(),
+                (height / 2).toFloat(),
+                Paint().apply {
+                    color = textColor.toInt()
+                })
+
+        canvas.drawText(
+            textInitials,
+            (width / 2).toFloat(),
+            height / 2 - (textPaint.descent() + textPaint.ascent()) / 2,
+            textPaint
+        )
+
+        return image
+    } catch (e: Exception) {
+        return Bitmap.createBitmap(15, 15, Bitmap.Config.ARGB_8888)
+    }
+}
+
+fun Long.convertToMS(): String {
+    val minutes = this / 60
+    val hours = minutes / 60
+
+    return if (hours > 0) {
+        "${hours}h ${(minutes % 60)}m ${(this % 60)}s"
+    } else if (minutes > 0) {
+        "${minutes}m ${(this % 60)}s"
+    } else {
+        "${this}s"
+    }
+}
+
+fun Float.convertToMS(): String {
+    val actual = this.toLong()
+
+    return actual.convertToMS()
 }

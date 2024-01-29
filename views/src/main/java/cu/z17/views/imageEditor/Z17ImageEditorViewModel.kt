@@ -2,15 +2,12 @@ package cu.z17.views.imageEditor
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cu.z17.compress.Compressor
+import cu.z17.compress.constraint.resolution
+import cu.z17.compress.constraint.size
 import cu.z17.views.utils.Z17MutableListFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -22,22 +19,22 @@ import java.io.File
 import java.io.FileOutputStream
 
 class Z17ImageEditorViewModel : ViewModel() {
-    private val _currentState = MutableStateFlow(Z17ImageEditorState.LOADING)
+    private val _currentState = MutableStateFlow(Z17EditorState.LOADING)
     val currentState = _currentState.asStateFlow()
 
-    val history = Z17MutableListFlow<ImageBitmap>(emptyList())
+    val history = Z17MutableListFlow<Bitmap>(emptyList())
 
-    fun setBitmap(imageBitmap: ImageBitmap, imagePath: String) {
-        _currentState.value = Z17ImageEditorState.LOADING
+    fun setBitmap(imageBitmap: Bitmap, imagePathToSave: String) {
+        _currentState.value = Z17EditorState.LOADING
 
         history.add(imageBitmap)
 
         viewModelScope.launch(Dispatchers.IO) {
-            val file = File(imagePath)
+            val file = File(imagePathToSave)
 
             try {
                 val outputStream = FileOutputStream(file)
-                imageBitmap.asAndroidBitmap()
+                imageBitmap
                     .compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
 
                 outputStream.flush()
@@ -46,14 +43,14 @@ class Z17ImageEditorViewModel : ViewModel() {
                 e.printStackTrace()
             }
 
-            _currentState.value = Z17ImageEditorState.VIEW
+            _currentState.value = Z17EditorState.VIEW
         }
     }
 
     fun loadBitmap(imageUri: Uri, context: Context) {
         viewModelScope.launch {
             try {
-                val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                /*val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                     ImageDecoder.decodeBitmap(
                         ImageDecoder.createSource(
                             context.contentResolver,
@@ -62,20 +59,32 @@ class Z17ImageEditorViewModel : ViewModel() {
                     )
                 } else {
                     MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
+                }*/
+
+                imageUri.path?.let {
+                    try {
+                        val b = Compressor.compressAndGetBitmap(context, File(it)) {
+                            size(3_097_152)
+                            resolution(1920, 1080)
+                        }
+
+                        history.add(b)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
 
-                history.add(b.asImageBitmap())
+                _currentState.value = Z17EditorState.VIEW
             } catch (e: Exception) {
                 e.printStackTrace()
+                _currentState.value = Z17EditorState.ERROR
             }
-
-            _currentState.value = Z17ImageEditorState.VIEW
         }
     }
 
     fun requestStepBack(imagePath: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            _currentState.value = Z17ImageEditorState.LOADING
+            _currentState.value = Z17EditorState.LOADING
 
             history.removeLast()
 
@@ -85,8 +94,7 @@ class Z17ImageEditorViewModel : ViewModel() {
 
             try {
                 val outputStream = FileOutputStream(file)
-                history.value.first().lastOrNull()?.asAndroidBitmap()
-                    ?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                history.value.first().lastOrNull()?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
 
                 outputStream.flush()
                 outputStream.close()
@@ -94,25 +102,15 @@ class Z17ImageEditorViewModel : ViewModel() {
                 e.printStackTrace()
             }
 
-            _currentState.value = Z17ImageEditorState.VIEW
+            _currentState.value = Z17EditorState.VIEW
         }
     }
 
-    fun returnToView() {
-        _currentState.value = Z17ImageEditorState.VIEW
+    fun requestState(z17EditorState: Z17EditorState) {
+        _currentState.value = z17EditorState
     }
 
-    fun requestCrop() {
-        _currentState.value = Z17ImageEditorState.CROP
-    }
-
-    fun requestFilter() {
-        _currentState.value = Z17ImageEditorState.FILTER
-    }
-
-    fun requestText() {
-        _currentState.value = Z17ImageEditorState.TEXT
-    }
-
-
+    // region Filter
+    var filteredBitmaps = Z17MutableListFlow<Bitmap>()
+    // endregion Filter
 }

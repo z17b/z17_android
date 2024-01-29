@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PauseCircleFilled
@@ -25,16 +26,19 @@ import androidx.compose.material.icons.outlined.FlashOff
 import androidx.compose.material.icons.outlined.FlashOn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -43,7 +47,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.z17.views.button.bounceClick
+import cu.z17.views.label.Z17Label
 import cu.z17.views.picture.Z17BasePicture
+import cu.z17.views.utils.convertToMS
+import cu.z17.views.utils.findActivity
+import kotlinx.coroutines.delay
 
 // REQUIRE: Z17 STORAGE PERMISSIONS
 @Composable
@@ -62,191 +70,249 @@ fun Z17Camera(
     ),
     context: Context = LocalContext.current,
     onClose: () -> Unit,
-    onResult: (String, ResultType) -> Unit,
-    onError: () -> Unit
+    onResult: (String, ResultType, Long) -> Unit,
+    onError: () -> Unit,
 ) {
-    Box(modifier = modifier) {
-        val previewView: PreviewView = remember { PreviewView(context) }
+    if (Z17CameraModule.getInstance().canUseCamera)
+        Box(modifier = modifier) {
+            val configuration = LocalConfiguration.current
 
-        var isFlashLightOn by remember {
-            mutableStateOf(false)
-        }
+            val previewView: PreviewView = remember { PreviewView(context) }
 
-        var isFrontCamera by remember {
-            mutableStateOf(false)
-        }
+            var isFlashLightOn by remember {
+                mutableStateOf(false)
+            }
 
-        fun handleFlashLight() {
-            isFlashLightOn = !isFlashLightOn
-            viewModel.handleFlashMode(isFlashLightOn)
-        }
+            var currentRecordTime by remember {
+                mutableLongStateOf(0L)
+            }
 
-        val captureResult by viewModel.captureResult.collectAsStateWithLifecycle()
+            var isFrontCamera by remember {
+                mutableStateOf(false)
+            }
 
-        if (captureResult == CaptureState.RESULT) {
-            onResult(imagePathToSave, ResultType.PHOTO)
-            viewModel.setStateRead()
-        }
+            fun handleFlashLight() {
+                isFlashLightOn = !isFlashLightOn
+                viewModel.handleFlashMode(isFlashLightOn)
+            }
 
-        if (captureResult == CaptureState.ERROR) {
-            onError()
-            viewModel.setStateRead()
-        }
+            val captureResult by viewModel.captureResult.collectAsStateWithLifecycle()
 
-        val recordState by viewModel.recordingResult.collectAsStateWithLifecycle()
+            val recordState by viewModel.recordingResult.collectAsStateWithLifecycle()
 
-        if (recordState == RecordingState.RESULT) {
-            onResult(videoPathToSave, ResultType.VIDEO)
-            viewModel.setStateRead()
-        }
+            LaunchedEffect(Unit) {
+                while (true) {
+                    delay(1000)
 
-        LaunchedEffect(isVideo, isFrontCamera) {
-            if (isVideo) {
-                if (isFrontCamera) {
-                    viewModel.showFrontVideoCamera(previewView, lifecycleOwner)
-                } else {
-                    viewModel.showBackVideoCamera(previewView, lifecycleOwner)
-                }
-            } else {
-                if (isFrontCamera) {
-                    viewModel.showFrontCamera(previewView, lifecycleOwner)
-                } else {
-                    viewModel.showBackCamera(previewView, lifecycleOwner)
+                    if (recordState == RecordingState.RECORDING) {
+                        currentRecordTime += 1
+                    }
                 }
             }
-        }
 
-        AndroidView(
-            factory = {
-                previewView
-            },
-            modifier = Modifier
-                .fillMaxSize()
-        )
+            LaunchedEffect(captureResult) {
+                if (captureResult == CaptureState.RESULT) {
+                    onResult(imagePathToSave, ResultType.PHOTO, 0L)
+                    viewModel.setStateRead()
+                }
 
-        IconButton(
-            modifier = Modifier
-                .align(alignment = Alignment.TopStart),
-            onClick = {
-                onClose()
+                if (captureResult == CaptureState.ERROR) {
+                    onError()
+                    viewModel.setStateRead()
+                }
             }
-        ) {
-            Z17BasePicture(
-                modifier = Modifier.size(30.dp),
-                source = Icons.Outlined.Clear,
-                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
-            )
-        }
 
-        Row(
-            modifier = Modifier
-                .align(alignment = Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(bottom = 20.dp, start = 20.dp, end = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
+            LaunchedEffect(recordState) {
+                if (recordState == RecordingState.RESULT) {
+                    onResult(videoPathToSave, ResultType.VIDEO, currentRecordTime * 1000)
+                    viewModel.setStateRead()
+                }
+            }
+
+            // CAMERA VIEW
+            AndroidView(
+                factory = {
+                    previewView
+                },
                 modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.3F),
-                        shape = CircleShape
-                    )
-                    .padding(10.dp)
-                    .clickable {
-                        handleFlashLight()
-                    },
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+            )
+
+            // CLOSE BTN
+            IconButton(
+                modifier = Modifier
+                    .align(alignment = Alignment.TopStart),
+                onClick = {
+                    viewModel.cancelRecord()
+                    onClose()
+                }
             ) {
                 Z17BasePicture(
-                    modifier = Modifier.size(25.dp),
-                    source = if (isFlashLightOn) Icons.Outlined.FlashOn else Icons.Outlined.FlashOff,
+                    modifier = Modifier.size(30.dp),
+                    source = Icons.Outlined.Clear,
                     colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
                 )
             }
 
-            AnimatedVisibility(visible = (recordState == RecordingState.RECORDING || recordState == RecordingState.PAUSE)) {
-                IconButton(
+            if (isVideo)
+                Z17Label(
+                    text = currentRecordTime.convertToMS(),
                     modifier = Modifier
-                        .size(40.dp)
-                        .bounceClick(),
-                    onClick = {
-                        if (recordState == RecordingState.PAUSE) viewModel.resumeRecord() else viewModel.pauseRecord()
-                    }
+                        .align(alignment = Alignment.TopEnd)
+                        .padding(20.dp)
+                        .background(color = Color.Black, shape = RoundedCornerShape(5.dp))
+                        .padding(horizontal = 5.dp, vertical = 3.dp),
+                    color = Color.White
+                )
+
+            Row(
+                modifier = Modifier
+                    .align(alignment = Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(bottom = 20.dp, start = 20.dp, end = 20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // CHANGE TORCH MODE
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background.copy(alpha = 0.3F),
+                            shape = CircleShape
+                        )
+                        .padding(10.dp)
+                        .clip(CircleShape)
+                        .clickable {
+                            handleFlashLight()
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
                     Z17BasePicture(
-                        modifier = Modifier.fillMaxSize(),
-                        source = if (recordState == RecordingState.PAUSE) Icons.Filled.PlayCircleFilled else Icons.Filled.PauseCircleFilled,
-                        colorFilter = ColorFilter.tint(color = Color(0xFFc62828))
+                        modifier = Modifier.size(25.dp),
+                        source = if (isFlashLightOn) Icons.Outlined.FlashOn else Icons.Outlined.FlashOff,
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
                     )
                 }
-            }
 
-            Box(
-                modifier = Modifier
-                    .border(
-                        4.dp,
-                        color = Color.White,
-                        shape = CircleShape
-                    )
-                    .padding(if (isVideo) 10.dp else 5.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    modifier = Modifier.bounceClick(),
-                    onClick = {
-                        if (!isVideo)
-                            viewModel.captureAndSaveImage(context)
-                        else {
-                            if (recordState == RecordingState.NOT_REQUESTED) {
-                                viewModel.startVideoRecord(
-                                    context
-                                )
-                            } else {
-                                viewModel.stopRecord()
+                // VIDEO PAUSE-RESUME BTN
+                AnimatedVisibility(visible = (recordState == RecordingState.RECORDING || recordState == RecordingState.PAUSE)) {
+                    IconButton(
+                        modifier = Modifier
+                            .size(40.dp)
+                            .bounceClick(),
+                        onClick = {
+                            if (recordState == RecordingState.PAUSE) viewModel.resumeRecord() else viewModel.pauseRecord()
+                        }
+                    ) {
+                        Z17BasePicture(
+                            modifier = Modifier.fillMaxSize(),
+                            source = if (recordState == RecordingState.PAUSE) Icons.Filled.PlayCircleFilled else Icons.Filled.PauseCircleFilled,
+                            colorFilter = ColorFilter.tint(color = Color(0xFFc62828))
+                        )
+                    }
+                }
+
+                // SHOT BTN
+                Box(
+                    modifier = Modifier
+                        .border(
+                            4.dp,
+                            color = Color.White,
+                            shape = CircleShape
+                        )
+                        .padding(if (isVideo) 10.dp else 5.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        modifier = Modifier.bounceClick(),
+                        onClick = {
+                            if (!isVideo)
+                                viewModel.captureAndSaveImage(context)
+                            else {
+                                if (recordState == RecordingState.NOT_REQUESTED) {
+                                    viewModel.startVideoRecord(
+                                        context
+                                    )
+                                } else {
+                                    viewModel.stopRecord()
+                                }
                             }
                         }
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(if (isVideo) 50.dp else 60.dp)
+                                .padding(5.dp)
+                                .background(
+                                    color = if (isVideo && recordState == RecordingState.RECORDING) MaterialTheme.colorScheme.primary else Color.White,
+                                    shape = CircleShape
+                                )
+                        )
                     }
-                ) {
+                }
+
+                // SWITCH CAMERA BTN
+                AnimatedVisibility(visible = !isVideo || (recordState == RecordingState.NOT_REQUESTED)) {
                     Box(
                         modifier = Modifier
-                            .size(if (isVideo) 50.dp else 60.dp)
-                            .padding(5.dp)
                             .background(
-                                color = if (isVideo && recordState == RecordingState.RECORDING) MaterialTheme.colorScheme.primary else Color.White,
+                                color = MaterialTheme.colorScheme.background.copy(alpha = 0.3F),
                                 shape = CircleShape
                             )
-                    )
+                            .padding(10.dp)
+                            .clickable {
+                                if (isFrontCamera) {
+                                    Z17CameraModule
+                                        .getInstance()
+                                        .changeToBackCamera()
+                                } else {
+                                    Z17CameraModule
+                                        .getInstance()
+                                        .changeToFrontCamera()
+                                }
+                                isFrontCamera = !isFrontCamera
+
+                                if (isVideo) {
+                                    viewModel.showVideoCamera(previewView, lifecycleOwner)
+                                } else {
+                                    viewModel.showCamera(previewView, lifecycleOwner)
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Z17BasePicture(
+                            modifier = Modifier.size(25.dp),
+                            source = Icons.Outlined.Cameraswitch,
+                            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
+                        )
+                    }
+                }
+
+            }
+
+            LaunchedEffect(isVideo) {
+                Z17CameraModule.getInstance().imageCapture.flashMode = ImageCapture.FLASH_MODE_OFF
+                if (isVideo) {
+                    viewModel.showVideoCamera(previewView, lifecycleOwner)
+                } else {
+                    viewModel.showCamera(previewView, lifecycleOwner)
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .alpha(if (recordState == RecordingState.RECORDING || recordState == RecordingState.PAUSE) 0F else 1F)
-                    .background(
-                        color = MaterialTheme.colorScheme.background.copy(alpha = 0.3F),
-                        shape = CircleShape
-                    )
-                    .padding(10.dp)
-                    .clickable {
-                        if (recordState != RecordingState.RECORDING && recordState != RecordingState.PAUSE) {
-                            isFrontCamera = !isFrontCamera
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Z17BasePicture(
-                    modifier = Modifier.size(25.dp),
-                    source = Icons.Outlined.Cameraswitch,
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
-                )
+            DisposableEffect(Unit) {
+                val previewsConfiguration = configuration.orientation
+                onDispose {
+                    Z17CameraModule.getInstance().processCameraProvider.unbindAll()
+
+                    try {
+                        val currentActivity = context.findActivity()
+                        currentActivity.requestedOrientation = previewsConfiguration
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
         }
-
-        LaunchedEffect(Unit) {
-            Z17CamaraModule.getInstance().imageCapture.flashMode = ImageCapture.FLASH_MODE_OFF
-        }
-    }
 }
 
 enum class CaptureState {
@@ -256,6 +322,8 @@ enum class CaptureState {
 }
 
 enum class RecordingState {
+    CANCEL,
+    FLIPPING,
     NOT_REQUESTED,
     RECORDING,
     RESULT,

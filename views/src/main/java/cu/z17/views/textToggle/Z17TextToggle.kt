@@ -25,7 +25,7 @@ fun Z17TextToggle(
     label: String = "",
     labelStyle: TextStyle = MaterialTheme.typography.bodyLarge,
     switchColors: SwitchColors = SwitchDefaults.colors(
-        checkedThumbColor = MaterialTheme.colorScheme.onBackground,
+        checkedThumbColor = Color.White,
         checkedTrackColor = MaterialTheme.colorScheme.primary,
         uncheckedBorderColor = MaterialTheme.colorScheme.onBackground,
         uncheckedThumbColor = MaterialTheme.colorScheme.onBackground,

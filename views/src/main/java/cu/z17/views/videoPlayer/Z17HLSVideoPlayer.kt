@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.CountDownTimer
 import androidx.activity.compose.BackHandler
 import androidx.annotation.FloatRange
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -40,7 +40,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import cu.z17.views.utils.findActivity
 import cu.z17.views.videoPlayer.controller.VideoPlayerControllerConfig
-import cu.z17.views.videoPlayer.controller.applyToExoPlayerView
 import cu.z17.views.videoPlayer.pip.enterPIPMode
 import cu.z17.views.videoPlayer.trackSelector.FormatAudioPreferred
 import cu.z17.views.videoPlayer.trackSelector.FormatSubsPreferred
@@ -61,6 +60,7 @@ fun Z17HLSVideoPlayer(
     mediaItem: HLSMediaItem,
     handleLifecycle: Boolean = true,
     autoPlay: Boolean = true,
+    autoRotation: Boolean = false,
     usePlayerController: Boolean = true,
     controllerConfig: VideoPlayerControllerConfig = VideoPlayerControllerConfig.Default,
     seekBeforeMilliSeconds: Long = 10000L,
@@ -75,6 +75,7 @@ fun Z17HLSVideoPlayer(
     playerState: PlayerState,
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
+    pipScale: Pair<Int, Int> = 16 to 9,
 ) {
     val context = LocalContext.current
 
@@ -175,7 +176,7 @@ fun Z17HLSVideoPlayer(
             delay(1000)
 
             if (currentTime != player.currentPosition) {
-                onCurrentTimeChanged(currentTime)
+                onCurrentTimeChanged(currentTime + 1)
             }
 
             currentTime = player.currentPosition
@@ -330,13 +331,26 @@ fun Z17HLSVideoPlayer(
         onRotate(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
     }
 
-    LaunchedEffect(playerState.isFullscreen) {
-        val currentActivity = context.findActivity()
-        currentActivity.setFullScreen(playerState.isFullscreen)
-        currentActivity.requestedOrientation =
-            if (playerState.isFullscreen) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR
+    if (autoRotation)
+        LaunchedEffect(playerState.isFullscreen) {
+            val currentActivity = context.findActivity()
+            currentActivity.setFullScreen(playerState.isFullscreen)
+            currentActivity.requestedOrientation =
+                if (playerState.isFullscreen) ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE else ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
-        if (playerState.isFullscreen) timer.start()
+            if (playerState.isFullscreen) timer.start()
+        }
+
+    DisposableEffect(Unit) {
+        val previewsConfiguration = configuration.orientation
+        onDispose {
+            try {
+                val currentActivity = context.findActivity()
+                currentActivity.requestedOrientation = previewsConfiguration
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     VideoPlayerSurface(
@@ -347,11 +361,12 @@ fun Z17HLSVideoPlayer(
         usePlayerController = usePlayerController,
         handleLifecycle = handleLifecycle,
         enablePip = enablePip,
+        pipScale = pipScale
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {
         if (playerState.isPlaying) {
-            enterPIPMode(context, defaultPlayerView) {
+            enterPIPMode(context, defaultPlayerView, pipScale) {
                 updatePlayerState(playerState.copy(isPIP = true), player)
             }
             player.play()

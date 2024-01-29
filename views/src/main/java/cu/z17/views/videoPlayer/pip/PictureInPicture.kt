@@ -29,19 +29,19 @@ import cu.z17.views.utils.findActivity
  * @param context Activity context.
  * @param defaultPlayerView Current video player controller.
  */
-@Suppress("DEPRECATION")
-internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView, onEnterPIP: () -> Unit = {}) {
+internal fun enterPIPMode(context: Context, defaultPlayerView: PlayerView, scale: Pair<Int, Int> ,onEnterPIP: () -> Unit = {}) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N &&
         context.packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
     ) {
         defaultPlayerView.useController = false
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val params = PictureInPictureParams.Builder()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 params
                     .setTitle("Video Player")
-                    .setAspectRatio(Rational(16, 9))
+                    .setAspectRatio(Rational(scale.first, scale.second))
                     .setSeamlessResizeEnabled(true)
             }
 

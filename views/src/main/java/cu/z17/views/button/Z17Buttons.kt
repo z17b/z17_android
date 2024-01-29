@@ -47,7 +47,7 @@ fun Z17BaseButton(
     enabled: Boolean = true,
     shape: Shape = RoundedCornerShape(15.dp),
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = MaterialTheme.colorScheme.primary,
         disabledContainerColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4F)
     ),
     elevation: ButtonElevation? = ButtonDefaults.buttonElevation(defaultElevation = 0.dp),
@@ -168,29 +168,27 @@ fun Z17PrimaryDialogButton(
     maxWidth: Boolean = false,
     simple: Boolean = false,
 ) {
-    Box {
-        if (simple) {
-            Z17Label(
-                modifier = modifier.clickable { onClick() },
-                text = text,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary
-            )
-        } else
-            Z17BaseDialogButton(
-                onClick = onClick, modifier = if (maxWidth) modifier.fillMaxWidth() else modifier
-            ) {
-                leading()
+    if (simple) {
+        Z17Label(
+            modifier = modifier.clickable { onClick() },
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    } else
+        Z17BaseDialogButton(
+            onClick = onClick, modifier = if (maxWidth) modifier.fillMaxWidth() else modifier
+        ) {
+            leading()
 
-                Z17Label(
-                    text = text,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = Color.White,
-                )
-            }
-    }
+            Z17Label(
+                text = text,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = Color.White,
+            )
+        }
 }
 
 @Composable
@@ -202,32 +200,30 @@ fun Z17SecondaryDialogButton(
     maxWidth: Boolean = false,
     simple: Boolean = false,
 ) {
-    Box {
-        if (simple) {
+    if (simple) {
+        Z17Label(
+            modifier = modifier.clickable { onClick() },
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+    } else
+        Z17BaseDialogButton(
+            onClick = onClick,
+            modifier = if (maxWidth) modifier.fillMaxWidth()
+            else modifier,
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
+            border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
+        ) {
+            leading()
+
             Z17Label(
-                modifier = modifier.clickable { onClick() },
                 text = text,
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
-        } else
-            Z17BaseDialogButton(
-                onClick = onClick,
-                modifier = if (maxWidth) modifier.fillMaxWidth()
-                else modifier,
-                elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
-                border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
-            ) {
-                leading()
-
-                Z17Label(
-                    text = text,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-            }
-    }
+        }
 }
 
 @Composable

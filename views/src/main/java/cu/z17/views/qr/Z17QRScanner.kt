@@ -7,10 +7,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FlashOff
 import androidx.compose.material.icons.outlined.FlashOn
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.zxing.client.android.BeepManager
@@ -35,7 +37,8 @@ fun Z17QRScanner(
     handleCorrectScan: (String) -> Unit,
     handleCancelScan: () -> Unit,
     cancelText: String = "Cancel",
-    showCancel: Boolean = false
+    showCancel: Boolean = false,
+    size: Dp = 250.dp
 ) {
     Column(
         modifier = modifier,
@@ -86,7 +89,8 @@ fun Z17QRScanner(
         Box {
             AndroidView(
                 factory = { compoundBarcodeView },
-                modifier = Modifier.size(250.dp), update = {
+                modifier = Modifier.size(size),
+                update = {
                     if (torchFlag) it.setTorchOn() else it.setTorchOff()
                 }
             )
@@ -97,7 +101,7 @@ fun Z17QRScanner(
                 Z17BasePicture(
                     modifier = Modifier.size(30.dp),
                     source = if (torchFlag) Icons.Outlined.FlashOn else Icons.Outlined.FlashOff,
-                    colorFilter = ColorFilter.tint(color = androidx.compose.material.MaterialTheme.colors.surface)
+                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.surface)
                 )
             }
         }

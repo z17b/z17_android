@@ -40,7 +40,7 @@ fun Z17MapView(
     centerOn: String = "",
     currentPoint: Z17MapMarker?,
     otherPoints: List<Z17MapMarker>,
-    updateMarker: (Z17MapMarker) -> Unit
+    updateMarker: (Z17MapMarker) -> Unit,
 ) {
     val mapView = rememberMapViewWithLifecycle(
         startLatitude = startLatitude,
@@ -62,7 +62,13 @@ fun Z17MapView(
         mutableMapOf<String, AccuracyOverlay>()
     }
 
-    fun centerMap(mapView: MapView, location: Location) {
+    fun centerMap(mapView: MapView, z17MapMarker: Z17MapMarker) {
+        val location = Location("").apply {
+            this.latitude = z17MapMarker.latitude
+            this.longitude = z17MapMarker.longitude
+            this.altitude = z17MapMarker.altitude
+        }
+
         val point = GeoPoint(
             location.latitude,
             location.longitude,
@@ -117,16 +123,12 @@ fun Z17MapView(
         }
 
         mMarker.setOnMarkerClickListener { _, _ ->
-            z17MapMarker.location?.let {
-                centerMap(mapView, z17MapMarker.location)
-            }
+            centerMap(mapView, z17MapMarker)
             false
         }
 
-        if (!isCentered && centerOn.isEmpty()) {
-            z17MapMarker.location?.let {
-                centerMap(mapView, z17MapMarker.location)
-            }
+        if (!isCentered && (centerOn.isEmpty() || centerOn == "0") ) {
+            centerMap(mapView, z17MapMarker)
             isCentered = true
         }
 
@@ -180,9 +182,7 @@ fun Z17MapView(
         friendMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
 
         if (!isCentered && centerOn == z17MapMarker.id) {
-            z17MapMarker.location?.let {
-                centerMap(mapView, z17MapMarker.location)
-            }
+            centerMap(mapView, z17MapMarker)
             isCentered = true
         }
 
@@ -220,9 +220,7 @@ fun Z17MapView(
         customMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
 
         if (!isCentered && centerOn == z17MapMarker.id) {
-            z17MapMarker.location?.let {
-                centerMap(mapView, z17MapMarker.location)
-            }
+            centerMap(mapView, z17MapMarker)
             isCentered = true
         }
 
@@ -260,6 +258,7 @@ fun Z17MapView(
                     return false
                 }
             }
+
             val overlayEvents = MapEventsOverlay(mReceive)
             mV.overlays.add(overlayEvents)
             mV.invalidate()
@@ -282,7 +281,7 @@ fun Z17MapView(
 fun rememberMapViewWithLifecycle(
     startLatitude: Double,
     startLongitude: Double,
-    startZoom: Double
+    startZoom: Double,
 ): MapView {
     val context = LocalContext.current
 

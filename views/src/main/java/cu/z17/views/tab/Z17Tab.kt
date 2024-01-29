@@ -23,7 +23,7 @@ fun Z17Tab(
 
     val selectedBg =
         if (selected) MaterialTheme.colorScheme.onBackground.copy(alpha = 0.05F) else MaterialTheme.colorScheme.onBackground.copy(
-            alpha = 0.2F
+            alpha = 0.05F
         )
 
     Tab(
