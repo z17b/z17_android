@@ -4,7 +4,7 @@ plugins {
     id("maven-publish")
 }
 
-val moduleName = "singledi"
+val moduleName = "compress"
 
 android {
     namespace = libs.versions.libName.get() + "." + moduleName
