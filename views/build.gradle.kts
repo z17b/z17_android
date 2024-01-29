@@ -2,12 +2,18 @@ plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("maven-publish")
 }
 
-android {
-    namespace = "cu.z17.views"
-    resourcePrefix("views")
+val moduleName = "views"
 
+android {
+    namespace = libs.versions.libName.get() + "." + moduleName
+
+    group = libs.versions.libName.get()
+    version = libs.versions.versionName.get()
+
+    resourcePrefix(moduleName)
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -18,7 +24,7 @@ android {
     }
 
     compileOptions {
-        isCoreLibraryDesugaringEnabled = true
+        //isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -44,11 +50,8 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+    //coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
-    implementation(libs.kotlin)
-    implementation(libs.kotlin.reflect)
-    implementation(libs.core.ktx)
     implementation(libs.app.compat)
     implementation(libs.material)
 
@@ -98,6 +101,8 @@ dependencies {
 
     implementation(libs.accompanist.permissions)
 
+    implementation(libs.constraintlayout)
+
     implementation(libs.compose.ui.test)
     implementation(libs.compose.ui.test.junit)
     implementation(libs.compose.ui.test.manifest)
@@ -130,8 +135,22 @@ dependencies {
     implementation(libs.camera.extensions)
     implementation(libs.camera.video)
 
+    implementation(libs.gson)
+
     implementation(libs.exifinterface)
 
     api(project(":singledi"))
     api(project(":compress"))
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>(moduleName) {
+                groupId = libs.versions.libName.get()
+                artifactId = moduleName
+                version = libs.versions.versionName.get()
+            }
+        }
+    }
 }
