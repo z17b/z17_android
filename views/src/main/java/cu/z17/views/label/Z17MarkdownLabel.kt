@@ -53,7 +53,7 @@ fun Z17MarkdownLabel(
                 }
             }
 
-            Z17Markown.getInstance().markwon.setMarkdown(tV, text)
+            Z17Markown.createInstance { Z17Markown(context = c) }.markwon.setMarkdown(tV, text)
 
             tV
         })
