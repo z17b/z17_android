@@ -40,16 +40,11 @@ android {
         }
     }
 
-}
-
-dependencies {
-    implementation(libs.kotlin)
-    implementation(libs.core.ktx)
-
-    implementation(libs.coroutines.core)
-    implementation(libs.coroutines.android)
-
-    implementation(libs.exifinterface)
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
 }
 
 afterEvaluate {
@@ -62,4 +57,14 @@ afterEvaluate {
             }
         }
     }
+}
+
+dependencies {
+    implementation(libs.kotlin)
+    implementation(libs.core.ktx)
+
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+
+    implementation(libs.exifinterface)
 }

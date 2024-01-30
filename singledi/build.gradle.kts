@@ -40,11 +40,11 @@ android {
         }
     }
 
-}
-
-dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.kotlin)
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
 }
 
 afterEvaluate {
@@ -57,4 +57,9 @@ afterEvaluate {
             }
         }
     }
+}
+
+dependencies {
+    implementation(libs.core.ktx)
+    implementation(libs.kotlin)
 }

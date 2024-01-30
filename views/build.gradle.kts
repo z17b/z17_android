@@ -53,7 +53,26 @@ android {
             withJavadocJar()
         }
     }
+    
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
+}
 
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>(moduleName) {
+
+
+                groupId = libs.versions.libName.get()
+                artifactId = moduleName
+                version = libs.versions.versionName.get()
+            }
+        }
+    }
 }
 
 dependencies {
@@ -149,16 +168,4 @@ dependencies {
 
     api(project(":singledi"))
     api(project(":compress"))
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            create<MavenPublication>(moduleName) {
-                groupId = libs.versions.libName.get()
-                artifactId = moduleName
-                version = libs.versions.versionName.get()
-            }
-        }
-    }
 }

@@ -41,12 +41,11 @@ android {
         }
     }
 
-}
-
-dependencies {
-    implementation(libs.data.store)
-    implementation(libs.kotlin.serialization)
-    implementation(libs.crypto)
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+        }
+    }
 }
 
 afterEvaluate {
@@ -59,4 +58,10 @@ afterEvaluate {
             }
         }
     }
+}
+
+dependencies {
+    implementation(libs.data.store)
+    implementation(libs.kotlin.serialization)
+    implementation(libs.crypto)
 }
