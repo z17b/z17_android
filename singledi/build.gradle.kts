@@ -54,6 +54,7 @@ afterEvaluate {
                 groupId = libs.versions.libName.get()
                 artifactId = moduleName
                 version = libs.versions.versionName.get()
+                from(components["release"])
             }
         }
     }

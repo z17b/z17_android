@@ -65,11 +65,10 @@ afterEvaluate {
     publishing {
         publications {
             create<MavenPublication>(moduleName) {
-
-
                 groupId = libs.versions.libName.get()
                 artifactId = moduleName
                 version = libs.versions.versionName.get()
+                from(components["release"])
             }
         }
     }
