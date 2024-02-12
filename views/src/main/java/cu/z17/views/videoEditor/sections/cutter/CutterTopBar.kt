@@ -92,7 +92,7 @@ fun CutterTopBar(
                             activeTrackColor = Color.Black.copy(alpha = 0.6F),
                             inactiveTrackColor = Color.Black.copy(alpha = 0.3F),
                         ),
-                        sliderPositions = it
+                        rangeSliderState = it
                     )
                     Box(
                         modifier = Modifier
