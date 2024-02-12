@@ -39,3 +39,4 @@ implementation(libs.z17.MODULE_NAME)
 - Z17PagerIndicator: pageCount parameter removed
 - Z17BaseScaffold: added bottom bar as composable parameter
 - Z17MutableListFlow: getSize method added
+- Fixed scroll color from topbar
