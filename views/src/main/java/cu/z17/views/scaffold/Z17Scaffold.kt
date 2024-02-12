@@ -29,8 +29,8 @@ fun Z17BaseScaffold(
     drawerContent: @Composable (ColumnScope.() -> Unit)? = null,
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     scaffoldState: ScaffoldState,
-    content: @Composable (modifier: Modifier) -> Unit,
     bottomBar: @Composable (() -> Unit)? = null,
+    content: @Composable (modifier: Modifier) -> Unit,
 ) {
     Box {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
