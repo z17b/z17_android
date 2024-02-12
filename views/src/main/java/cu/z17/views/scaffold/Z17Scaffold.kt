@@ -30,11 +30,24 @@ fun Z17BaseScaffold(
     backgroundColor: Color = MaterialTheme.colorScheme.background,
     scaffoldState: ScaffoldState,
     content: @Composable (modifier: Modifier) -> Unit,
+    bottomBar: @Composable (() -> Unit)? = null,
 ) {
     Box {
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-        if (!noToolbar)
+        if (noToolbar)
+            Scaffold(
+                scaffoldState = scaffoldState,
+                modifier = if (isNestedActive) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
+                floatingActionButton = floatingActionButton,
+                drawerBackgroundColor = MaterialTheme.colorScheme.background,
+                drawerContent = drawerContent,
+                backgroundColor = backgroundColor,
+                drawerGesturesEnabled = true,
+            ) {
+                content(Modifier.padding(it))
+            }
+        else
             Scaffold(
                 scaffoldState = scaffoldState,
                 topBar = {
@@ -56,18 +69,7 @@ fun Z17BaseScaffold(
                 drawerContent = drawerContent,
                 backgroundColor = backgroundColor,
                 drawerGesturesEnabled = true,
-            ) {
-                content(Modifier.padding(it))
-            }
-        else
-            Scaffold(
-                scaffoldState = scaffoldState,
-                modifier = if (isNestedActive) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
-                floatingActionButton = floatingActionButton,
-                drawerBackgroundColor = MaterialTheme.colorScheme.background,
-                drawerContent = drawerContent,
-                backgroundColor = backgroundColor,
-                drawerGesturesEnabled = true,
+                bottomBar = bottomBar ?: {}
             ) {
                 content(Modifier.padding(it))
             }

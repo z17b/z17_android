@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Modifier
 import cu.z17.android.ui.theme.AppTheme
+import cu.z17.views.topBar.Z17TopBar
 
 class MainActivity : ComponentActivity() {
 
@@ -18,7 +19,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
                 Box(Modifier) {
-
                 }
             }
         }

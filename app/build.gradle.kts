@@ -110,4 +110,6 @@ dependencies {
     implementation(libs.compose.activity)
     implementation(libs.compose.view.model)
     implementation(libs.compose.paging)
+
+    api(project(":views"))
 }

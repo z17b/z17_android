@@ -12,6 +12,8 @@ class Z17MutableListFlow<T>(initial: List<T> = emptyList()) {
         }
     }
 
+    fun getSize() = mutableList.value.size
+
     fun contains(condition: (T) -> Boolean): Boolean {
         var isIn = false
         mutableList.value.forEach {

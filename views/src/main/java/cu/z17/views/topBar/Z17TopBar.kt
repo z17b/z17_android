@@ -53,7 +53,8 @@ fun Z17TopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = containerColor
+            containerColor = containerColor,
+            scrolledContainerColor = containerColor
         ),
         scrollBehavior = scrollBehavior
     )
