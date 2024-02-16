@@ -24,7 +24,7 @@ fun Z17PictureAvatar(
     placeholder: Any = Icons.Outlined.Person,
     colorFilter: ColorFilter? = null,
     description: String = "avatar image",
-    filterQuality: FilterQuality = FilterQuality.None,
+    filterQuality: FilterQuality = FilterQuality.High,
     size: Int? = null,
     canEdit: Boolean = false,
     customHeaders: Headers? = null,

@@ -35,8 +35,3 @@ z17-MODULE_NAME = { group = "com.github.z17b.z17_android", name = "<MODULE_NAME>
 ```
 implementation(libs.z17.MODULE_NAME)
 ```
-### Changelog 0.0.8
-- Z17PagerIndicator: pageCount parameter removed
-- Z17BaseScaffold: added bottom bar as composable parameter
-- Z17MutableListFlow: getSize method added
-- Fixed scroll color from topbar
