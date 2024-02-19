@@ -23,6 +23,7 @@ import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
 import coil.size.Scale
+import coil.size.Size
 import cu.z17.singledi.SinglediException
 import cu.z17.views.loader.Z17Shimmer
 import cu.z17.views.utils.Z17BasePictureHeaders
@@ -36,9 +37,9 @@ import okhttp3.Headers
 fun PictureFromUri(
     modifier: Modifier,
     uri: Uri,
-    contentScale: ContentScale = ContentScale.Crop,
+    contentScale: ContentScale,
     description: String,
-    filterQuality: FilterQuality = FilterQuality.Low,
+    filterQuality: FilterQuality,
     context: Context = LocalContext.current
 ) {
     val source = remember {
@@ -74,11 +75,10 @@ fun PictureFromUrl(
     url: String,
     placeholder: Any,
     colorFilter: ColorFilter? = null,
-    contentScale: ContentScale = ContentScale.Crop,
+    contentScale: ContentScale,
     description: String,
-    filterQuality: FilterQuality = FilterQuality.Low,
-    customHeaders: Headers? = null,
-    size: Int? = null
+    filterQuality: FilterQuality,
+    customHeaders: Headers? = null
 ) {
     val context = LocalContext.current
 
@@ -90,19 +90,18 @@ fun PictureFromUrl(
                 .memoryCacheKey(url)
                 .diskCacheKey(url)
                 .crossfade(true)
+                .size(Size.ORIGINAL)
 
             // Setting placeholder
             if (placeholder is Drawable) {
                 imageRequest
                     .placeholder(placeholder)
-                    .scale(scale = Scale.FILL)
                     .error(placeholder)
             }
 
             if (placeholder is Int) {
                 imageRequest
                     .placeholder(placeholder)
-                    .scale(scale = Scale.FILL)
                     .error(placeholder)
             }
 
@@ -114,7 +113,6 @@ fun PictureFromUrl(
 
                 imageRequest
                     .placeholder(shapeDrawable)
-                    .scale(scale = Scale.FILL)
                     .error(shapeDrawable)
             }
 
@@ -131,10 +129,6 @@ fun PictureFromUrl(
                 } catch (e: SinglediException) {
                     e.printStackTrace()
                 }
-
-            // Adding custom size to load
-            if (size != null)
-                imageRequest.size(size)
 
             imageRequest
                 .memoryCachePolicy(CachePolicy.ENABLED)
@@ -155,9 +149,9 @@ fun PictureFromUrl(
 fun PictureWithBlurHash(
     modifier: Modifier = Modifier,
     colorFilter: ColorFilter? = null,
-    contentScale: ContentScale = ContentScale.Fit,
+    contentScale: ContentScale,
     description: String = "",
-    filterQuality: FilterQuality = FilterQuality.High,
+    filterQuality: FilterQuality,
     blurHash: String,
     context: Context = LocalContext.current
 ) {
@@ -209,9 +203,9 @@ fun PictureWithBlurHash(
 fun PictureFromBitmap(
     modifier: Modifier = Modifier,
     colorFilter: ColorFilter? = null,
-    contentScale: ContentScale = ContentScale.Fit,
-    description: String = "",
-    filterQuality: FilterQuality = FilterQuality.High,
+    contentScale: ContentScale,
+    description: String,
+    filterQuality: FilterQuality,
     bitmap: Bitmap,
     context: Context = LocalContext.current
 ) {

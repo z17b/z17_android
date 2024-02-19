@@ -33,7 +33,6 @@ fun Z17BasePicture(
     contentScale: ContentScale = ContentScale.Fit,
     description: String = "",
     filterQuality: FilterQuality = FilterQuality.High,
-    size: Int? = null,
     customHeaders: Headers? = null,
     blurHash: String = ""
 ) {
@@ -59,7 +58,6 @@ fun Z17BasePicture(
                     description = description,
                     colorFilter = colorFilter,
                     filterQuality = filterQuality,
-                    size = size,
                     customHeaders = customHeaders
                 )
             }
@@ -145,8 +143,7 @@ fun Z17BasePicture(
                     colorFilter = colorFilter,
                     contentScale = contentScale,
                     description = description,
-                    filterQuality = filterQuality,
-                    size = size
+                    filterQuality = filterQuality
                 )
             }
         }

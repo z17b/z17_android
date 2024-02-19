@@ -44,8 +44,7 @@ fun Z17BlurImage(
             colorFilter = colorFilter,
             contentScale = contentScale,
             description = description,
-            filterQuality = filterQuality,
-            size = size
+            filterQuality = filterQuality
         )
     }
 }
@@ -86,7 +85,6 @@ private fun LegacyBlurImage(
         colorFilter = colorFilter,
         contentScale = contentScale,
         description = description,
-        filterQuality = filterQuality,
-        size = size
+        filterQuality = filterQuality
     )
 }
