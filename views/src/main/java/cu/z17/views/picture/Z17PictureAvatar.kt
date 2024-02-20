@@ -54,7 +54,6 @@ fun Z17PictureAvatar(
                 colorFilter = colorFilter,
                 filterQuality = filterQuality,
                 description = description,
-                size = size,
                 blurHash = ""
             )
         else
@@ -68,7 +67,6 @@ fun Z17PictureAvatar(
                 colorFilter = colorFilter,
                 filterQuality = filterQuality,
                 description = description,
-                size = size,
                 customHeaders = customHeaders
             )
 
@@ -80,8 +78,7 @@ fun Z17PictureAvatar(
                 source = cu.z17.views.R.drawable.edit_profile_banner,
                 contentScale = ContentScale.Crop,
                 filterQuality = FilterQuality.High,
-                description = "edit profile banner",
-                size = size
+                description = "edit profile banner"
             )
     }
 }
