@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -21,6 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
+import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.size.Scale
 import coil.size.Size
@@ -91,6 +93,11 @@ fun PictureFromUrl(
                 .diskCacheKey(url)
                 .crossfade(true)
                 .size(Size.ORIGINAL)
+                .listener(object : ImageRequest.Listener {
+                    override fun onError(request: ImageRequest, result: ErrorResult) {
+                        Log.d("COIL", "request: ${request.data}, result: ${result.throwable}")
+                    }
+                })
 
             // Setting placeholder
             if (placeholder is Drawable) {

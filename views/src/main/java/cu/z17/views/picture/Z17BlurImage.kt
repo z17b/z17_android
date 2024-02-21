@@ -56,7 +56,7 @@ private fun LegacyBlurImage(
     colorFilter: ColorFilter? = null,
     contentScale: ContentScale = ContentScale.Fit,
     description: String = "",
-    filterQuality: FilterQuality = FilterQuality.High,
+    filterQuality: FilterQuality,
     size: Int? = null,
     blurRadio: Float
 ) {

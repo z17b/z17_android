@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.core.graphics.drawable.toBitmap
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import cu.z17.views.utils.Z17BasePictureHeaders
 import okhttp3.Headers
 
 @Composable
@@ -33,7 +34,7 @@ fun Z17BasePicture(
     contentScale: ContentScale = ContentScale.Fit,
     description: String = "",
     filterQuality: FilterQuality = FilterQuality.High,
-    customHeaders: Headers? = null,
+    customHeaders: Map<String, String>? = null,
     blurHash: String = ""
 ) {
     Box(modifier) {
@@ -51,14 +52,14 @@ fun Z17BasePicture(
 
             source is String && source.isNotEmpty() -> {
                 PictureFromUrl(
+                    modifier = Modifier.fillMaxSize(),
                     url = source,
                     placeholder = if (placeholder is Int || placeholder is Drawable || placeholder is Color) placeholder else cu.z17.views.R.drawable.placeholder,
-                    modifier = Modifier.fillMaxSize(),
                     contentScale = contentScale,
                     description = description,
                     colorFilter = colorFilter,
                     filterQuality = filterQuality,
-                    customHeaders = customHeaders
+                    customHeaders = Z17BasePictureHeaders.fromMapToHeaders(customHeaders)
                 )
             }
 

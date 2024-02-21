@@ -27,7 +27,7 @@ fun Z17PictureAvatar(
     filterQuality: FilterQuality = FilterQuality.High,
     size: Int? = null,
     canEdit: Boolean = false,
-    customHeaders: Headers? = null,
+    customHeaders: Map<String, String>? = null,
     textPlaceholder: String = "",
     useTextPlaceholder: Boolean = false,
     defaultAvatarSize: Int = 256,
@@ -77,7 +77,6 @@ fun Z17PictureAvatar(
                     .fillMaxSize(),
                 source = cu.z17.views.R.drawable.edit_profile_banner,
                 contentScale = ContentScale.Crop,
-                filterQuality = FilterQuality.High,
                 description = "edit profile banner"
             )
     }
