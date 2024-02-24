@@ -236,5 +236,4 @@ val ShimmerColorShades = listOf(
     Color.LightGray.copy(0.2f),
 
     Color.LightGray.copy(0.9f)
-
 )
