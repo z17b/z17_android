@@ -80,7 +80,7 @@ fun PictureFromUrl(
     contentScale: ContentScale,
     description: String,
     filterQuality: FilterQuality,
-    customHeaders: Headers? = null
+    customHeaders: Map<String, String>? = null,
 ) {
     val context = LocalContext.current
 
@@ -92,7 +92,8 @@ fun PictureFromUrl(
                 .memoryCacheKey(url)
                 .diskCacheKey(url)
                 .crossfade(true)
-                .size(Size.ORIGINAL)
+                .size(1920, 1080)
+                .scale(scale = Scale.FILL)
                 .listener(object : ImageRequest.Listener {
                     override fun onError(request: ImageRequest, result: ErrorResult) {
                         Log.d("COIL", "request: ${request.data}, result: ${result.throwable}")
@@ -129,10 +130,11 @@ fun PictureFromUrl(
                 )
             )
                 if (customHeaders != null)
-                    imageRequest.headers(customHeaders)
+                    imageRequest.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
                 else try {
-                    if (Z17BasePictureHeaders.getInstance().thereAreHeaders())
+                    if (Z17BasePictureHeaders.getInstance().thereAreHeaders()) {
                         imageRequest.headers(Z17BasePictureHeaders.getInstance().getHeaders()!!)
+                    }
                 } catch (e: SinglediException) {
                     e.printStackTrace()
                 }

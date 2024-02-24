@@ -6,8 +6,8 @@ compileSdk = "34"
 buildTools = "34.0.0"
 minSdk = "21"
 targetSdk = "34"
-versionCode = "17"
-versionName = "0.1.7"
+versionCode = "18"
+versionName = "0.1.8"
 
 ksp = "1.9.22-1.0.17"
 
@@ -35,7 +35,7 @@ composeViewModel = "2.7.0"
 composeActivity = "1.8.2"
 composeThemeAdapter = "1.2.1"
 
-composeCoil = "2.4.0"
+composeCoil = "2.6.0"
 
 accompanist = "0.32.0"
 

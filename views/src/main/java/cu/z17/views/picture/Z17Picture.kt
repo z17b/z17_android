@@ -59,7 +59,7 @@ fun Z17BasePicture(
                     description = description,
                     colorFilter = colorFilter,
                     filterQuality = filterQuality,
-                    customHeaders = Z17BasePictureHeaders.fromMapToHeaders(customHeaders)
+                    customHeaders = customHeaders
                 )
             }
 
