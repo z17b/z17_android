@@ -2,6 +2,7 @@ package cu.z17.views.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import android.util.Log
 import coil.ImageLoader
@@ -9,8 +10,14 @@ import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.decode.VideoFrameDecoder
 import coil.disk.DiskCache
+import coil.executeBlocking
 import coil.memory.MemoryCache
 import coil.request.CachePolicy
+import coil.request.ErrorResult
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import coil.size.Scale
+import cu.z17.singledi.SinglediException
 import cu.z17.singledi.SingletonInitializer
 import kotlinx.coroutines.Dispatchers
 import okhttp3.OkHttpClient
@@ -69,7 +76,54 @@ class Z17CoilDecoders(
         Log.d("COIL_CACHE", "Cache clear for $url")
     }
 
-    fun getInCache(key: String) = imageLoader.memoryCache?.get(MemoryCache.Key(key))?.bitmap
-    fun setInCache(key: String, bitmap: Bitmap) =
-        imageLoader.memoryCache?.set(MemoryCache.Key(key), MemoryCache.Value(bitmap))
+    fun getInCache(
+        url: String,
+        customHeaders: Map<String, String>? = null,
+    ): Bitmap? {
+        val imageRequest = ImageRequest.Builder(context).apply {
+            this.data(url)
+            this.memoryCacheKey(url)
+            this.diskCacheKey(url)
+            this.memoryCachePolicy(CachePolicy.DISABLED)
+            this.diskCachePolicy(CachePolicy.ENABLED)
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+            this.crossfade(true)
+            this.size(1920, 1080)
+            this.scale(scale = Scale.FILL)
+            this.listener(object : ImageRequest.Listener {
+                override fun onError(request: ImageRequest, result: ErrorResult) {
+                    Log.d("COIL", "request: ${request.data}, result: ${result.throwable}")
+                }
+            })
+            // Adding headers
+            if (!url.contains("s3.todus.cu/official") && !url.contains("s3.todus.cu/catalog") && !url.startsWith(
+                    "https://todus.cu"
+                )
+            )
+                if (customHeaders != null)
+                    this.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
+                else try {
+                    if (Z17BasePictureHeaders.getInstance().thereAreHeaders()) {
+                        this.headers(Z17BasePictureHeaders.getInstance().getHeaders()!!)
+                    }
+                } catch (e: SinglediException) {
+                    e.printStackTrace()
+                }
+        }.build()
+
+        val loader = Z17CoilDecoders.getInstanceOrNull()?.imageLoader
+
+        return if (loader != null) {
+            try {
+                val result = (loader.executeBlocking(imageRequest) as SuccessResult).drawable
+                val bitmap = (result as BitmapDrawable).bitmap
+
+                bitmap
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else null
+    }
 }
