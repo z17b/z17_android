@@ -212,7 +212,7 @@ fun PictureFromBitmap(
             this.data(bitmap)
             this.memoryCacheKey(bitmap.hashCode().toString())
             this.diskCacheKey(bitmap.hashCode().toString())
-            this.memoryCachePolicy(CachePolicy.ENABLED)
+            this.memoryCachePolicy(CachePolicy.DISABLED)
             this.diskCachePolicy(CachePolicy.ENABLED)
             this.dispatcher(Dispatchers.IO)
             this.interceptorDispatcher(Dispatchers.IO)
