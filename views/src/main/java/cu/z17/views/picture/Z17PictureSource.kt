@@ -25,7 +25,6 @@ import coil.request.CachePolicy
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.size.Scale
-import coil.size.Size
 import cu.z17.singledi.SinglediException
 import cu.z17.views.loader.Z17Shimmer
 import cu.z17.views.utils.Z17BasePictureHeaders
@@ -33,7 +32,6 @@ import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.utils.blurhash.BlurHashDecoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import okhttp3.Headers
 
 @Composable
 fun PictureFromUri(
@@ -42,28 +40,25 @@ fun PictureFromUri(
     contentScale: ContentScale,
     description: String,
     filterQuality: FilterQuality,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
-    val source = remember {
-        val imageRequest = ImageRequest.Builder(context)
-            .data(uri)
-            .memoryCacheKey(uri.path)
-            .diskCacheKey(uri.path)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .dispatcher(Dispatchers.IO)
-            .interceptorDispatcher(Dispatchers.IO)
-            .crossfade(true)
-
-        imageRequest
-            .dispatcher(Dispatchers.IO)
-            .interceptorDispatcher(Dispatchers.IO)
-            .build()
-    }
-
     AsyncImage(
         modifier = modifier,
-        model = source,
+        model = ImageRequest.Builder(context).apply {
+            this.data(uri)
+            this.memoryCacheKey(uri.path)
+            this.diskCacheKey(uri.path)
+            this.memoryCachePolicy(CachePolicy.ENABLED)
+            this.diskCachePolicy(CachePolicy.ENABLED)
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+            this.crossfade(true)
+            this.size(1920, 1080)
+            this.scale(scale = Scale.FILL)
+
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+        }.build(),
         filterQuality = filterQuality,
         contentDescription = description,
         contentScale = contentScale,
@@ -86,31 +81,32 @@ fun PictureFromUrl(
 
     AsyncImage(
         modifier = modifier,
-        model = remember {
-            val imageRequest = ImageRequest.Builder(context)
-                .data(url)
-                .memoryCacheKey(url)
-                .diskCacheKey(url)
-                .crossfade(true)
-                .size(1920, 1080)
-                .scale(scale = Scale.FILL)
-                .listener(object : ImageRequest.Listener {
-                    override fun onError(request: ImageRequest, result: ErrorResult) {
-                        Log.d("COIL", "request: ${request.data}, result: ${result.throwable}")
-                    }
-                })
+        model = ImageRequest.Builder(context).apply {
+            this.data(url)
+            this.memoryCacheKey(url)
+            this.diskCacheKey(url)
+            this.memoryCachePolicy(CachePolicy.ENABLED)
+            this.diskCachePolicy(CachePolicy.ENABLED)
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+            this.crossfade(true)
+            this.size(1920, 1080)
+            this.scale(scale = Scale.FILL)
+            this.listener(object : ImageRequest.Listener {
+                override fun onError(request: ImageRequest, result: ErrorResult) {
+                    Log.d("COIL", "request: ${request.data}, result: ${result.throwable}")
+                }
+            })
 
             // Setting placeholder
             if (placeholder is Drawable) {
-                imageRequest
-                    .placeholder(placeholder)
-                    .error(placeholder)
+                this.placeholder(placeholder)
+                this.error(placeholder)
             }
 
             if (placeholder is Int) {
-                imageRequest
-                    .placeholder(placeholder)
-                    .error(placeholder)
+                this.placeholder(placeholder)
+                this.error(placeholder)
             }
 
             if (placeholder is Color) {
@@ -119,9 +115,8 @@ fun PictureFromUrl(
                 shapeDrawable.intrinsicHeight = 200
                 shapeDrawable.paint.color = placeholder.hashCode()
 
-                imageRequest
-                    .placeholder(shapeDrawable)
-                    .error(shapeDrawable)
+                this.placeholder(shapeDrawable)
+                this.error(shapeDrawable)
             }
 
             // Adding headers
@@ -130,22 +125,15 @@ fun PictureFromUrl(
                 )
             )
                 if (customHeaders != null)
-                    imageRequest.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
+                    this.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
                 else try {
                     if (Z17BasePictureHeaders.getInstance().thereAreHeaders()) {
-                        imageRequest.headers(Z17BasePictureHeaders.getInstance().getHeaders()!!)
+                        this.headers(Z17BasePictureHeaders.getInstance().getHeaders()!!)
                     }
                 } catch (e: SinglediException) {
                     e.printStackTrace()
                 }
-
-            imageRequest
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .dispatcher(Dispatchers.IO)
-                .interceptorDispatcher(Dispatchers.IO)
-                .build()
-        },
+        }.build(),
         filterQuality = filterQuality,
         contentDescription = description,
         contentScale = contentScale,
@@ -162,7 +150,7 @@ fun PictureWithBlurHash(
     description: String = "",
     filterQuality: FilterQuality,
     blurHash: String,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
@@ -179,20 +167,20 @@ fun PictureWithBlurHash(
         bitmap.value?.let {
             AsyncImage(
                 modifier = modifier,
-                model = remember {
-                    val imageRequest = ImageRequest.Builder(context)
-                        .data(it)
-                        .memoryCacheKey(blurHash)
-                        .diskCacheKey(blurHash)
-                        .memoryCachePolicy(CachePolicy.ENABLED)
-                        .diskCachePolicy(CachePolicy.ENABLED)
-                        .dispatcher(Dispatchers.IO)
-                        .interceptorDispatcher(Dispatchers.IO)
-                        .crossfade(true)
+                model = ImageRequest.Builder(context).apply {
+                    this.data(it)
+                    this.memoryCacheKey(blurHash)
+                    this.diskCacheKey(blurHash)
+                    this.memoryCachePolicy(CachePolicy.ENABLED)
+                    this.diskCachePolicy(CachePolicy.ENABLED)
+                    this.dispatcher(Dispatchers.IO)
+                    this.interceptorDispatcher(Dispatchers.IO)
+                    this.crossfade(true)
+                    this.size(1920, 1080)
+                    this.scale(scale = Scale.FILL)
 
-                    imageRequest.dispatcher(Dispatchers.IO).interceptorDispatcher(Dispatchers.IO)
-                        .build()
-                },
+                    this.dispatcher(Dispatchers.IO).interceptorDispatcher(Dispatchers.IO)
+                }.build(),
                 filterQuality = filterQuality,
                 contentDescription = description,
                 contentScale = contentScale,
@@ -216,26 +204,23 @@ fun PictureFromBitmap(
     description: String,
     filterQuality: FilterQuality,
     bitmap: Bitmap,
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
 ) {
     AsyncImage(
         modifier = modifier,
-        model = remember {
-            val imageRequest = ImageRequest.Builder(context)
-                .data(bitmap)
-                .memoryCacheKey(bitmap.hashCode().toString())
-                .diskCacheKey(bitmap.hashCode().toString())
-                .memoryCachePolicy(CachePolicy.ENABLED)
-                .diskCachePolicy(CachePolicy.ENABLED)
-                .dispatcher(Dispatchers.IO)
-                .interceptorDispatcher(Dispatchers.IO)
-                .crossfade(true)
+        model = ImageRequest.Builder(context).apply {
+            this.data(bitmap)
+            this.memoryCacheKey(bitmap.hashCode().toString())
+            this.diskCacheKey(bitmap.hashCode().toString())
+            this.memoryCachePolicy(CachePolicy.ENABLED)
+            this.diskCachePolicy(CachePolicy.ENABLED)
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+            this.crossfade(true)
 
-            imageRequest
-                .dispatcher(Dispatchers.IO)
-                .interceptorDispatcher(Dispatchers.IO)
-                .build()
-        },
+            this.dispatcher(Dispatchers.IO)
+            this.interceptorDispatcher(Dispatchers.IO)
+        }.build(),
         filterQuality = filterQuality,
         contentDescription = description,
         contentScale = contentScale,
