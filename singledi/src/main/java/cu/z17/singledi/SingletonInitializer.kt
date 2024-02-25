@@ -19,4 +19,8 @@ open class SingletonInitializer<T : Any> {
     fun getInstanceOrNull(): T? {
         return instance
     }
+
+    fun deleteInstance() {
+        instance = null
+    }
 }

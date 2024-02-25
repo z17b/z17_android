@@ -121,7 +121,6 @@ class Z17CoilDecoders(
 
                 bitmap
             } catch (e: Exception) {
-                e.printStackTrace()
                 null
             }
         } else null

@@ -31,7 +31,7 @@ fun Z17BasePicture(
     source: Any?,
     placeholder: Any = Icons.Outlined.Image,
     colorFilter: ColorFilter? = null,
-    contentScale: ContentScale = ContentScale.FillBounds,
+    contentScale: ContentScale = ContentScale.Fit,
     description: String = "",
     filterQuality: FilterQuality = FilterQuality.High,
     customHeaders: Map<String, String>? = null,
