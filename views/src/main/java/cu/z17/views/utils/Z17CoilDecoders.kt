@@ -28,6 +28,7 @@ import javax.net.ssl.X509TrustManager
 class Z17CoilDecoders(
     private val context: Context,
     private val trustFactor: Pair<SSLSocketFactory, X509TrustManager>? = null,
+    val needsHeader: (String) -> Boolean = { true },
 ) {
     companion object : SingletonInitializer<Z17CoilDecoders>()
 
@@ -97,10 +98,7 @@ class Z17CoilDecoders(
                 }
             })
             // Adding headers
-            if (!url.contains("s3.todus.cu/official") && !url.contains("s3.todus.cu/catalog") && !url.startsWith(
-                    "https://todus.cu"
-                )
-            )
+            if (needsHeader(url))
                 if (customHeaders != null)
                     this.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
                 else try {

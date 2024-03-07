@@ -120,10 +120,7 @@ fun PictureFromUrl(
             }
 
             // Adding headers
-            if (!url.contains("s3.todus.cu/official") && !url.contains("s3.todus.cu/catalog") && !url.startsWith(
-                    "https://todus.cu"
-                )
-            )
+            if (Z17CoilDecoders.getInstanceOrNull()?.needsHeader?.invoke(url) == true)
                 if (customHeaders != null)
                     this.headers(Z17BasePictureHeaders.fromMapToHeaders(customHeaders)!!)
                 else try {
