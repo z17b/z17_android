@@ -57,6 +57,7 @@ fun Z17ImageEditor(
     modifier: Modifier = Modifier,
     source: Uri,
     imagePathToSave: String,
+    maxSize: Long = 3_097_152,
     onViewState: (Boolean) -> Unit,
     onError: () -> Unit,
     onEdited: (Boolean) -> Unit,
@@ -324,7 +325,7 @@ fun Z17ImageEditor(
             }
 
         LaunchedEffect(Unit) {
-            viewModel.loadBitmap(source, context)
+            viewModel.loadBitmap(source, context, maxSize)
         }
 
         LaunchedEffect(currentState) {

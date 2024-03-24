@@ -47,24 +47,13 @@ class Z17ImageEditorViewModel : ViewModel() {
         }
     }
 
-    fun loadBitmap(imageUri: Uri, context: Context) {
+    fun loadBitmap(imageUri: Uri, context: Context, maxSize: Long) {
         viewModelScope.launch {
             try {
-                /*val b = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    ImageDecoder.decodeBitmap(
-                        ImageDecoder.createSource(
-                            context.contentResolver,
-                            imageUri
-                        )
-                    )
-                } else {
-                    MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-                }*/
-
                 imageUri.path?.let {
                     try {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            size(3_097_152)
+                            size(maxSize)
                             resolution(1920, 1080)
                         }
 
