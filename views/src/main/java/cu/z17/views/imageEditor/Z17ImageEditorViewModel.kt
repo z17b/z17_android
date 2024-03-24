@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cu.z17.compress.Compressor
+import cu.z17.compress.constraint.format
 import cu.z17.compress.constraint.resolution
 import cu.z17.compress.constraint.size
 import cu.z17.views.utils.Z17MutableListFlow
@@ -53,6 +54,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                 imageUri.path?.let {
                     try {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
+                            format(format = if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP)
                             size(maxSize, 2, 30)
                             resolution(1920, 1080)
                         }
@@ -83,7 +85,8 @@ class Z17ImageEditorViewModel : ViewModel() {
 
             try {
                 val outputStream = FileOutputStream(file)
-                history.value.first().lastOrNull()?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                history.value.first().lastOrNull()
+                    ?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
 
                 outputStream.flush()
                 outputStream.close()

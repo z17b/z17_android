@@ -6,8 +6,8 @@ compileSdk = "34"
 buildTools = "34.0.0"
 minSdk = "21"
 targetSdk = "34"
-versionCode = "26"
-versionName = "0.2.6"
+versionCode = "27"
+versionName = "0.2.7"
 
 ksp = "1.9.22-1.0.17"
 

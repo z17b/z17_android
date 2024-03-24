@@ -15,12 +15,13 @@ private fun cachePath(context: Context) = "${context.cacheDir.path}${separator}c
 
 fun File.compressFormat() = when (extension.lowercase()) {
     "png" -> Bitmap.CompressFormat.PNG
-    "webp" -> Bitmap.CompressFormat.WEBP
+    "webp" -> if(android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP
     else -> Bitmap.CompressFormat.JPEG
 }
 
 fun Bitmap.CompressFormat.extension() = when (this) {
     Bitmap.CompressFormat.PNG -> "png"
+    if(android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP -> "webp"
     Bitmap.CompressFormat.WEBP -> "webp"
     else -> "jpg"
 }
