@@ -6,8 +6,8 @@ import java.io.File
 
 class SizeConstraint(
         private val maxFileSize: Long,
-        private val stepSize: Int = 2,
-        private val maxIteration: Int = 20,
+        private val stepSize: Int,
+        private val maxIteration: Int,
         private val minQuality: Int = 20
 ) : Constraint {
     private var iteration: Int = 0
@@ -23,6 +23,6 @@ class SizeConstraint(
     }
 }
 
-fun Compression.size(maxFileSize: Long, stepSize: Int = 10, maxIteration: Int = 10) {
+fun Compression.size(maxFileSize: Long, stepSize: Int, maxIteration: Int) {
     constraint(SizeConstraint(maxFileSize, stepSize, maxIteration))
 }
