@@ -6,9 +6,9 @@ import java.io.File
 
 class SizeConstraint(
         private val maxFileSize: Long,
-        private val stepSize: Int = 10,
-        private val maxIteration: Int = 10,
-        private val minQuality: Int = 10
+        private val stepSize: Int = 2,
+        private val maxIteration: Int = 20,
+        private val minQuality: Int = 20
 ) : Constraint {
     private var iteration: Int = 0
 
