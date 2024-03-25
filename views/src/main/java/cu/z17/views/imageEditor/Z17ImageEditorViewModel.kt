@@ -54,9 +54,8 @@ class Z17ImageEditorViewModel : ViewModel() {
                 imageUri.path?.let {
                     try {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            format(format = if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSLESS else Bitmap.CompressFormat.WEBP)
-                            size(maxSize, 2, 30)
-                            resolution(1920, 1080)
+                            size(maxSize, 5, 30)
+                            resolution(1280, 720)
                         }
 
                         history.add(b)
