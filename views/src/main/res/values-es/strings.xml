@@ -23,4 +23,8 @@
 
 
     <string name="required_permissions_were_not_granted">Todos los permisos requeridos no fueron concedidos. **Click para más información**.</string>
+
+    <string name="processing_wait">Procesando. Espere por favor.</string>
+
+    <string name="cannot_compressed_this_time">No se ha podido comprimir esta vez.</string>
 </resources>

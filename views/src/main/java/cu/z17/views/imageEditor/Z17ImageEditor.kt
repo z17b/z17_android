@@ -9,6 +9,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,6 +35,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.z17.views.imageEditor.sections.EditorAnimateVisibility
@@ -48,6 +52,7 @@ import cu.z17.views.imageEditor.sections.text.TextBottomBar
 import cu.z17.views.imageEditor.sections.text.TextTopBar
 import cu.z17.views.imageEditor.sections.viewer.Viewer
 import cu.z17.views.imageEditor.sections.viewer.ViewerTopBar
+import cu.z17.views.label.Z17Label
 import cu.z17.views.loader.Z17SimpleCircleLoader
 import cu.z17.views.picture.Z17BlurImage
 import kotlinx.coroutines.delay
@@ -57,7 +62,6 @@ fun Z17ImageEditor(
     modifier: Modifier = Modifier,
     source: Uri,
     imagePathToSave: String,
-    maxSize: Long = 3_097_152,
     onViewState: (Boolean) -> Unit,
     onError: () -> Unit,
     onEdited: (Boolean) -> Unit,
@@ -137,9 +141,12 @@ fun Z17ImageEditor(
                 content = {
                     ViewerTopBar(
                         requestState = ::setState,
-                        path = source.path!!,
+                        path = imagePathToSave,
                         count = history.size,
                         requestStepBack = viewModel::requestStepBack,
+                        requestCompress = {
+                            viewModel.requestCompress(imagePathToSave, source, context)
+                        },
                         configs = configs
                     )
                 },
@@ -325,7 +332,7 @@ fun Z17ImageEditor(
             }
 
         LaunchedEffect(Unit) {
-            viewModel.loadBitmap(source, context, maxSize)
+            viewModel.loadBitmap(source, imagePathToSave, context)
         }
 
         LaunchedEffect(currentState) {
@@ -359,7 +366,21 @@ fun Loading() {
             .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
-        Z17SimpleCircleLoader()
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Z17SimpleCircleLoader()
+            Z17Label(
+                modifier = Modifier
+                    .padding(5.dp)
+                    .background(
+                        color = Color.Black.copy(0.5F),
+                        shape = RoundedCornerShape(15.dp)
+                    )
+                    .padding(10.dp),
+                text = stringResource(id = cu.z17.views.R.string.processing_wait),
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.White
+            )
+        }
     }
 }
 
@@ -379,4 +400,5 @@ data class ImageEditorConfigurations(
     val allowFilters: Boolean = true,
     val allowText: Boolean = true,
     val allowRotate: Boolean = true,
+    val allowLowerSize: Boolean = true,
 )

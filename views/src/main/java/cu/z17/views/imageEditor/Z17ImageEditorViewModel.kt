@@ -3,6 +3,7 @@ package cu.z17.views.imageEditor
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cu.z17.compress.Compressor
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -31,15 +33,21 @@ class Z17ImageEditorViewModel : ViewModel() {
         history.add(imageBitmap)
 
         viewModelScope.launch(Dispatchers.IO) {
-            val file = File(imagePathToSave)
-
             try {
-                val outputStream = FileOutputStream(file)
-                imageBitmap
-                    .compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                withContext(Dispatchers.IO) {
+                    val file = File(imagePathToSave)
 
-                outputStream.flush()
-                outputStream.close()
+                    val outputStream = FileOutputStream(file)
+                    imageBitmap
+                        .compress(
+                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            90,
+                            outputStream
+                        )
+
+                    outputStream.flush()
+                    outputStream.close()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -48,14 +56,29 @@ class Z17ImageEditorViewModel : ViewModel() {
         }
     }
 
-    fun loadBitmap(imageUri: Uri, context: Context, maxSize: Long) {
+    fun loadBitmap(imageUri: Uri, imagePathToSave: String, context: Context) {
         viewModelScope.launch {
             try {
                 imageUri.path?.let {
                     try {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            size(maxSize, 5, 30)
-                            resolution(1280, 720)
+                            resolution(1920, 1080)
+                            format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
+                            size(File(it).length() / 2, 10, 10)
+                        }
+
+                        withContext(Dispatchers.IO) {
+                            val file = File(imagePathToSave)
+
+                            val outputStream = FileOutputStream(file)
+                            b.compress(
+                                    if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                                    90,
+                                    outputStream
+                                )
+
+                            outputStream.flush()
+                            outputStream.close()
                         }
 
                         history.add(b)
@@ -73,8 +96,8 @@ class Z17ImageEditorViewModel : ViewModel() {
     }
 
     fun requestStepBack(imagePath: String) {
+        _currentState.value = Z17EditorState.LOADING
         viewModelScope.launch(Dispatchers.IO) {
-            _currentState.value = Z17EditorState.LOADING
 
             history.removeLast()
 
@@ -83,17 +106,74 @@ class Z17ImageEditorViewModel : ViewModel() {
             delay(10)
 
             try {
-                val outputStream = FileOutputStream(file)
-                history.value.first().lastOrNull()
-                    ?.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                withContext(Dispatchers.IO) {
+                    val outputStream = FileOutputStream(file)
+                    history.value.first().lastOrNull()
+                        ?.compress(
+                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            90,
+                            outputStream
+                        )
 
-                outputStream.flush()
-                outputStream.close()
+                    outputStream.flush()
+                    outputStream.close()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
 
             _currentState.value = Z17EditorState.VIEW
+        }
+    }
+
+    fun requestCompress(imagePathToSave: String, source: Uri, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _currentState.value = Z17EditorState.LOADING
+
+            viewModelScope.launch(Dispatchers.IO) {
+                try {
+                    var file = File(imagePathToSave)
+
+                    if (!file.exists()) file = File(source.path!!)
+
+                    val firstSize = file.length()
+
+                    // compress
+                    val b = Compressor.compressAndGetBitmap(context, file) {
+                        format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
+                        size(file.length() / 2, 10, 10)
+                    }
+
+                    // save compressed
+                    withContext(Dispatchers.IO) {
+                        val outputStream = FileOutputStream(file)
+                        b.compress(
+                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            90,
+                            outputStream
+                        )
+
+                        outputStream.flush()
+                        outputStream.close()
+                    }
+
+                    val finalSize = file.length()
+
+                    if (finalSize > firstSize) {
+                        Toast.makeText(
+                            context,
+                            context.getText(cu.z17.views.R.string.cannot_compressed_this_time),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    history.add(b)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                _currentState.value = Z17EditorState.VIEW
+            }
         }
     }
 

@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import cu.z17.android.ui.theme.AppTheme
+import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.inputText.Z17InputText
 import cu.z17.views.label.Z17Label
 import cu.z17.views.picture.Z17BasePicture
@@ -68,243 +69,39 @@ class MainActivity : ComponentActivity() {
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE)
 
+        Z17CoilDecoders.createInstance { Z17CoilDecoders(applicationContext) }
+        Z17BasePictureHeaders.createInstance {
+            Z17BasePictureHeaders(
+                headers = mapOf(
+                    "Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4MjQwODksInRvRHVzSWQiOiJFZGR5IiwidXNlcm5hbWUiOiI1MzUyMTg5Mzc2IiwidmVyc2lvbiI6IjMwMDI0In0.YkpHKwJ6leAqmJc9Tkqfr5BDjciIKwNaJwXKPV26uGQ",
+                    "User-Agent" to "ToDus 2.0.24 Pictures",
+                    "Content-Type" to "application/json"
+                )
+            )
+        }
+
+        Z17CameraModule.createInstance { Z17CameraModule(applicationContext) }
+
         setContent {
             AppTheme {
                 val sizeH = LocalConfiguration.current.screenHeightDp
 
-                Z17CoilDecoders.createInstance { Z17CoilDecoders(applicationContext) }
-                Z17BasePictureHeaders.createInstance {
-                    Z17BasePictureHeaders(
-                        headers = mapOf(
-                            "Authorization" to "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MDg4MjQwODksInRvRHVzSWQiOiJFZGR5IiwidXNlcm5hbWUiOiI1MzUyMTg5Mzc2IiwidmVyc2lvbiI6IjMwMDI0In0.YkpHKwJ6leAqmJc9Tkqfr5BDjciIKwNaJwXKPV26uGQ",
-                            "User-Agent" to "ToDus 2.0.24 Pictures",
-                            "Content-Type" to "application/json"
-                        )
-                    )
-                }
 
-                Z17BaseScaffold(
-                    scaffoldState = rememberScaffoldState(),
-                    isNestedActive = false,
-                    noToolbar = false,
-                    topBar = {
-                        Z17TopBar(
-                            title = {
-                                Z17Label(
-                                    text = "asdjanskdn",
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            },
-                            scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
-                                rememberTopAppBarState()
-                            ),
-                            showActions = false,
-                            navHostController = rememberNavController(),
-                            navigationClick = {
+                Camera(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    maxImageSize = 1_000_000,
+                    sendImages = { files, content ->
 
-                            },
-                            actions = {
-                                IconButton(
-                                    onClick = {
-
-                                    }) {
-                                    Z17BasePicture(
-                                        modifier = Modifier
-                                            .size(24.dp),
-                                        source = Icons.Outlined.Save,
-                                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-                                    )
-                                }
-                            }
-                        )
                     },
-                    showFloatingActionBtn = false,
-                    floatingActionButton = {
-                        FloatingActionButton(
-                            onClick = {
+                    sendVideos = { files, content ->
 
-                            },
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ) {
-                            Z17BasePicture(
-                                source = Icons.Outlined.Check,
-                                modifier = Modifier.size(25.dp),
-                                description = "complete action btn",
-                                colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.background)
-                            )
-                        }
-                    }
-                ) { modifier ->
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background)
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        // IMAGE
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height((sizeH / 2).dp)
-                        ) {
-                            Z17BasePicture(
-                                modifier = Modifier.fillMaxSize(),
-                                source = "https://s3.todus.cu/todus/profile/f43d3fbabb78eb6d7b6975a7f646d8d7017db6b15439954ae48170eab1aa3812",
-                                contentScale = ContentScale.Crop,
-                                placeholder = MaterialTheme.colorScheme.secondary
-                            )
-
-                            CrossFade(targetState = false) { state ->
-                                if (state) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                color = MaterialTheme.colorScheme.onBackground.copy(
-                                                    alpha = 0.5F
-                                                )
-                                            )
-                                            .clickable {
-
-                                            }
-                                    ) {
-                                        Z17BasePicture(
-                                            modifier = Modifier
-                                                .align(alignment = Alignment.Center)
-                                                .size(24.dp),
-                                            source = Icons.Outlined.Edit,
-                                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-
-                        // NAME
-                        CrossFade(targetState = false) { state ->
-                            if (state) {
-                                Z17InputText(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(20.dp),
-                                    value = "asdasda",
-                                    onTextChange = {
-                                    },
-                                    labelText = "asdjasd",
-                                    maxLines = 1,
-                                    maxLength = 150,
-                                    style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
-                                )
-                            } else {
-                                Box(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .padding(20.dp)
-                                        .defaultMinSize(minHeight = 74.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Z17Label(
-                                        text = "asdasdasd",
-                                        style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
-                                        maxLines = 1
-                                    )
-                                }
-                            }
-                        }
-
-                        val tabs =
-                            listOf(
-                                "asdas",
-                                "wqeqd"
-                            )
-
-                        TabRow(
-                            selectedTabIndex = 1,
-                            modifier = Modifier
-                                .background(MaterialTheme.colorScheme.background)
-                        ) {
-                            Z17Tab(
-                                title = tabs[0],
-                                selected = 1 == 0,
-                                onClick = {
-                                }
-                            )
-
-                            Z17Tab(
-                                title = "${tabs[1]} ($1)",
-                                selected = false,
-                                onClick = {
-                                }
-                            )
-                        }
-
-                        var tabIndex by remember { mutableIntStateOf(0) }
-
-                        // INFORMATION AND CONFIGURATION
-                        Column(modifier = Modifier.height(IntrinsicSize.Max)) {
-                            when (tabIndex) {
-                                0 -> {
-                                    // Information section
-                                    CrossFade(targetState = false) { state ->
-                                        if (state) {
-                                            Z17InputText(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(20.dp),
-                                                value = "asdfasfasfasfasfasfas",
-                                                onTextChange = {
-                                                },
-                                                labelText = "asdasdasdasd",
-                                                minLines = 3,
-                                                maxLines = 4,
-                                                maxLength = 150
-                                            )
-                                        } else {
-                                            RichTitleDescBtn(
-                                                image = Icons.Outlined.Info,
-                                                content = "asdasdasd",
-                                                title = "asdasdasd"
-                                            ) {}
-                                        }
-                                    }
-
-                                    TitleDescBtn(
-                                        image = Icons.Outlined.Lock,
-                                        title = "asdasdasd",
-                                        content = "asdasd",
-                                    ) {
-
-                                    }
-
-                                    HorizontalDivider(
-                                        modifier = Modifier.padding(
-                                            horizontal = 20.dp,
-                                            vertical = 5.dp
-                                        ),
-                                        color = MaterialTheme.colorScheme.tertiary
-                                    )
-
-                                    Z17TextToggle(
-                                        modifier = Modifier.padding(horizontal = 16.dp),
-                                        state = false,
-                                        onChange = {
-                                        },
-                                        leading = {
-                                            Z17BasePicture(
-                                                modifier = Modifier
-                                                    .padding(20.dp)
-                                                    .size(24.dp),
-                                                source = Icons.Outlined.NotificationsNone,
-                                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground)
-                                            )
-                                        },
-                                        label = "asdasdasd"
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
+                    },
+                    onClose = {},
+                    onError = {},
+                    // TODO REMOVE
+                    showVideoOption = false
+                )
             }
         }
     }

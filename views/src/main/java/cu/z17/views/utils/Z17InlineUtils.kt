@@ -22,8 +22,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import java.nio.ByteBuffer
 import java.util.Locale
 import java.util.regex.Pattern
+import kotlin.math.pow
+import kotlin.math.roundToInt
 
 fun String.isAnUrl(): Boolean {
     val isMatch1: Boolean =
@@ -281,4 +284,39 @@ fun Float.convertToMS(): String {
     val actual = this.toLong()
 
     return actual.convertToMS()
+}
+
+val sizeName = arrayOf("B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB")
+
+fun Long.convertToByteSize(): String {
+    if (this <= 0) return "0 B"
+    val i =
+        kotlin.math.floor(kotlin.math.log10(this.toDouble()) / kotlin.math.log10(1024.0)).toInt()
+    val p = 1024.0.pow(i.toDouble())
+    val s = (this / p).roundToInt()
+    return "%s %s".format(s, sizeName[i])
+}
+
+/**
+ * Convert bitmap to byte array using ByteBuffer.
+ */
+fun Bitmap.convertToByteArray(): ByteArray {
+    //minimum number of bytes that can be used to store this bitmap's pixels
+    val size = this.byteCount
+
+    //allocate new instances which will hold bitmap
+    val buffer = ByteBuffer.allocate(size)
+    val bytes = ByteArray(size)
+
+    //copy the bitmap's pixels into the specified buffer
+    this.copyPixelsToBuffer(buffer)
+
+    //rewinds buffer (buffer position is set to zero and the mark is discarded)
+    buffer.rewind()
+
+    //transfer bytes from buffer into the given destination array
+    buffer.get(bytes)
+
+    //return bitmap's pixels
+    return bytes
 }
