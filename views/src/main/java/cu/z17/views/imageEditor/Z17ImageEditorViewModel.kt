@@ -56,7 +56,12 @@ class Z17ImageEditorViewModel : ViewModel() {
         }
     }
 
-    fun loadBitmap(imageUri: Uri, imagePathToSave: String, context: Context) {
+    fun loadBitmap(
+        imageUri: Uri,
+        imagePathToSave: String,
+        context: Context,
+        firstCompression: Boolean,
+    ) {
         viewModelScope.launch {
             try {
                 imageUri.path?.let {
@@ -64,7 +69,8 @@ class Z17ImageEditorViewModel : ViewModel() {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
                             resolution(1920, 1080)
                             format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
-                            //size(File(it).length() / 2, 10, 10)
+                            if (firstCompression)
+                                size(File(it).length() / 2, 10, 10)
                         }
 
                         withContext(Dispatchers.IO) {
@@ -72,10 +78,10 @@ class Z17ImageEditorViewModel : ViewModel() {
 
                             val outputStream = FileOutputStream(file)
                             b.compress(
-                                    if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
-                                    90,
-                                    outputStream
-                                )
+                                if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                                90,
+                                outputStream
+                            )
 
                             outputStream.flush()
                             outputStream.close()

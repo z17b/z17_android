@@ -62,6 +62,7 @@ fun Z17ImageEditor(
     modifier: Modifier = Modifier,
     source: Uri,
     imagePathToSave: String,
+    firstCompression: Boolean = false,
     onViewState: (Boolean) -> Unit,
     onError: () -> Unit,
     onEdited: (Boolean) -> Unit,
@@ -332,7 +333,7 @@ fun Z17ImageEditor(
             }
 
         LaunchedEffect(Unit) {
-            viewModel.loadBitmap(source, imagePathToSave, context)
+            viewModel.loadBitmap(source, imagePathToSave, context, firstCompression)
         }
 
         LaunchedEffect(currentState) {
