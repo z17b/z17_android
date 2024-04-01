@@ -64,7 +64,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
                             resolution(1920, 1080)
                             format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
-                            size(File(it).length() / 2, 10, 10)
+                            //size(File(it).length() / 2, 10, 10)
                         }
 
                         withContext(Dispatchers.IO) {

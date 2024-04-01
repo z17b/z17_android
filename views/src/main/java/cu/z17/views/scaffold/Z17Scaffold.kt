@@ -39,7 +39,15 @@ fun Z17BaseScaffold(
             Scaffold(
                 scaffoldState = scaffoldState,
                 modifier = if (isNestedActive) Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) else Modifier,
-                floatingActionButton = floatingActionButton,
+                floatingActionButton = {
+                    AnimatedVisibility(
+                        visible = showFloatingActionBtn,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        floatingActionButton()
+                    }
+                },
                 drawerBackgroundColor = MaterialTheme.colorScheme.background,
                 drawerContent = drawerContent,
                 backgroundColor = backgroundColor,
