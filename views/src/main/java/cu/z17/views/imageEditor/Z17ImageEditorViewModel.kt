@@ -67,7 +67,7 @@ class Z17ImageEditorViewModel : ViewModel() {
             try {
                 imageUri.path?.let {
                     try {
-                        val bounds = File(imageUri.path).getBounds()
+                        val bounds = imageUri.getBounds()
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
                             if (bounds.first > 1920 || bounds.second > 1080)
                                 resolution(1920, 1080)

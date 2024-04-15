@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -328,12 +329,34 @@ fun Bitmap.convertToByteArray(): ByteArray {
 
 suspend fun File.getBounds(): Pair<Int, Int> {
     return withContext(Dispatchers.IO) {
-        val options = BitmapFactory.Options()
-        options.inJustDecodeBounds = true
-        BitmapFactory.decodeFile(this@getBounds.absolutePath, options)
-        val imageHeight = options.outHeight
-        val imageWidth = options.outWidth
+        var imageHeight = 0//options.outHeight
+        var imageWidth = 0//options.outWidth
+        try {
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeFile(this@getBounds.absolutePath, options)
+            imageHeight = options.outHeight
+            imageWidth = options.outWidth
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return@withContext imageWidth to imageHeight
+    }
+}
 
+suspend fun Uri.getBounds(): Pair<Int, Int> {
+    return withContext(Dispatchers.IO) {
+        var imageHeight = 0//options.outHeight
+        var imageWidth = 0//options.outWidth
+        try {
+            val options = BitmapFactory.Options()
+            options.inJustDecodeBounds = true
+            BitmapFactory.decodeFile(File(this@getBounds.path).absolutePath, options)
+            imageHeight = options.outHeight
+            imageWidth = options.outWidth
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return@withContext imageWidth to imageHeight
     }
 }
