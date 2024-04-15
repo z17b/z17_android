@@ -88,7 +88,21 @@ class MainActivity : ComponentActivity() {
                 val sizeH = LocalConfiguration.current.screenHeightDp
 
 
-                Z17PrimaryButton(onClick = { /*TODO*/ }, text = "kk", maxWidth = true)
+                Camera(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    maxImageSize = 1_000_000,
+                    sendImages = { files, content ->
+
+                    },
+                    sendVideos = { files, content ->
+
+                    },
+                    onClose = {},
+                    onError = {},
+                    // TODO REMOVE
+                    showVideoOption = false
+                )
             }
         }
     }
