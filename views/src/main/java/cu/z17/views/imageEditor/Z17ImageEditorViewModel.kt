@@ -69,7 +69,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                     try {
                         val bounds = imageUri.getBounds()
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            if (bounds.first > 1920 || bounds.second > 1080)
+                            if (bounds.first > 4000 && bounds.second > 4000)
                                 resolution(1920, 1080)
                             format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                             if (firstCompression)
