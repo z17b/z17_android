@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import cu.z17.android.ui.theme.AppTheme
+import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.inputText.Z17InputText
 import cu.z17.views.label.Z17Label
@@ -87,21 +88,7 @@ class MainActivity : ComponentActivity() {
                 val sizeH = LocalConfiguration.current.screenHeightDp
 
 
-                Camera(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    maxImageSize = 1_000_000,
-                    sendImages = { files, content ->
-
-                    },
-                    sendVideos = { files, content ->
-
-                    },
-                    onClose = {},
-                    onError = {},
-                    // TODO REMOVE
-                    showVideoOption = false
-                )
+                Z17PrimaryButton(onClick = { /*TODO*/ }, text = "kk", maxWidth = true)
             }
         }
     }

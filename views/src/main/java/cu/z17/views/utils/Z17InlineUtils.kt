@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Paint
 import androidx.compose.foundation.background
@@ -22,11 +23,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.nio.ByteBuffer
 import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.pow
 import kotlin.math.roundToInt
+
 
 fun String.isAnUrl(): Boolean {
     val isMatch1: Boolean =
@@ -319,4 +324,16 @@ fun Bitmap.convertToByteArray(): ByteArray {
 
     //return bitmap's pixels
     return bytes
+}
+
+suspend fun File.getBounds(): Pair<Int, Int> {
+    return withContext(Dispatchers.IO) {
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(this@getBounds.absolutePath, options)
+        val imageHeight = options.outHeight
+        val imageWidth = options.outWidth
+
+        return@withContext imageWidth to imageHeight
+    }
 }

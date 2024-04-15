@@ -11,6 +11,7 @@ import cu.z17.compress.constraint.format
 import cu.z17.compress.constraint.resolution
 import cu.z17.compress.constraint.size
 import cu.z17.views.utils.Z17MutableListFlow
+import cu.z17.views.utils.getBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,8 +67,10 @@ class Z17ImageEditorViewModel : ViewModel() {
             try {
                 imageUri.path?.let {
                     try {
+                        val bounds = File(imageUri.path).getBounds()
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            resolution(1920, 1080)
+                            if (bounds.first > 1920 || bounds.second > 1080)
+                                resolution(1920, 1080)
                             format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                             if (firstCompression)
                                 size(File(it).length() / 2, 10, 10)
