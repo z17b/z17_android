@@ -13,6 +13,12 @@ private val separator = File.separator
 
 private fun cachePath(context: Context) = "${context.cacheDir.path}${separator}compressor$separator"
 
+fun String.compressFormat() = when (this) {
+    "png" -> Bitmap.CompressFormat.PNG
+    "webp" -> if(android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP
+    else -> Bitmap.CompressFormat.JPEG
+}
+
 fun File.compressFormat() = when (extension.lowercase()) {
     "png" -> Bitmap.CompressFormat.PNG
     "webp" -> if(android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP

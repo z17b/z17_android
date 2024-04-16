@@ -10,6 +10,7 @@ import cu.z17.compress.Compressor
 import cu.z17.compress.constraint.format
 import cu.z17.compress.constraint.resolution
 import cu.z17.compress.constraint.size
+import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.utils.Z17MutableListFlow
 import cu.z17.views.utils.getBounds
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                     val outputStream = FileOutputStream(file)
                     imageBitmap
                         .compress(
-                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
                             90,
                             outputStream
                         )
@@ -69,9 +70,11 @@ class Z17ImageEditorViewModel : ViewModel() {
                     try {
                         val bounds = imageUri.getBounds()
                         val b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            if (bounds.first > 4000 && bounds.second > 4000)
+                            if (bounds.first > 3000 && bounds.second > 3000)
                                 resolution(1920, 1080)
-                            format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
+
+                            format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
+
                             if (firstCompression)
                                 size(File(it).length() / 2, 10, 10)
                         }
@@ -81,7 +84,7 @@ class Z17ImageEditorViewModel : ViewModel() {
 
                             val outputStream = FileOutputStream(file)
                             b.compress(
-                                if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                                Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
                                 90,
                                 outputStream
                             )
@@ -119,7 +122,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                     val outputStream = FileOutputStream(file)
                     history.value.first().lastOrNull()
                         ?.compress(
-                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
                             90,
                             outputStream
                         )
@@ -149,7 +152,7 @@ class Z17ImageEditorViewModel : ViewModel() {
 
                     // compress
                     val b = Compressor.compressAndGetBitmap(context, file) {
-                        format(if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
+                        format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                         size(file.length() / 2, 10, 10)
                     }
 
@@ -157,7 +160,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                     withContext(Dispatchers.IO) {
                         val outputStream = FileOutputStream(file)
                         b.compress(
-                            if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
+                            Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
                             90,
                             outputStream
                         )

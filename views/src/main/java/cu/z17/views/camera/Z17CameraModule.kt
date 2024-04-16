@@ -1,6 +1,8 @@
 package cu.z17.views.camera
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.os.Build
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -8,10 +10,15 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.Recorder
 import androidx.camera.video.VideoCapture
+import cu.z17.compress.compressFormat
+import cu.z17.compress.constraint.Compression
+import cu.z17.compress.constraint.Constraint
+import cu.z17.compress.constraint.FormatConstraint
+import cu.z17.compress.constraint.format
 import cu.z17.singledi.SingletonInitializer
 import java.util.concurrent.Executors
 
-class Z17CameraModule(val context: Context) {
+class Z17CameraModule(val context: Context, val initialDefaultFormat: String = "webp") {
     companion object : SingletonInitializer<Z17CameraModule>()
 
     private var lensFacing = CameraSelector.LENS_FACING_FRONT
@@ -30,6 +37,8 @@ class Z17CameraModule(val context: Context) {
     val preview: Preview
     val imageCapture: ImageCapture
     val imageAnalysis: ImageAnalysis
+
+    var defaultFormat: Bitmap.CompressFormat? = null
 
     fun provideVideoCapture(): VideoCapture<Recorder> {
         val recorder = Recorder.Builder()
@@ -68,6 +77,8 @@ class Z17CameraModule(val context: Context) {
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
     }
 
+
+
     init {
         processCameraProvider = provideCameraProvider(context)
 
@@ -91,5 +102,7 @@ class Z17CameraModule(val context: Context) {
         preview = provideCameraPreview()
         imageCapture = provideImageCapture()
         imageAnalysis = provideImageAnalysis()
+
+        defaultFormat = initialDefaultFormat.compressFormat()
     }
 }
