@@ -2,7 +2,6 @@ package cu.z17.views.camera
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.os.Build
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageCapture
@@ -11,10 +10,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.video.Recorder
 import androidx.camera.video.VideoCapture
 import cu.z17.compress.compressFormat
-import cu.z17.compress.constraint.Compression
-import cu.z17.compress.constraint.Constraint
-import cu.z17.compress.constraint.FormatConstraint
-import cu.z17.compress.constraint.format
 import cu.z17.singledi.SingletonInitializer
 import java.util.concurrent.Executors
 
@@ -76,7 +71,6 @@ class Z17CameraModule(val context: Context, val initialDefaultFormat: String = "
         return ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
     }
-
 
 
     init {

@@ -73,10 +73,10 @@ class Z17ImageEditorViewModel : ViewModel() {
                             if (bounds.first > 3000 && bounds.second > 3000)
                                 resolution(1920, 1080)
 
-                            format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
-
                             if (firstCompression)
                                 size(File(it).length() / 2, 10, 10)
+
+                            format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                         }
 
                         withContext(Dispatchers.IO) {
@@ -152,8 +152,8 @@ class Z17ImageEditorViewModel : ViewModel() {
 
                     // compress
                     val b = Compressor.compressAndGetBitmap(context, file) {
-                        format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                         size(file.length() / 2, 10, 10)
+                        format(Z17CameraModule.getInstance().defaultFormat ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP)
                     }
 
                     // save compressed
