@@ -60,7 +60,7 @@ import cu.z17.views.videoPlayer.uri.VideoPlayerMediaItem
 import cu.z17.views.videoPlayer.uri.toUri
 import cu.z17.views.videoPlayer.util.setFullScreen
 import kotlinx.coroutines.delay
-import java.util.*
+import java.util.UUID
 
 
 @SuppressLint("SourceLockedOrientationActivity", "UnsafeOptInUsageError")
@@ -85,7 +85,7 @@ fun Z17VideoPlayer(
     playerState: PlayerState,
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
-    pipScale: Pair<Int, Int> = 16 to 9
+    pipScale: Pair<Int, Int> = 16 to 9,
 ) {
     val context = LocalContext.current
 
@@ -214,31 +214,41 @@ fun Z17VideoPlayer(
 
                     val selectedAudioTrack =
                         if (playerState.selectedAudioTrack?.trackStringData == trackSelector.parameters.preferredAudioLanguages.firstOrNull()) playerState.selectedAudioTrack
-                        else if (trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull() != null)
-                            TrackElement(
-                                trackType = C.TRACK_TYPE_AUDIO,
-                                index = 0,
-                                trackItem = 0,
-                                trackStringData = trackSelectorHelper!!.tripleTrackSave.audioTracks.first().trackStringData,
-                                trackFormatData = FormatAudioPreferred(
-                                    audio = trackSelectorHelper!!.tripleTrackSave.audioTracks.first().trackStringData
+                        else {
+                            val track =
+                                trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull()
+
+                            if (track != null)
+                                TrackElement(
+                                    trackType = C.TRACK_TYPE_AUDIO,
+                                    index = 0,
+                                    trackItem = 0,
+                                    trackStringData = track.trackStringData,
+                                    trackFormatData = FormatAudioPreferred(
+                                        audio = track.trackStringData
+                                    )
                                 )
-                            )
-                        else null
+                            else null
+                        }
 
                     val selectedSubsTrack =
                         if (playerState.selectedSubsTrack?.trackStringData == trackSelector.parameters.preferredTextLanguages.firstOrNull()) playerState.selectedSubsTrack
-                        else if (trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull() != null)
-                            TrackElement(
-                                trackType = C.TRACK_TYPE_TEXT,
-                                index = 0,
-                                trackItem = 0,
-                                trackStringData = trackSelectorHelper!!.tripleTrackSave.subsTracks.first().trackStringData,
-                                trackFormatData = FormatSubsPreferred(
-                                    language = trackSelectorHelper!!.tripleTrackSave.subsTracks.first().trackStringData
+                        else {
+                            val track =
+                                trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull()
+
+                            if (track != null) {
+                                TrackElement(
+                                    trackType = C.TRACK_TYPE_TEXT,
+                                    index = 0,
+                                    trackItem = 0,
+                                    trackStringData = track.trackStringData,
+                                    trackFormatData = FormatSubsPreferred(
+                                        language = track.trackStringData
+                                    )
                                 )
-                            )
-                        else null
+                            } else null
+                        }
 
                     var newPlayerState = playerState.copy(
                         isPlaying = player.isPlaying,
@@ -392,7 +402,7 @@ internal fun VideoPlayerSurface(
     handleLifecycle: Boolean,
     enablePip: Boolean,
     onPipEntered: () -> Unit = {},
-    pipScale: Pair<Int, Int>
+    pipScale: Pair<Int, Int>,
 ) {
     val context = LocalContext.current
 

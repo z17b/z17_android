@@ -29,7 +29,7 @@ fun Bitmap.CompressFormat.extension() = when (this) {
     Bitmap.CompressFormat.PNG -> "png"
     if(android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP -> "webp"
     Bitmap.CompressFormat.WEBP -> "webp"
-    else -> "jpg"
+    else -> "jpeg"
 }
 
 fun loadBitmap(imageFile: File) = BitmapFactory.decodeFile(imageFile.absolutePath).run {
