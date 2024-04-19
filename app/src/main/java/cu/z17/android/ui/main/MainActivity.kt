@@ -37,8 +37,10 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -46,14 +48,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.media3.common.Player
 import androidx.navigation.compose.rememberNavController
 import cu.z17.android.ui.theme.AppTheme
 import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.inputText.Z17InputText
 import cu.z17.views.label.Z17Label
+import cu.z17.views.permission.PermissionNeedIt
+import cu.z17.views.permission.Z17PermissionCheckerAndRequester
 import cu.z17.views.picture.Z17BasePicture
 import cu.z17.views.scaffold.Z17BaseScaffold
 import cu.z17.views.tab.Z17Tab
@@ -61,6 +67,10 @@ import cu.z17.views.textToggle.Z17TextToggle
 import cu.z17.views.topBar.Z17TopBar
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
+import cu.z17.views.videoPlayer.PlayerState
+import cu.z17.views.videoPlayer.RepeatMode
+import cu.z17.views.videoPlayer.Z17HLSVideoPlayer
+import cu.z17.views.videoPlayer.uri.HLSMediaItem
 
 class MainActivity : ComponentActivity() {
 
@@ -85,23 +95,71 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                val sizeH = LocalConfiguration.current.screenHeightDp
 
+                var permissionsAccepted by remember {
+                    mutableStateOf(false)
+                }
 
-                Camera(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    maxImageSize = 1_000_000,
-                    sendImages = { files, content ->
+                val context = LocalContext.current
 
+                if (permissionsAccepted) {
+                    var playerState by remember {
+                        mutableStateOf(PlayerState())
+                    }
+
+                    var player by remember {
+                        mutableStateOf<Player?>(null)
+                    }
+
+                    fun updatePlayerState(pS: PlayerState, p: Player) {
+                        playerState = pS
+                        player = p
+                    }
+
+                    fun onCurrentTimeChanged(t: Long) {
+                        playerState = playerState.copy(currentPosition = t)
+                    }
+
+                    Z17HLSVideoPlayer(
+                        modifier = Modifier.fillMaxSize(),
+                        mediaItem = HLSMediaItem(
+                            url = "https://stream.todus.cu/vs/194d52e833"
+                        ),
+                        handleLifecycle = true,
+                        autoPlay = false,
+                        usePlayerController = false,
+                        enablePip = false,
+                        enablePipWhenBackPressed = true,
+                        handleAudioFocus = true,
+                        volume = 0.5f,
+                        repeatMode = RepeatMode.ONE,
+                        playerState = playerState,
+                        updatePlayerState = ::updatePlayerState,
+                        onCurrentTimeChanged = ::onCurrentTimeChanged
+                    )
+
+                    LaunchedEffect(player) {
+                        if (!playerState.isPlaying && player != null) {
+                            player?.play()
+                        }
+
+                        if (playerState.isPlaying && player != null) {
+                            player?.pause()
+                        }
+                    }
+                }
+
+                Z17PermissionCheckerAndRequester(
+                    initialPermissions = listOf(
+                        PermissionNeedIt.CAMERA,
+                        PermissionNeedIt.RECORD_AUDIO,
+                        PermissionNeedIt.STORAGE
+                    ),
+                    onGranted = {
+                        permissionsAccepted = true
                     },
-                    sendVideos = { files, content ->
-
-                    },
-                    onClose = {},
-                    onError = {},
-                    // TODO REMOVE
-                    showVideoOption = false
+                    packageName = context.packageName,
+                    stringContent = null
                 )
             }
         }

@@ -29,8 +29,14 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
+import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.FileDataSource
+import androidx.media3.datasource.cache.CacheDataSink
+import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.datasource.cache.NoOpCacheEvictor
+import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
@@ -50,6 +56,7 @@ import cu.z17.views.videoPlayer.trackSelector.TripleTrackSave
 import cu.z17.views.videoPlayer.uri.HLSMediaItem
 import cu.z17.views.videoPlayer.util.setFullScreen
 import kotlinx.coroutines.delay
+import java.io.File
 import java.util.UUID
 
 
@@ -85,12 +92,52 @@ fun Z17HLSVideoPlayer(
 
     var mediaSession = remember<MediaSession?> { null }
 
+    val DOWNLOAD_CONTENT_DIRECTORY = "stream_videos_cache"
+    val downloadContentDirectory = remember {
+        File(context.getExternalFilesDir(null), DOWNLOAD_CONTENT_DIRECTORY)
+    }
+    val downloadCache = remember {
+        SimpleCache(downloadContentDirectory, NoOpCacheEvictor(), StandaloneDatabaseProvider(context))
+    }
+
+    val cacheSink = remember{
+        CacheDataSink.Factory()
+            .setCache(downloadCache)
+    }
+
     val bandwidthMeter = remember {
         DefaultBandwidthMeter.getSingletonInstance(context)
     }
 
     val dataSourceFactory: DataSource.Factory = remember {
         DefaultDataSource.Factory(context)
+    }
+
+    val videoTrackSelectionFactory = remember {
+        AdaptiveTrackSelection.Factory()
+    }
+
+    val downStreamFactory = FileDataSource.Factory()
+
+    val cacheDataSourceFactory  =
+        CacheDataSource.Factory()
+            .setCache(downloadCache)
+            .setCacheWriteDataSinkFactory(cacheSink)
+            .setCacheReadDataSourceFactory(downStreamFactory)
+            .setUpstreamDataSourceFactory(dataSourceFactory)
+            .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+
+    val videoSource: HlsMediaSource = remember {
+        HlsMediaSource.Factory(cacheDataSourceFactory)
+            /*.setDrmSessionManagerProvider {
+                DefaultDrmSessionManager.Builder()
+                    .setUuidAndExoMediaDrmProvider(
+                        C.WIDEVINE_UUID,
+                        FrameworkMediaDrm.DEFAULT_PROVIDER
+                    )
+                    .build(drmCallback)
+            }*/
+            .createMediaSource(MediaItem.fromUri(Uri.parse(mediaItem.url)))
     }
 
     val timer = remember {
@@ -103,40 +150,6 @@ fun Z17HLSVideoPlayer(
                 currentActivity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
             }
         }
-    }
-
-    /*val keyString2 = "  clearKeys: {" +
-            "    'f3c5e0361e6654b28f8049c778b23946': 'a4631a153a443df9eed0593043db7519'," +
-            "    'abba271e8bcf552bbd2e86a434a9a5d9': '69eaa802a6763af979e8d1940fb88392'," +
-            "    '6d76f25cb17f5e16b8eaef6bbf582d8e': 'cb541084c99731aef4fff74500c12ead'" +
-            "  }"
-    val local =
-        LocalMediaDrmCallback(keyString2.toByteArray())
-
-    DefaultDrmSessionManager.Builder()
-        .build(local)*/
-
-    /*val keyString =
-        "{\"keys\":[{\"kty\":\"oct\",\"k\":\"MGQ2NzEyYmYyYTg0ZWRjYzkzZDAwMWE5NjEzZjZmZWM\",\"kid\":\"Y2ZiNWUyYjczYmVmNGYzYzg3OGYyNWFiODZhNzQ1MWY\"}],'type':\"temporary\"}"
-
-    val drmCallback: MediaDrmCallback = LocalMediaDrmCallback(keyString.toByteArray())
-*/
-
-    val videoSource: HlsMediaSource = remember {
-        HlsMediaSource.Factory(dataSourceFactory)
-            /*.setDrmSessionManagerProvider {
-                DefaultDrmSessionManager.Builder()
-                    .setUuidAndExoMediaDrmProvider(
-                        C.WIDEVINE_UUID,
-                        FrameworkMediaDrm.DEFAULT_PROVIDER
-                    )
-                    .build(drmCallback)
-            }*/
-            .createMediaSource(MediaItem.fromUri(Uri.parse(mediaItem.url)))
-    }
-
-    val videoTrackSelectionFactory = remember {
-        AdaptiveTrackSelection.Factory()
     }
 
     val trackSelector = remember {

@@ -111,5 +111,14 @@ dependencies {
     implementation(libs.compose.view.model)
     implementation(libs.compose.paging)
 
+    implementation(libs.media3.exo.player)
+    implementation(libs.media3.mediasession)
+    implementation(libs.media3.ui)
+    implementation(libs.media3.dash)
+    implementation(libs.media3.hls)
+    implementation(libs.media3.transformer)
+    implementation(libs.media3.effect)
+    implementation(libs.media3.common)
+
     api(project(":views"))
 }
