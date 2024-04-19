@@ -72,7 +72,6 @@ class Z17CameraModule(val context: Context, val initialDefaultFormat: String = "
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build()
     }
 
-
     init {
         processCameraProvider = provideCameraProvider(context)
 

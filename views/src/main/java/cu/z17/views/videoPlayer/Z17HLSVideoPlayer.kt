@@ -92,13 +92,7 @@ fun Z17HLSVideoPlayer(
 
     var mediaSession = remember<MediaSession?> { null }
 
-    val DOWNLOAD_CONTENT_DIRECTORY = "stream_videos_cache"
-    val downloadContentDirectory = remember {
-        File(context.getExternalFilesDir(null), DOWNLOAD_CONTENT_DIRECTORY)
-    }
-    val downloadCache = remember {
-        SimpleCache(downloadContentDirectory, NoOpCacheEvictor(), StandaloneDatabaseProvider(context))
-    }
+    val downloadCache = Z17VideoModule.getInstance().downloadCache
 
     val cacheSink = remember{
         CacheDataSink.Factory()

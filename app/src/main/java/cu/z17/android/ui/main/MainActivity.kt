@@ -70,6 +70,7 @@ import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.videoPlayer.PlayerState
 import cu.z17.views.videoPlayer.RepeatMode
 import cu.z17.views.videoPlayer.Z17HLSVideoPlayer
+import cu.z17.views.videoPlayer.Z17VideoModule
 import cu.z17.views.videoPlayer.uri.HLSMediaItem
 
 class MainActivity : ComponentActivity() {
@@ -92,6 +93,7 @@ class MainActivity : ComponentActivity() {
         }
 
         Z17CameraModule.createInstance { Z17CameraModule(applicationContext) }
+        Z17VideoModule.createInstance { Z17VideoModule(applicationContext) }
 
         setContent {
             AppTheme {
