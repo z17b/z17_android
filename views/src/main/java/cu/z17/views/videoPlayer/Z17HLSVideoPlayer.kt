@@ -83,6 +83,7 @@ fun Z17HLSVideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
+    contentScale: Int = RESIZE_MODE_FILL
 ) {
     val context = LocalContext.current
 
@@ -383,7 +384,8 @@ fun Z17HLSVideoPlayer(
         usePlayerController = usePlayerController,
         handleLifecycle = handleLifecycle,
         enablePip = enablePip,
-        pipScale = pipScale
+        pipScale = pipScale,
+        contentScale = contentScale
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {

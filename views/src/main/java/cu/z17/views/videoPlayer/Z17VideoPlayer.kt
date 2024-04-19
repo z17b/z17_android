@@ -86,6 +86,7 @@ fun Z17VideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
+    contentScale: Int = RESIZE_MODE_FILL
 ) {
     val context = LocalContext.current
 
@@ -386,7 +387,8 @@ fun Z17VideoPlayer(
         usePlayerController = usePlayerController,
         handleLifecycle = handleLifecycle,
         enablePip = enablePip,
-        pipScale = pipScale
+        pipScale = pipScale,
+        contentScale = contentScale
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {
@@ -411,6 +413,7 @@ internal fun VideoPlayerSurface(
     enablePip: Boolean,
     onPipEntered: () -> Unit = {},
     pipScale: Pair<Int, Int>,
+    contentScale: Int
 ) {
     val context = LocalContext.current
 
@@ -479,9 +482,27 @@ internal fun VideoPlayerSurface(
         factory = {
             defaultPlayerView.apply {
                 useController = usePlayerController
-                resizeMode = RESIZE_MODE_FIT
+                resizeMode = contentScale
                 setBackgroundColor(Color.BLACK)
             }
         }
     )
 }
+
+const val RESIZE_MODE_FIT = 0
+
+/**
+ * The width is fixed and the height is increased or decreased to obtain the desired aspect ratio.
+ */
+const val RESIZE_MODE_FIXED_WIDTH = 1
+
+/**
+ * The height is fixed and the width is increased or decreased to obtain the desired aspect ratio.
+ */
+const val RESIZE_MODE_FIXED_HEIGHT = 2
+
+/** The specified aspect ratio is ignored.  */
+const val RESIZE_MODE_FILL = 3
+
+/** Either the width or height is increased to obtain the desired aspect ratio.  */
+const val RESIZE_MODE_ZOOM = 4

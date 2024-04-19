@@ -37,6 +37,7 @@ fun Viewer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     playerInstance: ExoPlayer.() -> Unit = {},
     playerState: PlayerState,
+    contentScale: Int,
 ) {
     val context = LocalContext.current
 
@@ -157,6 +158,7 @@ fun Viewer(
         usePlayerController = false,
         handleLifecycle = true,
         enablePip = false,
-        pipScale = 16 to 9
+        pipScale = 16 to 9,
+        contentScale = contentScale
     )
 }
