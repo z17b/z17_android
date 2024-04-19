@@ -22,6 +22,7 @@ import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import cu.z17.views.videoPlayer.PlayerState
+import cu.z17.views.videoPlayer.RESIZE_MODE_FIT
 import cu.z17.views.videoPlayer.VideoPlayerSurface
 import cu.z17.views.videoPlayer.cache.VideoPlayerCacheManager
 import cu.z17.views.videoPlayer.uri.VideoPlayerMediaItem
@@ -37,7 +38,7 @@ fun Viewer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     playerInstance: ExoPlayer.() -> Unit = {},
     playerState: PlayerState,
-    contentScale: Int,
+    contentScale: Int = RESIZE_MODE_FIT,
 ) {
     val context = LocalContext.current
 

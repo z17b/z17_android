@@ -143,7 +143,7 @@ fun Z17VideoEditor(
                             source = it,
                             cutPoints = cutPoints,
                             playerState = playerState,
-                            updatePlayerState = ::updatePlayerState
+                            updatePlayerState = ::updatePlayerState,
                         )
 
                         PlayerControls(
