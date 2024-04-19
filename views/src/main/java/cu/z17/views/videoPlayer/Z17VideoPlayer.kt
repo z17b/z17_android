@@ -190,92 +190,100 @@ fun Z17VideoPlayer(
                 override fun onPlaybackStateChanged(playbackState: Int) {
                     super.onPlaybackStateChanged(playbackState)
 
-                    if (playbackState == ExoPlayer.STATE_READY && trackSelectorHelper == null) {
-                        trackSelectorHelper = TrackSelectorHelper(context, trackSelector)
-                        trackSelectorHelper?.loadTrackData()
+                    try {
+                        if (playbackState == ExoPlayer.STATE_READY && trackSelectorHelper == null) {
+                            trackSelectorHelper = TrackSelectorHelper(context, trackSelector)
+                            trackSelectorHelper?.loadTrackData()
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
 
                 override fun onEvents(player: Player, events: Player.Events) {
                     super.onEvents(player, events)
 
-                    val selectedVideoTrack =
-                        playerState.selectedVideoTrack
-                            ?: TrackElement(
-                                trackType = C.TRACK_TYPE_VIDEO,
-                                index = 0,
-                                trackItem = 0,
-                                trackStringData = "${trackSelector.parameters.maxVideoWidth} × ${trackSelector.parameters.maxVideoHeight} ${trackSelector.parameters.maxVideoBitrate} Mbps",
-                                trackFormatData = FormatVideoResolution(
-                                    width = trackSelector.parameters.maxVideoWidth,
-                                    height = trackSelector.parameters.maxVideoHeight
+                    try {
+                        val selectedVideoTrack =
+                            playerState.selectedVideoTrack
+                                ?: TrackElement(
+                                    trackType = C.TRACK_TYPE_VIDEO,
+                                    index = 0,
+                                    trackItem = 0,
+                                    trackStringData = "${trackSelector.parameters.maxVideoWidth} × ${trackSelector.parameters.maxVideoHeight} ${trackSelector.parameters.maxVideoBitrate} Mbps",
+                                    trackFormatData = FormatVideoResolution(
+                                        width = trackSelector.parameters.maxVideoWidth,
+                                        height = trackSelector.parameters.maxVideoHeight
+                                    )
                                 )
+
+                        val selectedAudioTrack =
+                            if (playerState.selectedAudioTrack?.trackStringData == trackSelector.parameters.preferredAudioLanguages.firstOrNull()) playerState.selectedAudioTrack
+                            else {
+                                val track =
+                                    trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull()
+
+                                if (track != null)
+                                    TrackElement(
+                                        trackType = C.TRACK_TYPE_AUDIO,
+                                        index = 0,
+                                        trackItem = 0,
+                                        trackStringData = track.trackStringData,
+                                        trackFormatData = FormatAudioPreferred(
+                                            audio = track.trackStringData
+                                        )
+                                    )
+                                else null
+                            }
+
+                        val selectedSubsTrack =
+                            if (playerState.selectedSubsTrack?.trackStringData == trackSelector.parameters.preferredTextLanguages.firstOrNull()) playerState.selectedSubsTrack
+                            else {
+                                val track =
+                                    trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull()
+
+                                if (track != null) {
+                                    TrackElement(
+                                        trackType = C.TRACK_TYPE_TEXT,
+                                        index = 0,
+                                        trackItem = 0,
+                                        trackStringData = track.trackStringData,
+                                        trackFormatData = FormatSubsPreferred(
+                                            language = track.trackStringData
+                                        )
+                                    )
+                                } else null
+                            }
+
+                        var newPlayerState = playerState.copy(
+                            isPlaying = player.isPlaying,
+                            isLoading = player.isLoading,
+                            playbackState = player.playbackState,
+                            bufferedPercentage = player.bufferedPercentage,
+                            currentPosition = player.currentPosition.coerceAtLeast(0L),
+                            totalDuration = player.duration.coerceAtLeast(0L),
+                            tripleTrackSave = trackSelectorHelper?.loadTrackData()
+                                ?: TripleTrackSave(),
+                            selectedVideoTrack = selectedVideoTrack
+                        )
+
+                        if (selectedAudioTrack != null)
+                            newPlayerState = newPlayerState.copy(
+                                selectedAudioTrack = selectedAudioTrack
                             )
 
-                    val selectedAudioTrack =
-                        if (playerState.selectedAudioTrack?.trackStringData == trackSelector.parameters.preferredAudioLanguages.firstOrNull()) playerState.selectedAudioTrack
-                        else {
-                            val track =
-                                trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull()
+                        if (selectedSubsTrack != null)
+                            newPlayerState = newPlayerState.copy(
+                                selectedSubsTrack = selectedSubsTrack
+                            )
 
-                            if (track != null)
-                                TrackElement(
-                                    trackType = C.TRACK_TYPE_AUDIO,
-                                    index = 0,
-                                    trackItem = 0,
-                                    trackStringData = track.trackStringData,
-                                    trackFormatData = FormatAudioPreferred(
-                                        audio = track.trackStringData
-                                    )
-                                )
-                            else null
-                        }
-
-                    val selectedSubsTrack =
-                        if (playerState.selectedSubsTrack?.trackStringData == trackSelector.parameters.preferredTextLanguages.firstOrNull()) playerState.selectedSubsTrack
-                        else {
-                            val track =
-                                trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull()
-
-                            if (track != null) {
-                                TrackElement(
-                                    trackType = C.TRACK_TYPE_TEXT,
-                                    index = 0,
-                                    trackItem = 0,
-                                    trackStringData = track.trackStringData,
-                                    trackFormatData = FormatSubsPreferred(
-                                        language = track.trackStringData
-                                    )
-                                )
-                            } else null
-                        }
-
-                    var newPlayerState = playerState.copy(
-                        isPlaying = player.isPlaying,
-                        isLoading = player.isLoading,
-                        playbackState = player.playbackState,
-                        bufferedPercentage = player.bufferedPercentage,
-                        currentPosition = player.currentPosition.coerceAtLeast(0L),
-                        totalDuration = player.duration.coerceAtLeast(0L),
-                        tripleTrackSave = trackSelectorHelper?.loadTrackData()
-                            ?: TripleTrackSave(),
-                        selectedVideoTrack = selectedVideoTrack
-                    )
-
-                    if (selectedAudioTrack != null)
-                        newPlayerState = newPlayerState.copy(
-                            selectedAudioTrack = selectedAudioTrack
+                        updatePlayerState(
+                            newPlayerState,
+                            player
                         )
-
-                    if (selectedSubsTrack != null)
-                        newPlayerState = newPlayerState.copy(
-                            selectedSubsTrack = selectedSubsTrack
-                        )
-
-                    updatePlayerState(
-                        newPlayerState,
-                        player
-                    )
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             })
     }
