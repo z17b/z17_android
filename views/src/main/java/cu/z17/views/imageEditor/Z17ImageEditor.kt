@@ -25,13 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.platform.LocalContext
@@ -54,7 +52,6 @@ import cu.z17.views.imageEditor.sections.viewer.Viewer
 import cu.z17.views.imageEditor.sections.viewer.ViewerTopBar
 import cu.z17.views.label.Z17Label
 import cu.z17.views.loader.Z17SimpleCircleLoader
-import cu.z17.views.picture.Z17BlurImage
 import kotlinx.coroutines.delay
 
 @Composable
@@ -63,6 +60,7 @@ fun Z17ImageEditor(
     source: Uri,
     imagePathToSave: String,
     firstCompression: Boolean = false,
+    initialRotation: Float = 0F,
     onViewState: (Boolean) -> Unit,
     onError: () -> Unit,
     onEdited: (Boolean) -> Unit,
@@ -322,7 +320,13 @@ fun Z17ImageEditor(
             }
 
         LaunchedEffect(Unit) {
-            viewModel.loadBitmap(source, imagePathToSave, context, firstCompression)
+            viewModel.loadBitmap(
+                imageUri = source,
+                imagePathToSave = imagePathToSave,
+                context = context,
+                firstCompression = firstCompression,
+                initialRotation = initialRotation
+            )
         }
 
         LaunchedEffect(currentState) {
