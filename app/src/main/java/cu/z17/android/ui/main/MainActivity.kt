@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
 import androidx.navigation.compose.rememberNavController
 import cu.z17.android.ui.theme.AppTheme
+import cu.z17.compress.compressFormat
 import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.inputText.Z17InputText
@@ -92,7 +93,9 @@ class MainActivity : ComponentActivity() {
             )
         }
 
-        Z17CameraModule.createInstance { Z17CameraModule(applicationContext) }
+        Z17CameraModule.createInstance { Z17CameraModule(applicationContext) }.apply {
+            this.defaultFormat = "png".compressFormat()
+        }
         Z17VideoModule.createInstance { Z17VideoModule(applicationContext) }
 
         setContent {
@@ -105,50 +108,19 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
 
                 if (permissionsAccepted) {
-                    var playerState by remember {
-                        mutableStateOf(PlayerState())
-                    }
+                    Camera(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        maxImageSize = 1_000_000,
+                        sendImages = { files, content ->
 
-                    var player by remember {
-                        mutableStateOf<Player?>(null)
-                    }
+                        },
+                        sendVideos = { files, content ->
 
-                    fun updatePlayerState(pS: PlayerState, p: Player) {
-                        playerState = pS
-                        player = p
-                    }
-
-                    fun onCurrentTimeChanged(t: Long) {
-                        playerState = playerState.copy(currentPosition = t)
-                    }
-
-                    Z17HLSVideoPlayer(
-                        modifier = Modifier.fillMaxSize(),
-                        mediaItem = HLSMediaItem(
-                            url = "https://stream.todus.cu/vs/194d52e833"
-                        ),
-                        handleLifecycle = true,
-                        autoPlay = false,
-                        usePlayerController = false,
-                        enablePip = false,
-                        enablePipWhenBackPressed = true,
-                        handleAudioFocus = true,
-                        volume = 0.5f,
-                        repeatMode = RepeatMode.ONE,
-                        playerState = playerState,
-                        updatePlayerState = ::updatePlayerState,
-                        onCurrentTimeChanged = ::onCurrentTimeChanged
+                        },
+                        onClose = {},
+                        onError = {}
                     )
-
-                    LaunchedEffect(player) {
-                        if (!playerState.isPlaying && player != null) {
-                            player?.play()
-                        }
-
-                        if (playerState.isPlaying && player != null) {
-                            player?.pause()
-                        }
-                    }
                 }
 
                 Z17PermissionCheckerAndRequester(

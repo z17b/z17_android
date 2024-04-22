@@ -1,9 +1,11 @@
 package cu.z17.views.camera
 
 import android.content.Context
+import android.view.OrientationEventListener
 import androidx.camera.core.ImageCapture
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,6 +22,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PauseCircleFilled
 import androidx.compose.material.icons.filled.PlayCircleFilled
+import androidx.compose.material.icons.outlined.CameraAlt
 import androidx.compose.material.icons.outlined.Cameraswitch
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.FlashOff
@@ -29,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
@@ -47,6 +52,10 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import cu.z17.views.button.bounceClick
+import cu.z17.views.imageEditor.sections.rotater.ROTATION_0
+import cu.z17.views.imageEditor.sections.rotater.ROTATION_180
+import cu.z17.views.imageEditor.sections.rotater.ROTATION_270
+import cu.z17.views.imageEditor.sections.rotater.ROTATION_90
 import cu.z17.views.label.Z17Label
 import cu.z17.views.picture.Z17BasePicture
 import cu.z17.views.utils.convertToMS
@@ -70,7 +79,7 @@ fun Z17Camera(
     ),
     context: Context = LocalContext.current,
     onClose: () -> Unit,
-    onResult: (String, ResultType, Long) -> Unit,
+    onResult: (String, ResultType, Long, Float) -> Unit,
     onError: () -> Unit,
 ) {
     if (Z17CameraModule.getInstance().canUseCamera)
@@ -91,6 +100,14 @@ fun Z17Camera(
                 mutableStateOf(false)
             }
 
+            var actualRotation by remember {
+                mutableFloatStateOf(ROTATION_0)
+            }
+            val animateRotation by animateFloatAsState(
+                actualRotation,
+                label = "ar"
+            )
+
             fun handleFlashLight() {
                 isFlashLightOn = !isFlashLightOn
                 viewModel.handleFlashMode(isFlashLightOn)
@@ -101,6 +118,19 @@ fun Z17Camera(
             val recordState by viewModel.recordingResult.collectAsStateWithLifecycle()
 
             LaunchedEffect(Unit) {
+                val orientationEventListener = object : OrientationEventListener(context) {
+                    override fun onOrientationChanged(orientation: Int) {
+                        // Monitors orientation values to determine the target rotation value
+                        actualRotation = when (orientation) {
+                            in 45..134 -> ROTATION_270
+                            in 135..224 -> ROTATION_180
+                            in 225..314 -> ROTATION_90
+                            else -> ROTATION_0
+                        }
+                    }
+                }
+                orientationEventListener.enable()
+
                 while (true) {
                     delay(1000)
 
@@ -112,7 +142,7 @@ fun Z17Camera(
 
             LaunchedEffect(captureResult) {
                 if (captureResult == CaptureState.RESULT) {
-                    onResult(imagePathToSave, ResultType.PHOTO, 0L)
+                    onResult(imagePathToSave, ResultType.PHOTO, 0L, actualRotation)
                     viewModel.setStateRead()
                 }
 
@@ -124,7 +154,7 @@ fun Z17Camera(
 
             LaunchedEffect(recordState) {
                 if (recordState == RecordingState.RESULT) {
-                    onResult(videoPathToSave, ResultType.VIDEO, currentRecordTime * 1000)
+                    onResult(videoPathToSave, ResultType.VIDEO, currentRecordTime * 1000, actualRotation)
                     viewModel.setStateRead()
                 }
             }
@@ -239,15 +269,30 @@ fun Z17Camera(
                             }
                         }
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(if (isVideo) 50.dp else 60.dp)
-                                .padding(5.dp)
-                                .background(
-                                    color = if (isVideo && recordState == RecordingState.RECORDING) MaterialTheme.colorScheme.primary else Color.White,
-                                    shape = CircleShape
-                                )
-                        )
+                        if (isVideo) {
+                            Box(
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .padding(5.dp)
+                                    .background(
+                                        color = if (recordState == RecordingState.RECORDING) MaterialTheme.colorScheme.primary else Color.White,
+                                        shape = CircleShape
+                                    )
+                            )
+                        } else
+                            Z17BasePicture(
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(
+                                        color = Color.White,
+                                        shape = CircleShape
+                                    )
+                                    .padding(10.dp)
+                                    .rotate(animateRotation),
+                                source = Icons.Outlined.CameraAlt,
+                                colorFilter = ColorFilter.tint(color = Color.Black)
+                            )
+
                     }
                 }
 

@@ -72,7 +72,7 @@ fun Z17ImageEditor(
     context: Context = LocalContext.current,
     configs: ImageEditorConfigurations = ImageEditorConfigurations(allowText = false),
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.background(color = Color.Red.copy(0.15F))) {
         val currentState by viewModel.currentState.collectAsStateWithLifecycle()
 
         val history by viewModel.history.value.collectAsStateWithLifecycle(emptyList())
@@ -83,17 +83,6 @@ fun Z17ImageEditor(
 
         var actualBitmap by remember {
             mutableStateOf<Bitmap?>(null)
-        }
-
-        actualBitmap?.let { img ->
-            Z17BlurImage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(0.6F),
-                source = img,
-                contentScale = ContentScale.Crop,
-                blurRadio = 20F
-            )
         }
 
         val focusRequester = remember {

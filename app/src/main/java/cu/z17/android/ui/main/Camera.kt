@@ -272,7 +272,7 @@ fun CameraPager(
 
         fun newImageName(): String {
             val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-            return "${formatter.format(Date())}.webp"
+            return "${formatter.format(Date())}.png"
         }
 
         fun newVideoName(): String {
@@ -304,7 +304,7 @@ fun CameraPager(
                     imagePathToSave = imagePathToSave,
                     enableDeleteImage = enableDeleteImage,
                     videoPathToSave = videoPathToSave,
-                    onResult = { path, resultType, duration ->
+                    onResult = { path, resultType, duration, rotation->
                         when (resultType) {
                             ResultType.VIDEO -> {
                                 videoPathAndDuration = path to duration
@@ -409,7 +409,7 @@ fun CameraViewPage(
     enableDeleteImage: Boolean = false,
     imagePathToSave: String,
     videoPathToSave: String,
-    onResult: (String, ResultType, Long) -> Unit,
+    onResult: (String, ResultType, Long, Float) -> Unit,
     onClose: () -> Unit,
     onError: () -> Unit,
     isVideo: Boolean,
@@ -431,7 +431,8 @@ fun CameraViewPage(
                             context, uri
                         )!!,
                         ResultType.PHOTO,
-                        0L
+                        0L,
+                        0F
                     )
                 }
             })
@@ -447,7 +448,8 @@ fun CameraViewPage(
                     onResult(
                         path,
                         ResultType.VIDEO,
-                        fileDuration * 1000
+                        fileDuration * 1000,
+                        0F
                     )
                 }
             })
@@ -485,7 +487,8 @@ fun CameraViewPage(
                                     MediaUtil.getPath(
                                         context, it.first().uri
                                     )!!, ResultType.VIDEO,
-                                    it.first().duration!!
+                                    it.first().duration!!,
+                                    0F
                                 )
                             },
                             optionsList = if (enableDeleteImage) listOf(
@@ -493,7 +496,8 @@ fun CameraViewPage(
                                     onResult(
                                         "",
                                         ResultType.DELETE,
-                                        0L
+                                        0L,
+                                        0F
                                     )
                                 },
                                 AlbumOption(preview = Icons.Outlined.Folder) {
@@ -516,7 +520,8 @@ fun CameraViewPage(
                                         context, it.first().uri
                                     )!!,
                                     ResultType.PHOTO,
-                                    0L
+                                    0L,
+                                    0F
                                 )
                             },
                             optionsList = if (enableDeleteImage) listOf(
@@ -524,7 +529,8 @@ fun CameraViewPage(
                                     onResult(
                                         "",
                                         ResultType.DELETE,
-                                        0L
+                                        0L,
+                                        0F
                                     )
                                 },
                                 AlbumOption(preview = Icons.Outlined.Folder) {
@@ -555,7 +561,8 @@ fun CameraViewPage(
                                         context, it.first().uri
                                     )!!,
                                     ResultType.VIDEO,
-                                    it.first().duration!!
+                                    it.first().duration!!,
+                                    0F
                                 )
                             }
                         )
@@ -570,7 +577,8 @@ fun CameraViewPage(
                                         context, it.first().uri
                                     )!!,
                                     ResultType.PHOTO,
-                                    0L
+                                    0L,
+                                    0F
                                 )
                             }
                         )

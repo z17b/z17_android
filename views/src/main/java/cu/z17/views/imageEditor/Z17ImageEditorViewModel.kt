@@ -64,7 +64,7 @@ class Z17ImageEditorViewModel : ViewModel() {
         context: Context,
         firstCompression: Boolean,
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 imageUri.path?.let {
                     try {
