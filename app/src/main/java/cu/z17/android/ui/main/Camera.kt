@@ -40,6 +40,7 @@ import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -287,6 +288,10 @@ fun CameraPager(
             File(dir, newImageName()).path
         }
 
+        var initialRotation by rememberSaveable {
+            mutableFloatStateOf(0F)
+        }
+
         val videoPathToSave = remember {
             val dir = File(File(context.filesDir, "test"), "VIDEOS")
             if (!dir.exists()) dir.mkdirs()
@@ -305,6 +310,7 @@ fun CameraPager(
                     enableDeleteImage = enableDeleteImage,
                     videoPathToSave = videoPathToSave,
                     onResult = { path, resultType, duration, rotation->
+                        initialRotation = rotation
                         when (resultType) {
                             ResultType.VIDEO -> {
                                 videoPathAndDuration = path to duration
@@ -337,6 +343,7 @@ fun CameraPager(
                     enableImageFoot = enableImageFoot,
                     imagePath = imagePath,
                     imagePathToSave = imagePathToSave,
+                    initialRotation = initialRotation,
                     onResult = { path, stringContent ->
                         sendImages(listOf(File(path)), stringContent)
                     },
@@ -677,6 +684,7 @@ fun ImageEditorViewPage(
     enableImageFoot: Boolean,
     imagePath: String,
     imagePathToSave: String,
+    initialRotation: Float,
     onResult: (String, String) -> Unit, // path and string footer content
     retry: () -> Unit,
     onError: () -> Unit,
@@ -700,6 +708,7 @@ fun ImageEditorViewPage(
 
         Z17ImageEditor(
             modifier = Modifier.weight(1F),
+            initialRotation = initialRotation,
             source = Uri.fromFile(File(imagePath)),
             imagePathToSave = imagePathToSave,
             onViewState = {

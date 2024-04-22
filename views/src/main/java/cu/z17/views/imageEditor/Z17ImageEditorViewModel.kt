@@ -72,7 +72,7 @@ class Z17ImageEditorViewModel : ViewModel() {
                 imageUri.path?.let {
                     try {
                         val bounds = imageUri.getBounds()
-                        val b = Compressor.compressAndGetBitmap(context, File(it)) {
+                        var b = Compressor.compressAndGetBitmap(context, File(it)) {
                             if (bounds.first > 3000 && bounds.second > 3000)
                                 resolution(1920, 1080)
 
@@ -83,11 +83,9 @@ class Z17ImageEditorViewModel : ViewModel() {
                                 Z17CameraModule.getInstance().defaultFormat
                                     ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP
                             )
-                        }.apply {
-                            if (initialRotation != 0F) {
-                                this.rotate(initialRotation)
-                            }
                         }
+
+                        if (initialRotation != 0F) b = b.rotate(initialRotation)
 
                         withContext(Dispatchers.IO) {
                             val file = File(imagePathToSave)

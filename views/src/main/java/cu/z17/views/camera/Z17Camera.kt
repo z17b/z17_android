@@ -103,8 +103,13 @@ fun Z17Camera(
             var actualRotation by remember {
                 mutableFloatStateOf(ROTATION_0)
             }
+
+            var rotationStateOnlyForAnimation by remember {
+                mutableFloatStateOf(ROTATION_0)
+            }
+
             val animateRotation by animateFloatAsState(
-                actualRotation,
+                rotationStateOnlyForAnimation,
                 label = "ar"
             )
 
@@ -117,14 +122,26 @@ fun Z17Camera(
 
             val recordState by viewModel.recordingResult.collectAsStateWithLifecycle()
 
+            LaunchedEffect(actualRotation) {
+                if (actualRotation != rotationStateOnlyForAnimation) {
+                    delay(400)
+                    rotationStateOnlyForAnimation = when (actualRotation) {
+                        ROTATION_90 -> ROTATION_270
+                        ROTATION_180 -> ROTATION_180
+                        ROTATION_270 -> ROTATION_90
+                        else -> ROTATION_0
+                    }
+                }
+            }
+
             LaunchedEffect(Unit) {
                 val orientationEventListener = object : OrientationEventListener(context) {
                     override fun onOrientationChanged(orientation: Int) {
                         // Monitors orientation values to determine the target rotation value
                         actualRotation = when (orientation) {
-                            in 45..134 -> ROTATION_270
+                            in 45..134 -> ROTATION_90
                             in 135..224 -> ROTATION_180
-                            in 225..314 -> ROTATION_90
+                            in 225..314 -> ROTATION_270
                             else -> ROTATION_0
                         }
                     }
