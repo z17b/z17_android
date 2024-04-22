@@ -7,68 +7,25 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Edit
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Lock
-import androidx.compose.material.icons.outlined.NotificationsNone
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.media3.common.Player
-import androidx.navigation.compose.rememberNavController
 import cu.z17.android.ui.theme.AppTheme
 import cu.z17.compress.compressFormat
-import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.Z17CameraModule
-import cu.z17.views.inputText.Z17InputText
-import cu.z17.views.label.Z17Label
 import cu.z17.views.permission.PermissionNeedIt
 import cu.z17.views.permission.Z17PermissionCheckerAndRequester
-import cu.z17.views.picture.Z17BasePicture
-import cu.z17.views.scaffold.Z17BaseScaffold
-import cu.z17.views.tab.Z17Tab
-import cu.z17.views.textToggle.Z17TextToggle
-import cu.z17.views.topBar.Z17TopBar
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.videoPlayer.PlayerState
+import cu.z17.views.videoPlayer.RESIZE_MODE_FILL
 import cu.z17.views.videoPlayer.RepeatMode
 import cu.z17.views.videoPlayer.Z17HLSVideoPlayer
 import cu.z17.views.videoPlayer.Z17VideoModule
@@ -108,18 +65,39 @@ class MainActivity : ComponentActivity() {
                 val context = LocalContext.current
 
                 if (permissionsAccepted) {
-                    Camera(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        maxImageSize = 1_000_000,
-                        sendImages = { files, content ->
+                    var playerState by remember {
+                        mutableStateOf(PlayerState())
+                    }
 
-                        },
-                        sendVideos = { files, content ->
+                    var player by remember {
+                        mutableStateOf<Player?>(null)
+                    }
 
-                        },
-                        onClose = {},
-                        onError = {}
+                    fun updatePlayerState(pS: PlayerState, p: Player) {
+                        playerState = pS
+                        player = p
+                    }
+
+                    fun onCurrentTimeChanged(t: Long) {
+                        playerState = playerState.copy(currentPosition = t)
+                    }
+                    Z17HLSVideoPlayer(
+                        modifier = Modifier.fillMaxSize(),
+                        mediaItem = HLSMediaItem(
+                            url = "https://stream.todus.cu/vs/68b13067c5"
+                        ),
+                        handleLifecycle = true,
+                        autoPlay = false,
+                        usePlayerController = false,
+                        enablePip = false,
+                        enablePipWhenBackPressed = true,
+                        handleAudioFocus = true,
+                        volume = 1F,
+                        repeatMode = RepeatMode.ONE,
+                        playerState = playerState,
+                        updatePlayerState = ::updatePlayerState,
+                        onCurrentTimeChanged = ::onCurrentTimeChanged,
+                        contentScale = RESIZE_MODE_FILL
                     )
                 }
 

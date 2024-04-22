@@ -37,12 +37,12 @@ import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.CacheDataSource
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
-import androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FIT
 import androidx.media3.ui.PlayerView
 import cu.z17.views.utils.findActivity
 import cu.z17.views.utils.observeAsState
@@ -86,7 +86,7 @@ fun Z17VideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
-    contentScale: Int = RESIZE_MODE_FILL
+    contentScale: Int = RESIZE_MODE_FILL,
 ) {
     val context = LocalContext.current
 
@@ -413,7 +413,7 @@ internal fun VideoPlayerSurface(
     enablePip: Boolean,
     onPipEntered: () -> Unit = {},
     pipScale: Pair<Int, Int>,
-    contentScale: Int
+    contentScale: Int,
 ) {
     val context = LocalContext.current
 
