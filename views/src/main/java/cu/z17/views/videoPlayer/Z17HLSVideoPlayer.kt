@@ -6,6 +6,8 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.compose.BackHandler
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,19 +31,19 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
-import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.FileDataSource
+import androidx.media3.datasource.TransferListener
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.datasource.cache.NoOpCacheEvictor
-import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
@@ -57,7 +59,6 @@ import cu.z17.views.videoPlayer.trackSelector.TripleTrackSave
 import cu.z17.views.videoPlayer.uri.HLSMediaItem
 import cu.z17.views.videoPlayer.util.setFullScreen
 import kotlinx.coroutines.delay
-import java.io.File
 import java.util.UUID
 
 
@@ -84,7 +85,7 @@ fun Z17HLSVideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
-    contentScale: Int = RESIZE_MODE_FILL
+    contentScale: Int = RESIZE_MODE_FILL,
 ) {
     val context = LocalContext.current
 
@@ -94,9 +95,11 @@ fun Z17HLSVideoPlayer(
 
     var mediaSession = remember<MediaSession?> { null }
 
-    val downloadCache = Z17VideoModule.getInstance().downloadCache
+    val downloadCache = remember(mediaItem.itemUniqueId) {
+        Z17VideoModule.getInstance().getCacheDirectory(mediaItem.url + mediaItem.itemUniqueId)
+    }
 
-    val cacheSink = remember{
+    val cacheSink = remember((mediaItem.itemUniqueId)) {
         CacheDataSink.Factory()
             .setCache(downloadCache)
     }
@@ -113,17 +116,20 @@ fun Z17HLSVideoPlayer(
         AdaptiveTrackSelection.Factory()
     }
 
-    val downStreamFactory = FileDataSource.Factory()
+    val downStreamFactory = remember {
+        FileDataSource.Factory()
+    }
 
-    val cacheDataSourceFactory  =
+    val cacheDataSourceFactory = remember(mediaItem.itemUniqueId) {
         CacheDataSource.Factory()
             .setCache(downloadCache)
             .setCacheWriteDataSinkFactory(cacheSink)
             .setCacheReadDataSourceFactory(downStreamFactory)
             .setUpstreamDataSourceFactory(dataSourceFactory)
             .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+    }
 
-    val videoSource: HlsMediaSource = remember {
+    val videoSource: HlsMediaSource = remember(mediaItem.itemUniqueId) {
         HlsMediaSource.Factory(cacheDataSourceFactory)
             /*.setDrmSessionManagerProvider {
                 DefaultDrmSessionManager.Builder()
@@ -239,7 +245,8 @@ fun Z17HLSVideoPlayer(
                         val selectedAudioTrack =
                             if (playerState.selectedAudioTrack?.trackStringData == trackSelector.parameters.preferredAudioLanguages.firstOrNull()) playerState.selectedAudioTrack
                             else {
-                                val track = trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull()
+                                val track =
+                                    trackSelectorHelper?.tripleTrackSave?.audioTracks?.firstOrNull()
 
                                 if (track != null)
                                     TrackElement(
@@ -257,7 +264,8 @@ fun Z17HLSVideoPlayer(
                         val selectedSubsTrack =
                             if (playerState.selectedSubsTrack?.trackStringData == trackSelector.parameters.preferredTextLanguages.firstOrNull()) playerState.selectedSubsTrack
                             else {
-                                val track = trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull()
+                                val track =
+                                    trackSelectorHelper?.tripleTrackSave?.subsTracks?.firstOrNull()
                                 if (track != null)
                                     TrackElement(
                                         trackType = C.TRACK_TYPE_TEXT,
@@ -304,7 +312,7 @@ fun Z17HLSVideoPlayer(
             })
     }
 
-    LaunchedEffect(mediaItem, player) {
+    LaunchedEffect(mediaItem.itemUniqueId, player) {
         mediaSession?.release()
         mediaSession = MediaSession.Builder(context, ForwardingPlayer(player))
             .setId(

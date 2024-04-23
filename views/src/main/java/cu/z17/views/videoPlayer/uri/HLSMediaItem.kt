@@ -8,5 +8,6 @@ data class HLSMediaItem(
     val url: String,
     val mediaMetadata: MediaMetadata = MediaMetadata.EMPTY,
     val mimeType: String = MimeTypes.APPLICATION_M3U8,
-    val drmConfiguration: DrmConfiguration? = null
+    val drmConfiguration: DrmConfiguration? = null,
+    val itemUniqueId: String = ""
 )

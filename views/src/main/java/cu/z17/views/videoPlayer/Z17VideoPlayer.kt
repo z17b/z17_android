@@ -116,10 +116,12 @@ fun Z17VideoPlayer(
         AdaptiveTrackSelection.Factory()
     }
 
-    val trackSelector = remember {
-        DefaultTrackSelector(
-            context,
-            videoTrackSelectionFactory
+    val trackSelector by remember {
+        mutableStateOf(
+            DefaultTrackSelector(
+                context,
+                videoTrackSelectionFactory
+            )
         )
     }
 
