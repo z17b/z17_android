@@ -20,10 +20,12 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -121,6 +123,23 @@ fun Lifecycle.observeAsState(): State<Lifecycle.Event> {
         }
     }
     return state
+}
+
+@Composable
+fun ComposableLifecycle(
+    onEvent: (LifecycleOwner, Lifecycle.Event) -> Unit
+) {
+    val lifeCycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifeCycleOwner) {
+        val observer = LifecycleEventObserver { source, event ->
+            onEvent(source, event)
+        }
+        lifeCycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifeCycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 }
 
 fun Context.findActivity(): Activity {

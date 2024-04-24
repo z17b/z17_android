@@ -10,6 +10,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.BackHandler
 import androidx.annotation.FloatRange
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -22,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.media3.common.AudioAttributes
@@ -37,15 +37,14 @@ import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
+import cu.z17.views.utils.ComposableLifecycle
 import cu.z17.views.utils.findActivity
-import cu.z17.views.utils.observeAsState
 import cu.z17.views.videoPlayer.cache.VideoPlayerCacheManager
 import cu.z17.views.videoPlayer.controller.VideoPlayerControllerConfig
 import cu.z17.views.videoPlayer.pip.enterPIPMode
@@ -421,74 +420,76 @@ internal fun VideoPlayerSurface(
 
     var isPendingPipMode by remember { mutableStateOf(false) }
 
-    val currentEvent = remember {
+    var currentEvent by remember {
         mutableStateOf<Lifecycle.Event?>(null)
     }
 
-    val events by LocalLifecycleOwner.current.lifecycle.observeAsState()
+    Box(modifier = modifier) {
+        ComposableLifecycle { _, event ->
+            currentEvent = event
+        }
 
-    currentEvent.value = events
+        LaunchedEffect(currentEvent) {
+            try {
+                when (currentEvent) {
+                    Lifecycle.Event.ON_PAUSE -> {
+                        player.pause()
+                        defaultPlayerView.onPause()
 
-    LaunchedEffect(currentEvent.value) {
-        try {
-            when (currentEvent.value) {
-                Lifecycle.Event.ON_PAUSE -> {
-                    player.pause()
-                    defaultPlayerView.onPause()
+                        if (enablePip && player.playWhenReady) {
+                            isPendingPipMode = true
 
-                    if (enablePip && player.playWhenReady) {
-                        isPendingPipMode = true
+                            Handler(Looper.getMainLooper()).post {
+                                enterPIPMode(context, defaultPlayerView, pipScale)
+                                onPipEntered()
 
-                        Handler(Looper.getMainLooper()).post {
-                            enterPIPMode(context, defaultPlayerView, pipScale)
-                            onPipEntered()
-
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                isPendingPipMode = false
-                            }, 500)
+                                Handler(Looper.getMainLooper()).postDelayed({
+                                    isPendingPipMode = false
+                                }, 500)
+                            }
                         }
                     }
-                }
 
-                Lifecycle.Event.ON_RESUME -> {
-                    defaultPlayerView.onResume()
-                    if (autoPlay) player.play()
+                    Lifecycle.Event.ON_RESUME -> {
+                        defaultPlayerView.onResume()
+                        if (autoPlay) player.play()
 
-                    if (enablePip && player.playWhenReady) {
-                        defaultPlayerView.useController = usePlayerController
+                        if (enablePip && player.playWhenReady) {
+                            defaultPlayerView.useController = usePlayerController
+                        }
                     }
-                }
 
-                Lifecycle.Event.ON_STOP -> {
-                    val isPipMode = context.isActivityStatePipMode()
+                    Lifecycle.Event.ON_STOP -> {
+                        val isPipMode = context.isActivityStatePipMode()
 
-                    if (handleLifecycle || (enablePip && isPipMode && !isPendingPipMode)) {
-                        player.pause()
+                        if (handleLifecycle || (enablePip && isPipMode && !isPendingPipMode)) {
+                            player.pause()
+                        }
                     }
-                }
 
-                Lifecycle.Event.ON_DESTROY -> {
-                    player.stop()
-                    player.release()
-                }
+                    Lifecycle.Event.ON_DESTROY -> {
+                        player.stop()
+                        player.release()
+                    }
 
-                else -> {}
+                    else -> {}
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
+
+        AndroidView(
+            modifier = modifier,
+            factory = {
+                defaultPlayerView.apply {
+                    useController = usePlayerController
+                    resizeMode = contentScale
+                    setBackgroundColor(Color.BLACK)
+                }
+            }
+        )
     }
-
-    AndroidView(
-        modifier = modifier,
-        factory = {
-            defaultPlayerView.apply {
-                useController = usePlayerController
-                resizeMode = contentScale
-                setBackgroundColor(Color.BLACK)
-            }
-        }
-    )
 }
 
 const val RESIZE_MODE_FIT = 0
