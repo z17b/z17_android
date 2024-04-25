@@ -8,6 +8,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.upstream.BandwidthMeter
 import androidx.media3.exoplayer.upstream.experimental.ExperimentalBandwidthMeter
@@ -26,9 +27,12 @@ class Z17VideoModule(private val context: Context) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    var initialBitrate = 2_000_000L
+
     @UnstableApi
     val bandwidthMeter = ExperimentalBandwidthMeter.Builder(context)
         .setResetOnNetworkTypeChange(true)
+        .setInitialBitrateEstimate(initialBitrate)
         .build()
 
     private val downloadContentDirectory =
@@ -41,6 +45,9 @@ class Z17VideoModule(private val context: Context) {
     private val noOpCacheEvictor = NoOpCacheEvictor()
 
     private val cacheDB = hashMapOf<String, SimpleCache>()
+
+    @UnstableApi
+    val rendererFactory = DefaultRenderersFactory(context).setEnableDecoderFallback(true)
 
     @UnstableApi
     fun getCacheDirectory(identifier: String): SimpleCache {

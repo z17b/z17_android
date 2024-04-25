@@ -34,7 +34,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.FileDataSource
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
@@ -175,7 +174,7 @@ fun Z17HLSVideoPlayer(
                     .build(),
                 handleAudioFocus,
             )
-            .setRenderersFactory(DefaultRenderersFactory(context).setEnableDecoderFallback(true))
+            .setRenderersFactory(Z17VideoModule.getInstance().rendererFactory)
             .build()
             .also(playerInstance)
     }

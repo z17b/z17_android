@@ -74,16 +74,112 @@ class MainActivity : ComponentActivity() {
 
                 if (permissionsAccepted) {
 
-                    Camera(
+                    val pagerState = rememberPagerState(
+                        initialPage = 0,
+                        pageCount = { 10 }
+                    )
+
+                    var canPlay by remember {
+                        mutableStateOf(true)
+                    }
+
+                    var playerState by remember {
+                        mutableStateOf(PlayerState())
+                    }
+
+                    var player by remember {
+                        mutableStateOf<Player?>(null)
+                    }
+
+                    fun updatePlayerState(pS: PlayerState, p: Player) {
+                        playerState = pS
+                        player = p
+                    }
+
+                    fun onCurrentTimeChanged(t: Long) {
+                        playerState = playerState.copy(currentPosition = t)
+                    }
+
+                    var isPlaying by remember {
+                        mutableStateOf(false)
+                    }
+
+                    var mediaItem by remember {
+                        mutableStateOf<Pair<HLSMediaItem?, VideoPlayerMediaItem?>>(null to null)
+                    }
+
+                    if (mediaItem.first != null)
+                        Z17HLSVideoPlayer(
+                            modifier = Modifier.fillMaxSize(),
+                            mediaItem = HLSMediaItem(
+                                url = mediaItem.first!!.url,
+                                itemUniqueId = mediaItem.first!!.itemUniqueId.toString()
+                            ),
+                            handleLifecycle = true,
+                            autoPlay = false,
+                            usePlayerController = false,
+                            enablePip = false,
+                            enablePipWhenBackPressed = true,
+                            handleAudioFocus = true,
+                            volume = 1F,
+                            repeatMode = RepeatMode.ONE,
+                            playerState = playerState,
+                            updatePlayerState = ::updatePlayerState,
+                            onCurrentTimeChanged = ::onCurrentTimeChanged,
+                            contentScale = RESIZE_MODE_FILL
+                        )
+
+                    VerticalPager(
+                        state = pagerState,
                         modifier = Modifier
                             .fillMaxSize(),
-                        sendImages = { files, content ->
-                        },
-                        sendVideos = { files, content ->
-                        },
-                        onClose = {},
-                        onError = {}
-                    )
+                    ) {
+                        isPlaying = canPlay && pagerState.currentPage == it
+
+                        if (!isPlaying)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = Color(
+                                            255 * 1 / (it + 1),
+                                            255 * 1 / (it + 1),
+                                            255 * 1 / (it + 1),
+                                            255
+                                        )
+                                    )
+                            )
+                        else {
+                            mediaItem = HLSMediaItem(
+                                url = "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
+                                itemUniqueId = it.toString()
+                            ) to null
+                        }
+                    }
+
+                    LaunchedEffect(isPlaying, player) {
+                        if (isPlaying && !playerState.isPlaying && player != null) {
+                            player?.play()
+                        }
+
+                        if (!isPlaying && playerState.isPlaying && player != null) {
+                            player?.pause()
+                        }
+                    }
+
+                    LaunchedEffect(playerState.isPlaying) {
+                        if (!playerState.isPlaying &&
+                            playerState.playbackState == Player.STATE_ENDED
+                        ) {
+                            player?.seekTo(0)
+                            onCurrentTimeChanged(0)
+                            player?.playWhenReady = true
+                        }
+                    }
+
+                    LaunchedEffect(pagerState.isScrollInProgress) {
+                        canPlay = !pagerState.isScrollInProgress
+                    }
                 }
 
                 Z17PermissionCheckerAndRequester(
