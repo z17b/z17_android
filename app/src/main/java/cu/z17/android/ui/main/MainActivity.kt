@@ -180,14 +180,6 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(pagerState.isScrollInProgress) {
                         canPlay = !pagerState.isScrollInProgress
                     }
-
-                    LaunchedEffect(pagerState.currentPage) {
-                        if ((pagerState.currentPage - Z17VideoModule.getInstance().threshold) >= 0) {
-                            Z17VideoModule.getInstance().clearFromRAMCache(
-                                "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8" + (pagerState.currentPage - -Z17VideoModule.getInstance().threshold)
-                            )
-                        }
-                    }
                 }
 
                 Z17PermissionCheckerAndRequester(

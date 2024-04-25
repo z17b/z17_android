@@ -6,8 +6,6 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.compose.BackHandler
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,10 +30,8 @@ import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ALL
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_NONE
 import androidx.media3.common.util.RepeatModeUtil.REPEAT_TOGGLE_MODE_ONE
 import androidx.media3.datasource.DataSource
-import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.FileDataSource
-import androidx.media3.datasource.TransferListener
 import androidx.media3.datasource.cache.CacheDataSink
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -43,8 +39,6 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.trackselection.AdaptiveTrackSelection
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
-import androidx.media3.exoplayer.upstream.BandwidthMeter
-import androidx.media3.exoplayer.upstream.DefaultBandwidthMeter
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
 import cu.z17.views.utils.findActivity
@@ -85,7 +79,7 @@ fun Z17HLSVideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
-    contentScale: Int = RESIZE_MODE_FILL,
+    contentScale: Int = RESIZE_MODE_FIXED_WIDTH,
 ) {
     val context = LocalContext.current
 
@@ -96,16 +90,12 @@ fun Z17HLSVideoPlayer(
     var mediaSession = remember<MediaSession?> { null }
 
     val downloadCache = remember(mediaItem.itemUniqueId) {
-        Z17VideoModule.getInstance().getCacheDirectory(mediaItem.url + mediaItem.itemUniqueId)
+        Z17VideoModule.getInstance().getCacheDirectory(mediaItem.itemUniqueId)
     }
 
-    val cacheSink = remember((mediaItem.itemUniqueId)) {
+    val cacheSink = remember(mediaItem.itemUniqueId) {
         CacheDataSink.Factory()
             .setCache(downloadCache)
-    }
-
-    val bandwidthMeter = remember {
-        DefaultBandwidthMeter.getSingletonInstance(context)
     }
 
     val dataSourceFactory: DataSource.Factory = remember {
@@ -113,7 +103,12 @@ fun Z17HLSVideoPlayer(
     }
 
     val videoTrackSelectionFactory = remember {
-        AdaptiveTrackSelection.Factory()
+        AdaptiveTrackSelection.Factory(
+            500,
+            500,
+            AdaptiveTrackSelection.DEFAULT_MIN_DURATION_TO_RETAIN_AFTER_DISCARD_MS,
+            AdaptiveTrackSelection.DEFAULT_BANDWIDTH_FRACTION
+        )
     }
 
     val downStreamFactory = remember {
@@ -154,10 +149,12 @@ fun Z17HLSVideoPlayer(
         }
     }
 
-    val trackSelector = remember {
-        DefaultTrackSelector(
-            context,
-            videoTrackSelectionFactory
+    val trackSelector by remember {
+        mutableStateOf(
+            DefaultTrackSelector(
+                context,
+                videoTrackSelectionFactory
+            )
         )
     }
 
@@ -167,7 +164,7 @@ fun Z17HLSVideoPlayer(
 
     val player = remember {
         ExoPlayer.Builder(context)
-            .setBandwidthMeter(bandwidthMeter)
+            .setBandwidthMeter(Z17VideoModule.getInstance().bandwidthMeter)
             .setTrackSelector(trackSelector)
             .setSeekBackIncrementMs(seekBeforeMilliSeconds)
             .setSeekForwardIncrementMs(seekAfterMilliSeconds)

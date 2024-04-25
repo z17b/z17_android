@@ -1,17 +1,23 @@
 package cu.z17.views.videoPlayer
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.OptIn
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
+import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.exoplayer.upstream.BandwidthMeter
+import androidx.media3.exoplayer.upstream.experimental.ExperimentalBandwidthMeter
 import cu.z17.singledi.SingletonInitializer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+
 
 class Z17VideoModule(private val context: Context) {
     companion object : SingletonInitializer<Z17VideoModule>() {
@@ -20,7 +26,10 @@ class Z17VideoModule(private val context: Context) {
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    var threshold = 3
+    @UnstableApi
+    val bandwidthMeter = ExperimentalBandwidthMeter.Builder(context)
+        .setResetOnNetworkTypeChange(true)
+        .build()
 
     private val downloadContentDirectory =
         File(context.cacheDir, DOWNLOAD_CONTENT_DIRECTORY)

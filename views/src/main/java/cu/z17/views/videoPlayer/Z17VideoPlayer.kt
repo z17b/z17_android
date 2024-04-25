@@ -85,7 +85,7 @@ fun Z17VideoPlayer(
     updatePlayerState: (PlayerState, Player) -> Unit = { _, _ -> },
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
-    contentScale: Int = RESIZE_MODE_FILL,
+    contentScale: Int = RESIZE_MODE_FIXED_WIDTH,
 ) {
     val context = LocalContext.current
 
