@@ -110,7 +110,7 @@ fun CutterTopBar(
             if (cutPoints.endInclusive > whereShouldEndBe) {
                 previewsCutPoints =
                     cutPoints.start..whereShouldEndBe
-                onCutPointsChange(cutPoints)
+                onCutPointsChange(previewsCutPoints)
             }
         }
 
@@ -118,7 +118,7 @@ fun CutterTopBar(
             val whereShouldStartBe = cutPoints.endInclusive - forceCrop
             if (cutPoints.start < whereShouldStartBe) {
                 previewsCutPoints = whereShouldStartBe..cutPoints.endInclusive
-                onCutPointsChange(cutPoints)
+                onCutPointsChange(previewsCutPoints)
             }
         }
     }

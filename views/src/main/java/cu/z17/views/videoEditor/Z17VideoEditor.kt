@@ -122,6 +122,7 @@ fun Z17VideoEditor(
                         forceCrop = configs.forceCrop,
                         onCutPointsChange = {
                             cutPoints = it
+
                             player?.pause()
                         }
                     )
@@ -227,7 +228,7 @@ fun Z17VideoEditor(
         LaunchedEffect(Unit) {
             viewModel.generateThumbnailList(source, currentDuration) {
                 if (currentDuration > configs.forceCrop) {
-                    viewModel.requestState(Z17EditorState.VIEW)
+                    viewModel.requestState(Z17EditorState.CROP)
                 } else
                     viewModel.requestState(Z17EditorState.VIEW)
             }
