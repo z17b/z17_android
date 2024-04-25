@@ -119,6 +119,7 @@ fun Z17VideoEditor(
                         cutPoints = cutPoints,
                         maxEnd = currentDuration.toFloat(),
                         thumbnails = thumbnails,
+                        forceCrop = configs.forceCrop,
                         onCutPointsChange = {
                             cutPoints = it
                             player?.pause()
@@ -225,7 +226,10 @@ fun Z17VideoEditor(
 
         LaunchedEffect(Unit) {
             viewModel.generateThumbnailList(source, currentDuration) {
-                viewModel.requestState(Z17EditorState.VIEW)
+                if (currentDuration > configs.forceCrop) {
+                    viewModel.requestState(Z17EditorState.VIEW)
+                } else
+                    viewModel.requestState(Z17EditorState.VIEW)
             }
         }
     }
@@ -235,4 +239,5 @@ fun Z17VideoEditor(
 data class VideoEditorConfigurations(
     val allowCrop: Boolean = true,
     val allowFilters: Boolean = true,
+    val forceCrop: Long = Long.MAX_VALUE,
 )

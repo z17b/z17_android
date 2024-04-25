@@ -91,7 +91,7 @@ fun Camera(
     showVideoOption: Boolean = true,
     enableImageFoot: Boolean = true,
     enableDeleteImage: Boolean = false,
-    maxImageSize: Long = 3_097_152,
+    maxVideoDuration: Long = 5_000,
     sendVideos: (
         files: List<File>,
         content: String,
@@ -215,7 +215,7 @@ fun Camera(
                 showVideoOption = showVideoOption,
                 enableImageFoot = enableImageFoot,
                 enableDeleteImage = enableDeleteImage,
-                maxImageSize = maxImageSize,
+                maxVideoDuration = maxVideoDuration,
                 sendImages = sendImages,
                 sendVideos = sendVideos,
                 onClose = onClose,
@@ -240,7 +240,7 @@ fun CameraPager(
     showVideoOption: Boolean,
     enableImageFoot: Boolean,
     enableDeleteImage: Boolean = false,
-    maxImageSize: Long,
+    maxVideoDuration: Long = Long.MAX_VALUE,
     isVideo: Boolean,
     sendVideos: (
         files: List<File>,
@@ -367,6 +367,7 @@ fun CameraPager(
                     videoPath = videoPathAndDuration.first,
                     videoPathToSave = videoPathToSave,
                     duration = videoPathAndDuration.second,
+                    maxVideoDuration = maxVideoDuration,
                     onResult = { path, stringContent ->
                         sendVideos(listOf(File(path)), stringContent)
                     },
@@ -783,6 +784,7 @@ fun VideoEditorViewPage(
     videoPath: String,
     videoPathToSave: String,
     duration: Long,
+    maxVideoDuration: Long,
     onResult: (String, String) -> Unit,
     retry: () -> Unit,
     onError: () -> Unit,
@@ -818,7 +820,8 @@ fun VideoEditorViewPage(
             },
             configs = VideoEditorConfigurations(
                 allowCrop = (duration / 1000L) >= 5,
-                allowFilters = false
+                allowFilters = false,
+                forceCrop = maxVideoDuration
             )
         )
 

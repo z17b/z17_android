@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RangeSlider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import kotlin.math.abs
 @Composable
 fun CutterTopBar(
     modifier: Modifier = Modifier,
+    forceCrop: Long,
     cutPoints: ClosedFloatingPointRange<Float>,
     maxEnd: Float,
     thumbnails: List<Bitmap>,
@@ -102,6 +104,23 @@ fun CutterTopBar(
                 }
             }
         )
+
+        LaunchedEffect(cutPoints.start) {
+            val whereShouldEndBe = cutPoints.start + forceCrop
+            if (cutPoints.endInclusive > whereShouldEndBe) {
+                previewsCutPoints =
+                    cutPoints.start..whereShouldEndBe
+                onCutPointsChange(cutPoints)
+            }
+        }
+
+        LaunchedEffect(cutPoints.endInclusive) {
+            val whereShouldStartBe = cutPoints.endInclusive - forceCrop
+            if (cutPoints.start < whereShouldStartBe) {
+                previewsCutPoints = whereShouldStartBe..cutPoints.endInclusive
+                onCutPointsChange(cutPoints)
+            }
+        }
     }
 }
 
