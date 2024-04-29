@@ -479,6 +479,13 @@ internal fun VideoPlayerSurface(
             }
         }
 
+        DisposableEffect(Unit) {
+            onDispose {
+                player.stop()
+                player.release()
+            }
+        }
+
         AndroidView(
             modifier = modifier,
             factory = {

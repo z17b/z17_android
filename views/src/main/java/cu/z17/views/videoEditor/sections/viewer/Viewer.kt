@@ -2,8 +2,10 @@ package cu.z17.views.videoEditor.sections.viewer
 
 import android.net.Uri
 import androidx.annotation.OptIn
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -81,85 +83,90 @@ fun Viewer(
         PlayerView(context)
     }
 
-    LaunchedEffect(player) {
-        defaultPlayerView.player = player
-    }
+    Box(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        LaunchedEffect(player) {
+            defaultPlayerView.player = player
+        }
 
-    LaunchedEffect(player, playerState) {
-        defaultPlayerView.player = player
+        LaunchedEffect(player, playerState) {
+            defaultPlayerView.player = player
 
-        player
-            .addListener(object : Player.Listener {
-                override fun onEvents(player: Player, events: Player.Events) {
-                    super.onEvents(player, events)
+            player
+                .addListener(object : Player.Listener {
+                    override fun onEvents(player: Player, events: Player.Events) {
+                        super.onEvents(player, events)
 
-                    val newPlayerState = playerState.copy(
-                        isPlaying = player.isPlaying,
-                        isLoading = player.isLoading,
-                        playbackState = player.playbackState,
-                        bufferedPercentage = player.bufferedPercentage,
-                        currentPosition = player.currentPosition.coerceAtLeast(0L),
-                        totalDuration = player.duration.coerceAtLeast(0L)
-                    )
+                        val newPlayerState = playerState.copy(
+                            isPlaying = player.isPlaying,
+                            isLoading = player.isLoading,
+                            playbackState = player.playbackState,
+                            bufferedPercentage = player.bufferedPercentage,
+                            currentPosition = player.currentPosition.coerceAtLeast(0L),
+                            totalDuration = player.duration.coerceAtLeast(0L)
+                        )
 
-                    updatePlayerState(
-                        newPlayerState,
-                        player
-                    )
-                }
-            })
-    }
-
-    LaunchedEffect(source, player, cutPoints) {
-        mediaSession?.release()
-        mediaSession = MediaSession.Builder(context, ForwardingPlayer(player))
-            .setId(
-                "VideoPlayerMediaSession_${
-                    UUID.randomUUID().toString().lowercase().split("-").first()
-                }"
-            )
-            .build()
-
-        val exoPlayerMediaItem = listOf(
-            VideoPlayerMediaItem.StorageMediaItem(
-                storageUri = source
-            ).let {
-                val uri = it.toUri(context)
-
-                var clippingConfiguration: MediaItem.ClippingConfiguration? = null
-
-                if ((cutPoints.endInclusive - cutPoints.start) >= 3)
-                    clippingConfiguration = MediaItem.ClippingConfiguration.Builder()
-                        .setStartPositionMs(cutPoints.start.toLong())
-                        .setEndPositionMs(cutPoints.endInclusive.toLong())
-                        .build()
-
-                MediaItem.Builder().apply {
-                    setUri(uri)
-                    setMediaMetadata(it.mediaMetadata)
-                    setMimeType(it.mimeType)
-                    if (clippingConfiguration != null) {
-                        setClippingConfiguration(clippingConfiguration)
+                        updatePlayerState(
+                            newPlayerState,
+                            player
+                        )
                     }
-                }.build()
-            }
+                })
+        }
+
+        LaunchedEffect(source, player, cutPoints) {
+            mediaSession?.release()
+            mediaSession = MediaSession.Builder(context, ForwardingPlayer(player))
+                .setId(
+                    "VideoPlayerMediaSession_${
+                        UUID.randomUUID().toString().lowercase().split("-").first()
+                    }"
+                )
+                .build()
+
+            val exoPlayerMediaItem = listOf(
+                VideoPlayerMediaItem.StorageMediaItem(
+                    storageUri = source
+                ).let {
+                    val uri = it.toUri(context)
+
+                    var clippingConfiguration: MediaItem.ClippingConfiguration? = null
+
+                    if ((cutPoints.endInclusive - cutPoints.start) >= 3)
+                        clippingConfiguration = MediaItem.ClippingConfiguration.Builder()
+                            .setStartPositionMs(cutPoints.start.toLong())
+                            .setEndPositionMs(cutPoints.endInclusive.toLong())
+                            .build()
+
+                    MediaItem.Builder().apply {
+                        setUri(uri)
+                        setMediaMetadata(it.mediaMetadata)
+                        setMimeType(it.mimeType)
+                        if (clippingConfiguration != null) {
+                            setClippingConfiguration(clippingConfiguration)
+                        }
+                    }.build()
+                }
+            )
+
+            player.setMediaItems(exoPlayerMediaItem)
+            player.prepare()
+
+            player.playWhenReady = false
+        }
+
+        VideoPlayerSurface(
+            modifier = Modifier.fillMaxWidth(),
+            defaultPlayerView = defaultPlayerView,
+            player = player,
+            autoPlay = false,
+            usePlayerController = false,
+            handleLifecycle = true,
+            enablePip = false,
+            pipScale = 16 to 9,
+            contentScale = contentScale
         )
-
-        player.setMediaItems(exoPlayerMediaItem)
-        player.prepare()
-
-        player.playWhenReady = false
     }
 
-    VideoPlayerSurface(
-        modifier = modifier.fillMaxWidth(),
-        defaultPlayerView = defaultPlayerView,
-        player = player,
-        autoPlay = false,
-        usePlayerController = false,
-        handleLifecycle = true,
-        enablePip = false,
-        pipScale = 16 to 9,
-        contentScale = contentScale
-    )
 }
