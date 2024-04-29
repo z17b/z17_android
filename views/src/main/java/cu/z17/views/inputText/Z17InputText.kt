@@ -1,6 +1,5 @@
 package cu.z17.views.inputText
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,10 +42,12 @@ fun Z17InputText(
     maxLength: Int = 100,
     inputType: KeyboardType = KeyboardType.Text,
     errorColor: Color = Color(0xFFc62828),
+    focusedBorderColor: Color = MaterialTheme.colorScheme.onBackground,
+    unfocusedBorderColor: Color = MaterialTheme.colorScheme.primary,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     readOnly: Boolean = false,
     shape: Shape = RoundedCornerShape(15.dp),
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
 
     OutlinedTextField(
@@ -82,6 +83,8 @@ fun Z17InputText(
         shape = shape,
         textStyle = style,
         colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = focusedBorderColor,
+            unfocusedBorderColor = unfocusedBorderColor,
             focusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedContainerColor = Color.Transparent,
@@ -111,7 +114,7 @@ fun Z17PasswordText(
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     readOnly: Boolean = false,
     shape: Shape = RoundedCornerShape(15.dp),
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
 
     var isShowIn by remember {
@@ -203,7 +206,7 @@ fun Z17InputTextFlat(
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     readOnly: Boolean = false,
     shape: Shape = RoundedCornerShape(15.dp),
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     TextField(
         value = value,
