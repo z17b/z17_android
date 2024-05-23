@@ -86,6 +86,7 @@ fun Z17VideoPlayer(
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
     contentScale: Int = RESIZE_MODE_FIXED_WIDTH,
+    defaultBackgroundColor: Int = Color.BLACK
 ) {
     val context = LocalContext.current
 
@@ -389,7 +390,8 @@ fun Z17VideoPlayer(
         handleLifecycle = handleLifecycle,
         enablePip = enablePip,
         pipScale = pipScale,
-        contentScale = contentScale
+        contentScale = contentScale,
+        defaultBackgroundColor = defaultBackgroundColor
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {
@@ -415,6 +417,7 @@ internal fun VideoPlayerSurface(
     onPipEntered: () -> Unit = {},
     pipScale: Pair<Int, Int>,
     contentScale: Int,
+    defaultBackgroundColor: Int
 ) {
     val context = LocalContext.current
 
@@ -492,7 +495,8 @@ internal fun VideoPlayerSurface(
                 defaultPlayerView.apply {
                     useController = usePlayerController
                     resizeMode = contentScale
-                    setBackgroundColor(Color.BLACK)
+                    setBackgroundColor(defaultBackgroundColor)
+                    setShutterBackgroundColor(defaultBackgroundColor)
                 }
             }
         )

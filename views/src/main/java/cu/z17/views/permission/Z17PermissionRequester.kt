@@ -131,7 +131,11 @@ fun Z17PermissionCheckerAndRequester(
     )
 
     val storageForApi30OrAbove = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        Environment.isExternalStorageManager()
+        try {
+            Environment.isExternalStorageManager()
+        } catch (e: Exception) {
+            true
+        }
     } else true
 
     // LOCATION
@@ -312,7 +316,11 @@ fun Z17PermissionChecker(
     )
 
     val storageForApi30OrAbove = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        Environment.isExternalStorageManager()
+        try {
+            Environment.isExternalStorageManager()
+        } catch (e: Exception) {
+            true
+        }
     } else true
 
     // LOCATION
@@ -489,7 +497,11 @@ fun Z17PermissionContainer(
     )
 
     val storageForApi30OrAbove = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        Environment.isExternalStorageManager()
+        try {
+            Environment.isExternalStorageManager()
+        } catch (e: Exception) {
+            true
+        }
     } else true
 
     // LOCATION
@@ -605,13 +617,17 @@ fun Z17PermissionContainer(
                             else showRationaleDialog = true
 
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                                if (!Environment.isExternalStorageManager()) {
-                                    val intent = Intent()
-                                    intent.action =
-                                        Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-                                    val uri = Uri.fromParts("package", context.packageName, null)
-                                    intent.data = uri
-                                    ContextCompat.startActivity(context, intent, null)
+                                try {
+                                    if (!Environment.isExternalStorageManager()) {
+                                        val intent = Intent()
+                                        intent.action =
+                                            Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
+                                        val uri = Uri.fromParts("package", context.packageName, null)
+                                        intent.data = uri
+                                        ContextCompat.startActivity(context, intent, null)
+                                    }
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
                             }
                         }

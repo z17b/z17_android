@@ -5,10 +5,10 @@ import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -165,7 +165,8 @@ fun Viewer(
             handleLifecycle = true,
             enablePip = false,
             pipScale = 16 to 9,
-            contentScale = contentScale
+            contentScale = contentScale,
+            defaultBackgroundColor = android.graphics.Color.BLACK
         )
     }
 

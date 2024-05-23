@@ -4,6 +4,7 @@ package cu.z17.views.videoPlayer
 import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Color
 import android.net.Uri
 import android.os.CountDownTimer
 import androidx.activity.compose.BackHandler
@@ -79,6 +80,7 @@ fun Z17HLSVideoPlayer(
     onRotate: (Boolean) -> Unit = {},
     pipScale: Pair<Int, Int> = 16 to 9,
     contentScale: Int = RESIZE_MODE_FIXED_WIDTH,
+    defaultBackgroundColor: Int = Color.BLACK
 ) {
     val context = LocalContext.current
 
@@ -391,7 +393,8 @@ fun Z17HLSVideoPlayer(
         handleLifecycle = handleLifecycle,
         enablePip = enablePip,
         pipScale = pipScale,
-        contentScale = contentScale
+        contentScale = contentScale,
+        defaultBackgroundColor = defaultBackgroundColor
     )
 
     BackHandler(enablePip && enablePipWhenBackPressed) {
