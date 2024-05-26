@@ -44,6 +44,8 @@ fun Z17InputText(
     errorColor: Color = Color(0xFFc62828),
     focusedBorderColor: Color = MaterialTheme.colorScheme.primary,
     unfocusedBorderColor: Color = MaterialTheme.colorScheme.onBackground,
+    unableColor: Color = MaterialTheme.colorScheme.onSurface,
+    labelTextColor: Color = MaterialTheme.colorScheme.onSurface,
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     readOnly: Boolean = false,
     shape: Shape = RoundedCornerShape(15.dp),
@@ -60,7 +62,7 @@ fun Z17InputText(
                 Z17Label(
                     text = labelText,
                     style = style,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = labelTextColor
                 )
             }
         },
@@ -89,6 +91,7 @@ fun Z17InputText(
             unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
             unfocusedContainerColor = Color.Transparent,
             focusedContainerColor = Color.Transparent,
+            disabledBorderColor = unableColor,
             errorCursorColor = errorColor,
             errorLabelColor = errorColor,
             errorLeadingIconColor = errorColor,
