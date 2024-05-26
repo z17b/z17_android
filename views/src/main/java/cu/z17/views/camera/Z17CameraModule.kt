@@ -44,9 +44,11 @@ class Z17CameraModule(val context: Context, val initialDefaultFormat: String = "
 
     var defaultFormat: Bitmap.CompressFormat? = null
 
+    var defaultVideoBitrate: Int = 1_000_000
+
     fun provideVideoCapture(): VideoCapture<Recorder> {
         val recorder = Recorder.Builder()
-            .setTargetVideoEncodingBitRate(2_000_000) // Establece el bitrate a 2 Mbps
+            .setTargetVideoEncodingBitRate(defaultVideoBitrate) // Establece el bitrate a 2 Mbps
             .setExecutor(Executors.newSingleThreadExecutor())
             .setQualitySelector(QualitySelector.from(Quality.HD))
             .build()
