@@ -69,7 +69,7 @@ class Z17CRCameraViewModel(private val videoPathToSave: String) :
         recording = videoCapture?.output!!.prepareRecording(context, outputOptions)
             .withAudioEnabled()
             .start(
-                ContextCompat.getMainExecutor(context)
+                Z17CameraModule.getInstance().backgroundExecutor
             ) { event ->
                 if (event is VideoRecordEvent.Finalize && _recordingResult.value != RecordingState.CANCEL) {
                     val uri = event.outputResults.outputUri

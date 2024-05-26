@@ -6,14 +6,12 @@ import android.database.DatabaseUtils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.media.ExifInterface
 import android.media.MediaMetadataRetriever
 import android.media.ThumbnailUtils
 import android.net.Uri
-import android.os.Build
 import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.provider.OpenableColumns
-import android.util.Size
 import android.webkit.MimeTypeMap
 import java.io.*
 import java.security.MessageDigest
@@ -37,6 +35,82 @@ object MediaUtil {
 
     private const val AUTHORITY = "com.ianhanniballake.localstorage.documents"
     private const val DEBUG = false
+
+    fun generateImageThumbnail(bitmap: Bitmap, file: File, size: Float = 15F): Bitmap {
+
+        val bitmapCompressed: Bitmap by lazy {
+
+            var mOriginal = bitmap
+
+            val rotate = getCameraPhotoOrientation(file.absolutePath)
+            val matrix = Matrix()
+            matrix.postRotate(rotate.toFloat())
+            // Here you will get the image bitmap which has changed orientation
+            mOriginal = Bitmap.createBitmap(
+                mOriginal, 0, 0, mOriginal.width, mOriginal.height, matrix, true
+            )
+
+            var width = mOriginal.width.toFloat()
+            var height = mOriginal.height.toFloat()
+            var invert = false
+            if (height > width) {
+                val tmp = width
+                width = height
+                height = tmp
+                invert = true
+            }
+
+            var newWidth =
+                size//cacontext.getResources().getDimensionPixelSize(R.dimen.media_bubble_height).toFloat()
+            var newHeight = height / width * newWidth
+
+            if (newHeight < newWidth && invert) {
+                val tmp = newWidth
+                newWidth = newHeight
+                newHeight = tmp
+            }
+
+
+            ThumbnailUtils.extractThumbnail(mOriginal, newWidth.toInt(), newHeight.toInt())
+
+        }
+
+        return bitmapCompressed
+
+    }
+
+    fun getImageWidthHeight(imageFile: String): Pair<Long, Long> {
+        val rotate = getCameraPhotoOrientation(imageFile)
+        val matrix = Matrix()
+        matrix.postRotate(rotate.toFloat())
+
+        val mOriginal = BitmapFactory.decodeFile(imageFile)
+
+        val createBitmap =
+            Bitmap.createBitmap(mOriginal, 0, 0, mOriginal.width, mOriginal.height, matrix, true)
+        return createBitmap.width.toLong() to createBitmap.height.toLong()
+    }
+
+    private fun getCameraPhotoOrientation(imageFile: String): Int {
+        var rotate = 0
+        try {
+            val exif = ExifInterface(
+                imageFile
+            )
+            val orientation = exif.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL
+            )
+            when (orientation) {
+                ExifInterface.ORIENTATION_ROTATE_270 -> rotate = 270
+                ExifInterface.ORIENTATION_ROTATE_180 -> rotate = 180
+                ExifInterface.ORIENTATION_ROTATE_90 -> rotate = 90
+            }
+        } catch (e: Exception) {
+            //Timber.e(e)
+        }
+
+        return rotate
+    }
 
     fun getHumanDuration(duration: Long): String {
         return String.format(
@@ -83,7 +157,7 @@ object MediaUtil {
     }
 
     fun isFileType(contentType: String): Boolean {
-        return contentType.startsWith("application/")
+        return contentType.startsWith("*/")
     }
 
     fun isAudioType(contentType: String): Boolean {
@@ -106,7 +180,7 @@ object MediaUtil {
                         isExternalStorageDocument(uri) || isDownloadsDocument(uri) || isMediaDocument(
                             uri
                         ) -> {
-                            return ""//getPathFromContent(context, uri)
+                            return getPathFromContent(context, uri)
                         }
                     }
 
@@ -117,11 +191,11 @@ object MediaUtil {
 
                 "file".equals(uri.scheme!!, ignoreCase = true) -> return uri.path
             }
-            return ""//getPathFromContent(context, uri)
+            return getPathFromContent(context, uri)
 
         } else if ("content".equals(uri.scheme, ignoreCase = true)) {
 
-            return ""//getPathFromContent(context, uri)
+            return getPathFromContent(context, uri)
 
         } else if ("file".equals(uri.scheme, ignoreCase = true)) {
             return uri.path
@@ -129,6 +203,23 @@ object MediaUtil {
         // MediaStore (and general)
 
         return uri.toString()
+    }
+
+    fun getPathFromContent(context: Context, uri: Uri): String? {
+
+        val contentResolver = context.contentResolver
+        val inputStream = contentResolver.openInputStream(uri)
+        val mimeType = MimeUtils.guessMimeTypeFromUri(context, uri)
+        val file = File(
+            context.externalCacheDir,
+            getFileNameByUri(context, uri)
+                ?: "asdasd.txt"
+        )
+        return if (IO.save(inputStream, file.outputStream())) {
+            file.path
+        } else {
+            null
+        }
     }
 
     private fun getFileNameByUri(context: Context, uri: Uri): String? {

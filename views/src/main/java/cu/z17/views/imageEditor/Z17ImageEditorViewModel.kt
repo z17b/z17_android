@@ -7,13 +7,10 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import cu.z17.compress.Compressor
-import cu.z17.compress.constraint.format
-import cu.z17.compress.constraint.resolution
 import cu.z17.compress.constraint.size
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.imageEditor.sections.rotater.rotate
 import cu.z17.views.utils.Z17MutableListFlow
-import cu.z17.views.utils.getBounds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -63,7 +60,6 @@ class Z17ImageEditorViewModel : ViewModel() {
     fun loadBitmap(
         imageUri: Uri,
         imagePathToSave: String,
-        context: Context,
         firstCompression: Boolean,
         initialRotation: Float,
     ) {
@@ -71,35 +67,26 @@ class Z17ImageEditorViewModel : ViewModel() {
             try {
                 imageUri.path?.let {
                     try {
-                        val bounds = imageUri.getBounds()
-                        var b = Compressor.compressAndGetBitmap(context, File(it)) {
-                            if (bounds.first > 3000 && bounds.second > 3000)
-                                resolution(1920, 1080)
-
-                            if (firstCompression)
-                                size(File(it).length() / 2, 10, 10)
-
-                            format(
-                                Z17CameraModule.getInstance().defaultFormat
-                                    ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP
-                            )
-                        }
-
+                        // Copiar imagen y rotarla si es necesario
+                        var b = cu.z17.compress.loadBitmap(File(imageUri.path ?: "/"))
                         if (initialRotation != 0F) b = b.rotate(initialRotation)
 
                         withContext(Dispatchers.IO) {
+                            // guardar lo comprimido en un fichero
                             val file = File(imagePathToSave)
 
                             val outputStream = FileOutputStream(file)
                             b.compress(
                                 Z17CameraModule.getInstance().defaultFormat
                                     ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
-                                90,
+                                if (firstCompression) 50 else 90,
                                 outputStream
                             )
 
                             outputStream.flush()
                             outputStream.close()
+
+                            b = cu.z17.compress.loadBitmap(file)
                         }
 
                         history.add(b)
@@ -124,8 +111,6 @@ class Z17ImageEditorViewModel : ViewModel() {
 
             val file = File(imagePath)
 
-            delay(10)
-
             try {
                 withContext(Dispatchers.IO) {
                     val outputStream = FileOutputStream(file)
@@ -148,42 +133,22 @@ class Z17ImageEditorViewModel : ViewModel() {
         }
     }
 
-    fun requestCompress(imagePathToSave: String, source: Uri, context: Context) {
+    fun requestCompress(imagePathToSave: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             _currentState.value = Z17EditorState.LOADING
 
-            viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 try {
-                    var file = File(imagePathToSave)
-
-                    if (!file.exists()) file = File(source.path!!)
+                    val file = File(imagePathToSave)
 
                     val firstSize = file.length()
 
                     // compress
-                    val b = Compressor.compressAndGetBitmap(context, file) {
-                        size(file.length() / 2, 10, 10)
-                        format(
-                            Z17CameraModule.getInstance().defaultFormat
-                                ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP
-                        )
+                    val compressed = Compressor.compress(context, file, true) {
+                        size(firstSize / 4, 10, 10)
                     }
 
-                    // save compressed
-                    withContext(Dispatchers.IO) {
-                        val outputStream = FileOutputStream(file)
-                        b.compress(
-                            Z17CameraModule.getInstance().defaultFormat
-                                ?: if (android.os.Build.VERSION.SDK_INT >= 30) Bitmap.CompressFormat.WEBP_LOSSY else Bitmap.CompressFormat.WEBP,
-                            90,
-                            outputStream
-                        )
-
-                        outputStream.flush()
-                        outputStream.close()
-                    }
-
-                    val finalSize = file.length()
+                    val finalSize = compressed.length()
 
                     if (finalSize > firstSize) {
                         Toast.makeText(
@@ -193,13 +158,15 @@ class Z17ImageEditorViewModel : ViewModel() {
                         ).show()
                     }
 
+                    val b = cu.z17.compress.loadBitmap(compressed)
+
                     history.add(b)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
-                _currentState.value = Z17EditorState.VIEW
             }
+
+            _currentState.value = Z17EditorState.VIEW
         }
     }
 

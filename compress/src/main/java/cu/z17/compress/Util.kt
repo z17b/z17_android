@@ -68,7 +68,7 @@ fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeig
     return inSampleSize
 }
 
-fun determineImageRotation(imageFile: File, bitmap: Bitmap): Bitmap {
+fun determineImageRotation(imageFile: File, bitmap: Bitmap, maxHeight: Int = 3000, maxWidth: Int = 3000): Bitmap {
     val exif = ExifInterface(imageFile.absolutePath)
     val orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
     val matrix = Matrix()
@@ -77,7 +77,11 @@ fun determineImageRotation(imageFile: File, bitmap: Bitmap): Bitmap {
         3 -> matrix.postRotate(180f)
         8 -> matrix.postRotate(270f)
     }
-    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+
+    val finalHeight = if (maxHeight > bitmap.height) bitmap.height else 1920
+    val finalWidth = if (maxWidth > bitmap.width) bitmap.width else 1080
+
+    return Bitmap.createBitmap(bitmap, 0, 0, finalWidth, finalHeight, matrix, true)
 }
 
 internal fun copyToCache(context: Context, imageFile: File): File {
@@ -97,6 +101,7 @@ fun overWrite(
     }
     imageFile.delete()
     saveBitmap(bitmap, result, format, quality)
+
     return result
 }
 

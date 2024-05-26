@@ -7,10 +7,10 @@ import cu.z17.compress.overWrite
 import java.io.File
 
 class DefaultConstraint(
-        private val width: Int = 612,
-        private val height: Int = 816,
-        private val format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        private val quality: Int = 80
+    private val width: Int = 612,
+    private val height: Int = 816,
+    private val format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+    private val quality: Int = 80
 ) : Constraint {
     private var isResolved = false
 
@@ -30,10 +30,10 @@ class DefaultConstraint(
 }
 
 fun Compression.default(
-        width: Int = 612,
-        height: Int = 816,
-        format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
-        quality: Int = 80
+    width: Int = 612,
+    height: Int = 816,
+    format: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG,
+    quality: Int = 80
 ) {
     constraint(DefaultConstraint(width, height, format, quality))
 }

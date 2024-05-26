@@ -6,6 +6,7 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import cu.z17.compress.copyFileUsingStream
 import cu.z17.views.imageEditor.Z17EditorState
 import cu.z17.views.utils.VideoUtils
 import cu.z17.views.utils.Z17MutableListFlow
@@ -83,7 +84,7 @@ class VideoEditorViewModel : ViewModel() {
             ).first()
 
             withContext(Dispatchers.IO) {
-                File(temp).copyTo(File(videoPathToSave), true)
+                File(temp).copyFileUsingStream(File(videoPathToSave))
             }
 
             withContext(Dispatchers.IO) {

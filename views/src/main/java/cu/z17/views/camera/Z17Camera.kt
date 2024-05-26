@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.IconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PauseCircleFilled
 import androidx.compose.material.icons.filled.PlayCircleFilled
@@ -171,7 +171,12 @@ fun Z17Camera(
 
             LaunchedEffect(recordState) {
                 if (recordState == RecordingState.RESULT) {
-                    onResult(videoPathToSave, ResultType.VIDEO, currentRecordTime * 1000, actualRotation)
+                    onResult(
+                        videoPathToSave,
+                        ResultType.VIDEO,
+                        currentRecordTime * 1000,
+                        actualRotation
+                    )
                     viewModel.setStateRead()
                 }
             }
@@ -352,6 +357,11 @@ fun Z17Camera(
 
             }
 
+            if (captureResult == CaptureState.SAVING)
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color.Black.copy(0.2F)))
+
             LaunchedEffect(isVideo) {
                 Z17CameraModule.getInstance().imageCapture.flashMode = ImageCapture.FLASH_MODE_OFF
                 if (isVideo) {
@@ -380,7 +390,8 @@ fun Z17Camera(
 enum class CaptureState {
     NOT_REQUESTED,
     ERROR,
-    RESULT
+    RESULT,
+    SAVING
 }
 
 enum class RecordingState {

@@ -133,7 +133,7 @@ fun Z17ImageEditor(
                         count = history.size,
                         requestStepBack = viewModel::requestStepBack,
                         requestCompress = {
-                            viewModel.requestCompress(imagePathToSave, source, context)
+                            viewModel.requestCompress(imagePathToSave, context)
                         },
                         configs = configs
                     )
@@ -323,7 +323,6 @@ fun Z17ImageEditor(
             viewModel.loadBitmap(
                 imageUri = source,
                 imagePathToSave = imagePathToSave,
-                context = context,
                 firstCompression = firstCompression,
                 initialRotation = initialRotation
             )
@@ -342,6 +341,8 @@ fun Z17ImageEditor(
 
             if (history.isEmpty())
                 onEdited(false)
+            else
+                onEdited(true)
         }
 
         DisposableEffect(Unit) {

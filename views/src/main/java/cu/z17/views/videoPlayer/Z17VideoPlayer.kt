@@ -495,9 +495,15 @@ internal fun VideoPlayerSurface(
                 defaultPlayerView.apply {
                     useController = usePlayerController
                     resizeMode = contentScale
+                    controllerAutoShow = false
                     setBackgroundColor(defaultBackgroundColor)
                     setShutterBackgroundColor(defaultBackgroundColor)
                 }
+            },
+            update = {
+                it.resizeMode = contentScale
+                it.setBackgroundColor(defaultBackgroundColor)
+                it.setShutterBackgroundColor(defaultBackgroundColor)
             }
         )
     }

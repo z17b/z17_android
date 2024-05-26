@@ -273,7 +273,7 @@ fun CameraPager(
 
         fun newImageName(): String {
             val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
-            return "${formatter.format(Date())}.png"
+            return "${formatter.format(Date())}.jpeg"
         }
 
         fun newVideoName(): String {
@@ -296,7 +296,7 @@ fun CameraPager(
             val dir = File(File(context.filesDir, "test"), "VIDEOS")
             if (!dir.exists()) dir.mkdirs()
 
-            File(dir, newImageName()).path
+            File(dir, newVideoName()).path
         }
 
         HorizontalPager(

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.hardware.camera2.CameraCharacteristics
 import android.net.Uri
+import android.os.Looper
 import androidx.annotation.OptIn
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
@@ -21,10 +22,15 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
+import java.util.concurrent.Executors
 
 class Z17CameraViewModel(private val imagePathToSave: String, private val videoPathToSave: String) :
     ViewModel() {
@@ -92,29 +98,34 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
 
     fun captureAndSaveImage(
         context: Context,
-    ) {
+    )  {
         // for capture output
-        val file = File(imagePathToSave)
-        val fos = FileOutputStream(file)
-        val outputOptions = ImageCapture.OutputFileOptions
-            .Builder(fos)
-            .build()
+        _captureResult.value = CaptureState.SAVING
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val file = File(imagePathToSave)
+                val fos = FileOutputStream(file)
+                val outputOptions = ImageCapture.OutputFileOptions
+                    .Builder(fos)
+                    .build()
 
-        z17CameraModule.imageCapture.takePicture(
-            outputOptions,
-            ContextCompat.getMainExecutor(context),
-            object : ImageCapture.OnImageSavedCallback {
-                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    // stop image
-                    z17CameraModule.processCameraProvider.unbindAll()
-                    _captureResult.value = CaptureState.RESULT
-                }
+                z17CameraModule.imageCapture.takePicture(
+                    outputOptions,
+                    Z17CameraModule.getInstance().backgroundExecutor,
+                    object : ImageCapture.OnImageSavedCallback {
+                        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                            // stop image
+                            z17CameraModule.processCameraProvider.unbindAll()
+                            _captureResult.value = CaptureState.RESULT
+                        }
 
-                override fun onError(exception: ImageCaptureException) {
-                    _captureResult.value = CaptureState.ERROR
-                }
+                        override fun onError(exception: ImageCaptureException) {
+                            _captureResult.value = CaptureState.ERROR
+                        }
+                    }
+                )
             }
-        )
+        }
     }
 
     @OptIn(ExperimentalCamera2Interop::class) @SuppressLint("MissingPermission")
@@ -125,7 +136,7 @@ class Z17CameraViewModel(private val imagePathToSave: String, private val videoP
         recording = videoCapture?.output!!.prepareRecording(context, outputOptions)
             .withAudioEnabled()
             .start(
-                ContextCompat.getMainExecutor(context)
+                Z17CameraModule.getInstance().backgroundExecutor
             ) { event ->
                 if (event is VideoRecordEvent.Finalize && _recordingResult.value != RecordingState.CANCEL) {
                     val uri = event.outputResults.outputUri
