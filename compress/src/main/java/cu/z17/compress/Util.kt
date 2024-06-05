@@ -78,10 +78,25 @@ fun determineImageRotation(imageFile: File, bitmap: Bitmap, maxHeight: Int = 300
         8 -> matrix.postRotate(270f)
     }
 
-    val finalHeight = if (maxHeight > bitmap.height) bitmap.height else 1920
-    val finalWidth = if (maxWidth > bitmap.width) bitmap.width else 1080
+    var needCompression = false
+    val finalHeight = if (maxHeight > bitmap.height) bitmap.height else {
+        needCompression = true
+        1920
+    }
+    val finalWidth = if (maxWidth > bitmap.width) bitmap.width else {
+        needCompression = true
+        1080
+    }
 
-    return Bitmap.createBitmap(bitmap, 0, 0, finalWidth, finalHeight, matrix, true)
+    if (needCompression) {
+        val finalBitmap = decodeSampledBitmapFromFile(
+            imageFile = imageFile,
+            reqWidth = finalWidth,
+            reqHeight = finalHeight
+        )
+        return finalBitmap
+    }
+    else return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
 }
 
 internal fun copyToCache(context: Context, imageFile: File): File {
