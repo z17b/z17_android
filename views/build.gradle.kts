@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("maven-publish")
+    alias(libs.plugins.compose.compiler)
 }
 
 val moduleName = "views"
@@ -59,6 +60,13 @@ android {
             isMinifyEnabled = false
         }
     }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
+
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 afterEvaluate {

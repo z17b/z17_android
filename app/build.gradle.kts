@@ -5,6 +5,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.devtools.ksp")
     kotlin("plugin.serialization") version "1.7.20"
+    alias(libs.plugins.compose.compiler)
 }
 
 val moduleName = "app"
@@ -65,6 +66,13 @@ android {
         abortOnError = false
         checkReleaseBuilds = false
     }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
+
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 dependencies {

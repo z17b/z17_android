@@ -111,7 +111,9 @@ suspend fun getBitmapFromColorMatrix(cm: ColorMatrix, sourceBitmap: Bitmap): Bit
     return withContext(Dispatchers.Default) {
         val drawableBitmap: Bitmap = sourceBitmap.copy(Bitmap.Config.ARGB_8888, true)
         val ret =
-            Bitmap.createBitmap(drawableBitmap.width, drawableBitmap.height, drawableBitmap.config)
+            Bitmap.createBitmap(drawableBitmap.width, drawableBitmap.height,
+                drawableBitmap.config!!
+            )
         val canvas = Canvas(ret)
         val paint = Paint()
         paint.setColorFilter(ColorMatrixColorFilter(cm))

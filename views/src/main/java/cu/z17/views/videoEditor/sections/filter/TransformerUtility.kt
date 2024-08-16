@@ -155,11 +155,6 @@ object TransformerUtility {
                     .setEnableFallback(bundle.getBoolean(ENABLE_FALLBACK))
                     .build()
             )
-            if (!bundle.getBoolean(ABORT_SLOW_EXPORT)) {
-                transformerBuilder.setMuxerFactory(
-                    DefaultMuxer.Factory(C.TIME_UNSET)
-                )
-            }
         }
         return transformerBuilder
             .addListener(
