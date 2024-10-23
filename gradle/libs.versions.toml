@@ -11,7 +11,7 @@ versionName = "0.4.8"
 
 ksp = "2.0.0-1.0.24"
 
-agp = "8.5.2"
+agp = "8.7.0"
 
 # Libraries
 kotlin = "2.0.0"

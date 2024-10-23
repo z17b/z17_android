@@ -3,6 +3,7 @@ package cu.z17.views.dialogs
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ fun Z17DialogWithActions(
 ) {
     if (openDialog)
         AlertDialog(
+            modifier = Modifier.safeContentPadding(),
             containerColor = MaterialTheme.colorScheme.background,
             onDismissRequest = {
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -79,6 +81,7 @@ fun Z17DialogWithActionsCustom(
 ) {
     if (openDialog)
         AlertDialog(
+            modifier = Modifier.safeContentPadding(),
             containerColor = MaterialTheme.colorScheme.background,
             onDismissRequest = {
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
@@ -131,6 +134,7 @@ fun Z17CustomDialog(
         ) {
             Box(
                 modifier = Modifier
+                    .safeContentPadding()
                     .fillMaxWidth()
                     .background(
                         color = MaterialTheme.colorScheme.background,
