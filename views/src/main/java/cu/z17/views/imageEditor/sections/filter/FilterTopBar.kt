@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun FilterTopBar(
+    modifier: Modifier = Modifier,
     bitmap: Bitmap,
     filteredBitmaps: List<Bitmap>,
     filterSelected: Int,
@@ -28,7 +29,7 @@ fun FilterTopBar(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+    Row(modifier = modifier.horizontalScroll(rememberScrollState())) {
         Z17BasePicture(
             modifier = Modifier
                 .clickable {

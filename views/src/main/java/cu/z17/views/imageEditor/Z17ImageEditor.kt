@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -128,6 +129,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     ViewerTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         requestState = ::setState,
                         path = imagePathToSave,
                         count = history.size,
@@ -145,6 +147,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     TextTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         colors = colors,
                         currentColor = currentColor,
                         onTextColorChange = {
@@ -159,6 +162,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     RotaterTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         degreesSelected = degrees,
                         onDegreeSelected = {
                             degrees = it
@@ -172,6 +176,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     FilterTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         bitmap = it,
                         filteredBitmaps = filteredBitmaps,
                         filterSelected = filterSelected,
@@ -282,6 +287,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     TextBottomBar(
+                        modifier = Modifier.safeContentPadding(),
                         onOk = {
                             //getAndSaveView()
                         },
@@ -297,6 +303,7 @@ fun Z17ImageEditor(
                 last = actualBitmap,
                 content = {
                     FilterBottomBar(
+                        modifier = Modifier.safeContentPadding(),
                         onOk = {
                             val selected =
                                 if (filterSelected == 0) it else filteredBitmaps[filterSelected - 1]

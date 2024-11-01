@@ -23,11 +23,12 @@ import cu.z17.views.picture.Z17BasePicture
 
 @Composable
 fun TextBottomBar(
+    modifier: Modifier = Modifier,
     onOk: () -> Unit,
     onCancel: () -> Unit,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .background(color = MaterialTheme.colorScheme.background)
             .fillMaxWidth()
             .padding(10.dp)

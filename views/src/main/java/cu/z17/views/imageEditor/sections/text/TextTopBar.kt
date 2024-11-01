@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TextTopBar(
+    modifier: Modifier = Modifier,
     colors: List<Color>,
     currentColor: Int,
     onTextColorChange: (Int) -> Unit,
@@ -27,7 +28,7 @@ fun TextTopBar(
     val scrollState = rememberScrollState()
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(10.dp)
             .fillMaxWidth()
             .horizontalScroll(scrollState),

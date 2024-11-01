@@ -6,6 +6,7 @@ import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -92,6 +93,7 @@ fun Z17VideoEditor(
                 last = Uri.fromFile(File(currentSource)),
                 content = {
                     ViewerTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         canCancel = currentSource != source,
                         requestState = {
                             viewModel.requestState(it)
@@ -116,6 +118,7 @@ fun Z17VideoEditor(
                 last = Uri.fromFile(File(source)),
                 content = {
                     CutterTopBar(
+                        modifier = Modifier.safeContentPadding(),
                         cutPoints = cutPoints,
                         maxEnd = currentDuration.toFloat(),
                         thumbnails = thumbnails,
@@ -186,6 +189,7 @@ fun Z17VideoEditor(
                 last = Uri.fromFile(File(source)),
                 content = {
                     CutterBottomBar(
+                        modifier = Modifier.safeContentPadding(),
                         onOk = {
                             viewModel.saveVideo(
                                 source = it,
