@@ -27,4 +27,6 @@
     <string name="processing_wait">Procesando. Espere por favor.</string>
 
     <string name="cannot_compressed_this_time">No se ha podido comprimir esta vez.</string>
+
+    <string name="submit">Enviar</string>
 </resources>
