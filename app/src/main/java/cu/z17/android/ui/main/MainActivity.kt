@@ -7,10 +7,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -81,26 +79,35 @@ class MainActivity : ComponentActivity() {
 //                        // TODO REMOVE
 //                        showVideoOption = true
 //                    )
-//                }
-
-                    Z17PermissionCheckerAndRequester(
-                        initialPermissions = listOf(
-                            PermissionNeedIt.CAMERA,
-                            PermissionNeedIt.RECORD_AUDIO,
-                            PermissionNeedIt.STORAGE
-                        ),
-                        onGranted = {
-                            permissionsAccepted = true
-                        },
-                        packageName = context.packageName,
-                        stringContent = null
-                    )
+////                }
+//
+//                    Z17PermissionCheckerAndRequester(
+//                        initialPermissions = listOf(
+//                            PermissionNeedIt.CAMERA,
+//                            PermissionNeedIt.RECORD_AUDIO,
+//                            PermissionNeedIt.STORAGE
+//                        ),
+//                        onGranted = {
+//                            permissionsAccepted = true
+//                        },
+//                        packageName = context.packageName,
+//                        stringContent = null
+//                    )
 
                     Z17Form(
                         modifier = Modifier
                             .fillMaxSize()
                             .safeContentPadding(),
                         initialRequest = listOf(
+                            FormItemRequest(
+                                id = "item7",
+                                type = FormItemType.IMAGE,
+                                label = "Escoge una imagen",
+                                description = "Utiliza una imagen para reconocerte.",
+                                value = "",
+                                nonErrorCondition = { true },
+                                errorLabel = "",
+                            ),
                             FormItemRequest(
                                 id = "item1",
                                 type = FormItemType.TEXT,

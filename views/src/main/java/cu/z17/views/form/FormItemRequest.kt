@@ -13,5 +13,12 @@ data class FormItemRequest(
     val errorLabel: String = "",
     val limit: Int = Int.MAX_VALUE,
     val displaySize: Float = 1F,
-    val selectionList: List<String> = emptyList()
+    val selectionList: List<String> = emptyList(),
+    val imageForm: ImageForm = ImageForm.ROUND_CORNERS
 )
+
+enum class ImageForm {
+    CIRCLE,
+    SQUARE,
+    ROUND_CORNERS
+}

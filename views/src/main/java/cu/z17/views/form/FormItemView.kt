@@ -1,33 +1,45 @@
 package cu.z17.views.form
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import cu.z17.views.inputText.Z17InputText
 import cu.z17.views.label.Z17Label
+import cu.z17.views.picture.Z17BasePicture
 
 @Composable
 fun FormItemView(
     modifier: Modifier = Modifier,
     formItemRequest: FormItemRequest,
     isChecked: Boolean,
-    updateItem: (FormItemRequest) -> Unit
+    updateItem: (FormItemRequest) -> Unit,
+    cameraDisplaying: Pair<Int, String>?,
+    getImage: () -> Unit,
+    clearImage: () -> String
 ) {
     Box(modifier = modifier) {
         fun handleChange(newValue: String) {
@@ -95,7 +107,17 @@ fun FormItemView(
                     )
                 }
 
-                FormItemType.IMAGE -> TODO()
+                FormItemType.IMAGE -> {
+                    ImageFiled(
+                        modifier = Modifier.fillMaxWidth(formItemRequest.displaySize),
+                        value = formItemRequest.value,
+                        onValueChange = ::handleChange,
+                        onPeakRequest = getImage,
+                        valueInSelection = cameraDisplaying?.second,
+                        clearImage = clearImage,
+                        imageForm = formItemRequest.imageForm,
+                    )
+                }
                 FormItemType.LARGE_TEXT -> {
                     LargeField(
                         modifier = Modifier.fillMaxWidth(formItemRequest.displaySize),
@@ -252,6 +274,49 @@ internal fun MultipleSelection(
                     text = s,
                     style = MaterialTheme.typography.bodyLarge
                 )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun ImageFiled(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onPeakRequest: () -> Unit,
+    valueInSelection: String? = null,
+    clearImage: () -> String,
+    imageForm: ImageForm
+) {
+
+    Box(modifier) {
+        Z17BasePicture(
+            modifier = Modifier
+                .size(100.dp)
+                .clip(
+                    shape = when (imageForm) {
+                        ImageForm.CIRCLE -> CircleShape
+                        ImageForm.SQUARE -> RectangleShape
+                        ImageForm.ROUND_CORNERS -> RoundedCornerShape(8.dp)
+                    }
+                )
+                .border(
+                    1.dp, shape = when (imageForm) {
+                        ImageForm.CIRCLE -> CircleShape
+                        ImageForm.SQUARE -> RectangleShape
+                        ImageForm.ROUND_CORNERS -> RoundedCornerShape(8.dp)
+                    }, color = MaterialTheme.colorScheme.primary
+                )
+                .clickable {
+                    onPeakRequest()
+                },
+            source = value,
+        )
+
+        LaunchedEffect(valueInSelection) {
+            if (!valueInSelection.isNullOrBlank()) {
+                onValueChange(clearImage())
             }
         }
     }

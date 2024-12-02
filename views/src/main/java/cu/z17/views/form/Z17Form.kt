@@ -13,13 +13,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cu.z17.views.R
 import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.loader.Z17SimpleCircleLoader
+import cu.z17.views.permission.PermissionNeedIt
+import cu.z17.views.permission.Z17PermissionCheckerAndRequester
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -31,14 +38,22 @@ fun Z17Form(
             onClick = {
                 onSubmit()
             },
-            text = stringResource(cu.z17.views.R.string.submit),
+            text = stringResource(R.string.submit),
             maxWidth = true
         )
     },
     onComplete: (List<FormItemRequest>) -> Unit
 ) {
+    val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope()
+
     val request = remember {
         mutableStateListOf<FormItemRequest>()
+    }
+
+    var permissionsGranted by remember {
+        mutableStateOf(false)
     }
 
     val isLoading by remember {
@@ -70,35 +85,92 @@ fun Z17Form(
             Z17SimpleCircleLoader()
         }
     } else {
-        val listState = rememberLazyListState()
+        Box(modifier) {
+            val listState = rememberLazyListState()
 
-        LazyColumn(
-            modifier = modifier,
-            state = listState
-        ) {
-            items(
-                count = request.size,
-                key = { request[it].id }
-            ) { index ->
-                FormItemView(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .padding(vertical = 10.dp),
-                    formItemRequest = request[index],
-                    isChecked = isChecked,
-                    updateItem = { upd ->
-                        handleChange(index, upd)
-                        isChecked = false
-                    }
-                )
+            var cameraDisplaying by remember {
+                mutableStateOf<Triple<Int, Int, String>?>(null)
             }
 
-            item {
-                Box(modifier = Modifier.padding(vertical = 10.dp)) {
-                    submitBtn.invoke {
-                        checkForm()
+            fun getImage(index: Int) {
+                coroutineScope.launch {
+                    cameraDisplaying = null
+                    delay(100)
+                    cameraDisplaying = Triple(index, 1, "")
+                }
+            }
+
+            fun clearImage(): String {
+                val value = cameraDisplaying?.third ?: ""
+
+                cameraDisplaying = null
+
+                return value
+            }
+
+            LazyColumn(
+                modifier = modifier,
+                state = listState
+            ) {
+                items(
+                    count = request.size,
+                    key = { request[it].id }
+                ) { index ->
+                    FormItemView(
+                        modifier = Modifier
+                            .animateItemPlacement()
+                            .padding(vertical = 10.dp),
+                        formItemRequest = request[index],
+                        isChecked = isChecked,
+                        updateItem = { upd ->
+                            handleChange(index, upd)
+                            isChecked = false
+                        },
+                        cameraDisplaying = if (cameraDisplaying?.first == index && cameraDisplaying?.third != null)
+                            cameraDisplaying!!.first to cameraDisplaying!!.third
+                        else
+                            null,
+                        getImage = {
+                            getImage(index)
+                        },
+                        clearImage = ::clearImage
+                    )
+                }
+
+                item {
+                    Box(modifier = Modifier.padding(vertical = 10.dp)) {
+                        submitBtn.invoke {
+                            checkForm()
+                        }
                     }
                 }
+            }
+
+            if (cameraDisplaying != null) {
+                if (permissionsGranted)
+                    Z17FormCamera(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        onClose = {
+                            cameraDisplaying = null
+                        },
+                        type = cameraDisplaying?.second ?: 1,
+                        rootPath = "/",
+                        initialValue = cameraDisplaying?.third ?: "",
+                    )
+
+                Z17PermissionCheckerAndRequester(
+                    initialPermissions = listOf(
+                        PermissionNeedIt.STORAGE,
+                        PermissionNeedIt.CAMERA,
+                        PermissionNeedIt.RECORD_AUDIO
+                    ),
+                    onGranted = {
+                        permissionsGranted = true
+                    },
+                    packageName = context.packageName,
+                    stringContent = null
+                )
             }
         }
     }
