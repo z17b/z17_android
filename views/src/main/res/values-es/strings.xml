@@ -29,4 +29,6 @@
     <string name="cannot_compressed_this_time">No se ha podido comprimir esta vez.</string>
 
     <string name="submit">Enviar</string>
+
+    <string name="accept">Aceptar</string>
 </resources>

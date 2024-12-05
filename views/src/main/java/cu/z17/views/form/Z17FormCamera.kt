@@ -1,6 +1,5 @@
 package cu.z17.views.form
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -27,7 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.ResultType
 import cu.z17.views.camera.Z17Camera
 import cu.z17.views.picture.Z17BasePicture
@@ -42,7 +44,8 @@ fun Z17FormCamera(
     rootPath: String,
     initialValue: String = "",
     onClose: () -> Unit,
-    onRequestRealPath: (String) -> String
+    onRequestRealPath: (String) -> String,
+    onSelected: (String) -> Unit
 ) {
     Box(modifier.safeContentPadding()) {
         var state by remember {
@@ -116,13 +119,15 @@ fun Z17FormCamera(
                         ) {
                             Z17BasePicture(
                                 modifier = Modifier.size(24.dp),
-                                source = Icons.Default.Folder,
+                                source = Icons.Default.FolderOpen,
                                 colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
                             )
                         }
                     }
 
-                    Z17FormCameraStep.PREVIEW -> {}
+                    Z17FormCameraStep.PREVIEW -> {
+
+                    }
 
                     Z17FormCameraStep.EDITING -> {}
                 }
@@ -164,6 +169,15 @@ fun Z17FormCamera(
 
                 Z17FormCameraStep.PREVIEW -> {
                     Z17BasePicture(modifier = Modifier.weight(1F), source = state.value)
+
+                    Z17PrimaryButton(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        onClick = {
+                            onSelected(state.value)
+                        },
+                        text = stringResource(cu.z17.views.R.string.accept),
+                        maxWidth = true
+                    )
                 }
 
                 Z17FormCameraStep.EDITING -> TODO()

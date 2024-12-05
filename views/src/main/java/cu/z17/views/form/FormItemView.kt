@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -134,7 +136,18 @@ fun FormItemView(
                     )
                 }
 
-                FormItemType.LARGE_IMAGE -> TODO()
+                FormItemType.LARGE_IMAGE -> {
+                    LargeImageFiled(
+                        modifier = Modifier.fillMaxWidth(formItemRequest.displaySize),
+                        value = formItemRequest.value,
+                        onValueChange = ::handleChange,
+                        onPeakRequest = getImage,
+                        valueInSelection = cameraDisplaying?.second,
+                        clearImage = clearImage,
+                        imageForm = formItemRequest.imageForm,
+                    )
+                }
+
                 FormItemType.SIMPLE_SELECTION -> {
                     SingleSelection(
                         modifier = Modifier.fillMaxWidth(formItemRequest.displaySize),
@@ -330,6 +343,51 @@ internal fun ImageFiled(
                     onPeakRequest()
                 },
             source = value,
+            contentScale = if (value.isNotBlank()) ContentScale.Crop else ContentScale.Inside
+        )
+
+        LaunchedEffect(valueInSelection) {
+            if (!valueInSelection.isNullOrBlank()) {
+                onValueChange(clearImage())
+            }
+        }
+    }
+}
+
+@Composable
+internal fun LargeImageFiled(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    onPeakRequest: () -> Unit,
+    valueInSelection: String? = null,
+    clearImage: () -> String,
+    imageForm: ImageForm
+) {
+    Box(modifier) {
+        Z17BasePicture(
+            modifier = Modifier
+                .height(100.dp)
+                .fillMaxWidth()
+                .clip(
+                    shape = when (imageForm) {
+                        ImageForm.CIRCLE -> CircleShape
+                        ImageForm.SQUARE -> RectangleShape
+                        ImageForm.ROUND_CORNERS -> RoundedCornerShape(8.dp)
+                    }
+                )
+                .border(
+                    1.dp, shape = when (imageForm) {
+                        ImageForm.CIRCLE -> CircleShape
+                        ImageForm.SQUARE -> RectangleShape
+                        ImageForm.ROUND_CORNERS -> RoundedCornerShape(8.dp)
+                    }, color = MaterialTheme.colorScheme.primary
+                )
+                .clickable {
+                    onPeakRequest()
+                },
+            source = value,
+            contentScale = if (value.isNotBlank()) ContentScale.Crop else ContentScale.Inside
         )
 
         LaunchedEffect(valueInSelection) {

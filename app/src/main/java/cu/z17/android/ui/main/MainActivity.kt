@@ -111,6 +111,15 @@ class MainActivity : ComponentActivity() {
                                 errorLabel = "",
                             ),
                             FormItemRequest(
+                                id = "item8",
+                                type = FormItemType.LARGE_IMAGE,
+                                label = "Escoge una imagen",
+                                description = "Utiliza una imagen para fondo.",
+                                value = "",
+                                okRegex = CAN_BE_EMPTY,
+                                errorLabel = "",
+                            ),
+                            FormItemRequest(
                                 id = "item1",
                                 type = FormItemType.TEXT,
                                 label = "Prueba tu nombre",
@@ -191,11 +200,11 @@ class MainActivity : ComponentActivity() {
                                 maxWidth = true
                             )
                         },
-                        onComplete = {},
+                        onComplete = {
+                            println("!!!! ${it}")
+                        },
                         onRequestRealPath = {
                             val result = FileUtils.getRealPath(context, Uri.parse(it))
-                            println("!!!!1 $it")
-                            println("!!!!2 $result")
                             result ?: ""
                         }
                     )

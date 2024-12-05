@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -44,8 +45,9 @@ fun Z17Form(
             maxWidth = true
         )
     },
-    onComplete: (List<FormItemRequest>) -> Unit,
-    onRequestRealPath: (String) -> String = { it }
+    onComplete: (HashMap<String, String>) -> Unit,
+    onRequestRealPath: (String) -> String = { it },
+    configs: Z17FormConfigs = Z17FormConfigs()
 ) {
     val context = LocalContext.current
 
@@ -87,7 +89,9 @@ fun Z17Form(
 
         isChecked = true
 
-        if (hasNonErrors) onComplete(request)
+        if (hasNonErrors) onComplete(
+            request.associate { it.id to it.value } as HashMap
+        )
     }
 
     if (isLoading) {
@@ -167,7 +171,10 @@ fun Z17Form(
                         type = cameraDisplaying?.second ?: 1,
                         rootPath = File(context.cacheDir, "/form_photo/").path,
                         initialValue = cameraDisplaying?.third ?: "",
-                        onRequestRealPath = onRequestRealPath
+                        onRequestRealPath = onRequestRealPath,
+                        onSelected = {
+                            cameraDisplaying = cameraDisplaying?.copy(third = it)
+                        }
                     )
 
                 Z17PermissionCheckerAndRequester(
@@ -190,3 +197,10 @@ fun Z17Form(
         if (request.isEmpty() && initialRequest.isNotEmpty()) request.addAll(initialRequest)
     }
 }
+
+@Immutable
+data class Z17FormConfigs(
+    val makeRequest: Boolean = false,
+    val postRoot: String = "",
+    val headers: HashMap<String, String> = HashMap()
+)

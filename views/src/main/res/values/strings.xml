@@ -29,4 +29,6 @@
     <string name="cannot_compressed_this_time">The image was not compressed.</string>
 
     <string name="submit">Submit</string>
+
+    <string name="accept">Accept</string>
 </resources>
