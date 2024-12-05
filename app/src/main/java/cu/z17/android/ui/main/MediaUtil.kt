@@ -2,6 +2,7 @@ package cu.z17.android.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -10,11 +11,16 @@ import android.media.ExifInterface
 import android.media.MediaMetadataRetriever
 import android.media.ThumbnailUtils
 import android.net.Uri
+import android.os.Build
 import android.provider.DocumentsContract
+import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.util.Size
 import android.webkit.MimeTypeMap
 import java.io.*
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -35,6 +41,49 @@ object MediaUtil {
 
     private const val AUTHORITY = "com.ianhanniballake.localstorage.documents"
     private const val DEBUG = false
+
+    fun generateImageThumbnail(file: File, size: Float = 15F): Bitmap {
+
+        val bitmapCompressed: Bitmap by lazy {
+
+            var mOriginal = BitmapFactory.decodeFile(file.path)
+
+            val rotate = getCameraPhotoOrientation(file.absolutePath)
+            val matrix = Matrix()
+            matrix.postRotate(rotate.toFloat())
+            // Here you will get the image bitmap which has changed orientation
+            mOriginal = Bitmap.createBitmap(
+                mOriginal, 0, 0, mOriginal.width, mOriginal.height, matrix, true
+            )
+
+            var width = mOriginal.width.toFloat()
+            var height = mOriginal.height.toFloat()
+            var invert = false
+            if (height > width) {
+                val tmp = width
+                width = height
+                height = tmp
+                invert = true
+            }
+
+            var newWidth =
+                size//cacontext.getResources().getDimensionPixelSize(R.dimen.media_bubble_height).toFloat()
+            var newHeight = height / width * newWidth
+
+            if (newHeight < newWidth && invert) {
+                val tmp = newWidth
+                newWidth = newHeight
+                newHeight = tmp
+            }
+
+
+            ThumbnailUtils.extractThumbnail(mOriginal, newWidth.toInt(), newHeight.toInt())
+
+        }
+
+        return bitmapCompressed
+
+    }
 
     fun generateImageThumbnail(bitmap: Bitmap, file: File, size: Float = 15F): Bitmap {
 
@@ -77,6 +126,20 @@ object MediaUtil {
 
         return bitmapCompressed
 
+    }
+
+    fun generateVideoThumbnail(path: String) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        generateImageThumbnail(
+            ThumbnailUtils.createVideoThumbnail(
+                File(path), Size(100, 200), null
+            ), File(path)
+        )
+    } else {
+        generateImageThumbnail(
+            ThumbnailUtils.createVideoThumbnail(
+                File(path).toString(), MediaStore.Images.Thumbnails.MINI_KIND
+            )!!, File(path)
+        )
     }
 
     fun getImageWidthHeight(imageFile: String): Pair<Long, Long> {
@@ -206,6 +269,7 @@ object MediaUtil {
     }
 
     fun getPathFromContent(context: Context, uri: Uri): String? {
+        val formatter = SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US)
 
         val contentResolver = context.contentResolver
         val inputStream = contentResolver.openInputStream(uri)
@@ -213,7 +277,10 @@ object MediaUtil {
         val file = File(
             context.externalCacheDir,
             getFileNameByUri(context, uri)
-                ?: "asdasd.txt"
+                ?: (File(
+                    context.cacheDir,
+                    "/form_photo/"
+                ).path + "${formatter.format(Date())}.jpeg")
         )
         return if (IO.save(inputStream, file.outputStream())) {
             file.path
@@ -372,6 +439,4 @@ object MediaUtil {
             }
         }
     }
-
-
 }

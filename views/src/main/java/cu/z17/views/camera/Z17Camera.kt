@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PauseCircleFilled
 import androidx.compose.material.icons.filled.PlayCircleFilled
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.outlined.Cameraswitch
 import androidx.compose.material.icons.outlined.Clear
 import androidx.compose.material.icons.outlined.FlashOff
 import androidx.compose.material.icons.outlined.FlashOn
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -82,6 +82,7 @@ fun Z17Camera(
     onClose: () -> Unit,
     onResult: (String, ResultType, Long, Float) -> Unit,
     onError: () -> Unit,
+    showCloseBtn: Boolean = true
 ) {
     if (Z17CameraModule.getInstance().canUseCamera)
         Box(modifier = modifier) {
@@ -192,21 +193,22 @@ fun Z17Camera(
             )
 
             // CLOSE BTN
-            IconButton(
-                modifier = Modifier
-                    .safeContentPadding()
-                    .align(alignment = Alignment.TopStart),
-                onClick = {
-                    viewModel.cancelRecord()
-                    onClose()
+            if (showCloseBtn)
+                IconButton(
+                    modifier = Modifier
+                        .safeContentPadding()
+                        .align(alignment = Alignment.TopStart),
+                    onClick = {
+                        viewModel.cancelRecord()
+                        onClose()
+                    }
+                ) {
+                    Z17BasePicture(
+                        modifier = Modifier.size(30.dp),
+                        source = Icons.Outlined.Clear,
+                        colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
+                    )
                 }
-            ) {
-                Z17BasePicture(
-                    modifier = Modifier.size(30.dp),
-                    source = Icons.Outlined.Clear,
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground)
-                )
-            }
 
             if (isVideo)
                 Z17Label(
@@ -360,9 +362,11 @@ fun Z17Camera(
             }
 
             if (captureResult == CaptureState.SAVING)
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = Color.Black.copy(0.2F)))
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color.Black.copy(0.2F))
+                )
 
             LaunchedEffect(isVideo) {
                 Z17CameraModule.getInstance().imageCapture.flashMode = ImageCapture.FLASH_MODE_OFF

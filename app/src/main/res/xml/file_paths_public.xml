@@ -18,6 +18,12 @@
         name="files"
         path="/" />
     <external-path
+        name="root"
+        path="/" />
+    <external-path
         name="my_files"
+        path="." />
+    <external-path
+        name="external_files"
         path="." />
 </paths>

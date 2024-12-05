@@ -1,5 +1,6 @@
 package cu.z17.android.ui.main
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.Window
 import androidx.activity.ComponentActivity
@@ -26,8 +27,7 @@ import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.form.FormItemRequest
 import cu.z17.views.form.FormItemType
 import cu.z17.views.form.Z17Form
-import cu.z17.views.permission.PermissionNeedIt
-import cu.z17.views.permission.Z17PermissionCheckerAndRequester
+import cu.z17.views.utils.FileUtils
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.videoPlayer.Z17VideoModule
@@ -189,7 +189,13 @@ class MainActivity : ComponentActivity() {
                                 maxWidth = true
                             )
                         },
-                        onComplete = {}
+                        onComplete = {},
+                        onRequestRealPath = {
+                            val result = FileUtils.getRealPath(context, Uri.parse(it))
+                            println("!!!!1 $it")
+                            println("!!!!2 $result")
+                            result ?: ""
+                        }
                     )
                 }
             }

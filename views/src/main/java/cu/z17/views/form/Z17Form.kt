@@ -27,6 +27,7 @@ import cu.z17.views.permission.PermissionNeedIt
 import cu.z17.views.permission.Z17PermissionCheckerAndRequester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -42,7 +43,8 @@ fun Z17Form(
             maxWidth = true
         )
     },
-    onComplete: (List<FormItemRequest>) -> Unit
+    onComplete: (List<FormItemRequest>) -> Unit,
+    onRequestRealPath: (String) -> String = { it }
 ) {
     val context = LocalContext.current
 
@@ -155,8 +157,9 @@ fun Z17Form(
                             cameraDisplaying = null
                         },
                         type = cameraDisplaying?.second ?: 1,
-                        rootPath = "/",
+                        rootPath = File(context.cacheDir, "/form_photo/").path,
                         initialValue = cameraDisplaying?.third ?: "",
+                        onRequestRealPath = onRequestRealPath
                     )
 
                 Z17PermissionCheckerAndRequester(
