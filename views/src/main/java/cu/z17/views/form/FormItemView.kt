@@ -163,6 +163,18 @@ fun FormItemView(
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Red
                 )
+
+            LaunchedEffect(Unit) {
+                when (formItemRequest.type) {
+                    FormItemType.SIMPLE_SELECTION -> {
+                        if (formItemRequest.value == "") {
+                            handleChange("0")
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 }
