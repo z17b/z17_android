@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import cu.z17.views.R
 import cu.z17.views.button.Z17PrimaryButton
+import cu.z17.views.form.UtilRegex.CANNOT_BE_EMPTY
 import cu.z17.views.loader.Z17SimpleCircleLoader
 import cu.z17.views.permission.PermissionNeedIt
 import cu.z17.views.permission.Z17PermissionCheckerAndRequester
@@ -74,7 +75,14 @@ fun Z17Form(
         var hasNonErrors = true
 
         request.forEach {
-            hasNonErrors = hasNonErrors && it.nonErrorCondition(it.value)
+            if (it.okRegex == CANNOT_BE_EMPTY) {
+                hasNonErrors = hasNonErrors && it.value.isNotBlank()
+            } else if (it.okRegex != "") {
+                val okRegex = Regex(it.okRegex)
+
+                // esta chekeando y no se cumple la condicion del regex
+                hasNonErrors = hasNonErrors && okRegex.matches(it.value)
+            }
         }
 
         isChecked = true

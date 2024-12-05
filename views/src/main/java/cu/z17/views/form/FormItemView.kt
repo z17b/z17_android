@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import cu.z17.views.form.UtilRegex.CANNOT_BE_EMPTY
 import cu.z17.views.inputText.Z17InputText
 import cu.z17.views.label.Z17Label
 import cu.z17.views.picture.Z17BasePicture
@@ -48,9 +49,13 @@ fun FormItemView(
 
         val showError by remember(isChecked) {
             derivedStateOf {
-                isChecked && !formItemRequest.nonErrorCondition(
-                    formItemRequest.value
-                )
+                if (formItemRequest.okRegex == "") return@derivedStateOf false
+                if (formItemRequest.okRegex == CANNOT_BE_EMPTY) return@derivedStateOf isChecked && formItemRequest.value.isBlank()
+
+                val okRegex = Regex(formItemRequest.okRegex)
+
+                // esta chekeando y no se cumple la condicion del regex
+                isChecked && !(okRegex.matches(formItemRequest.value))
             }
         }
 
@@ -118,6 +123,7 @@ fun FormItemView(
                         imageForm = formItemRequest.imageForm,
                     )
                 }
+
                 FormItemType.LARGE_TEXT -> {
                     LargeField(
                         modifier = Modifier.fillMaxWidth(formItemRequest.displaySize),

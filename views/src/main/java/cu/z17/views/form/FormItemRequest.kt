@@ -1,6 +1,7 @@
 package cu.z17.views.form
 
 import androidx.compose.runtime.Immutable
+import cu.z17.views.form.UtilRegex.CAN_BE_EMPTY
 
 @Immutable
 data class FormItemRequest(
@@ -9,7 +10,7 @@ data class FormItemRequest(
     val label: String,
     val description: String = "",
     val value: String,
-    val nonErrorCondition: (String) -> Boolean = { true },
+    val okRegex: String = CAN_BE_EMPTY,
     val errorLabel: String = "",
     val limit: Int = Int.MAX_VALUE,
     val displaySize: Float = 1F,
@@ -21,4 +22,9 @@ enum class ImageForm {
     CIRCLE,
     SQUARE,
     ROUND_CORNERS
+}
+
+object UtilRegex {
+    const val CAN_BE_EMPTY = ""
+    const val CANNOT_BE_EMPTY = "cannot_be_empty"
 }

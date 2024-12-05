@@ -26,6 +26,8 @@ import cu.z17.views.button.Z17PrimaryButton
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.form.FormItemRequest
 import cu.z17.views.form.FormItemType
+import cu.z17.views.form.UtilRegex.CANNOT_BE_EMPTY
+import cu.z17.views.form.UtilRegex.CAN_BE_EMPTY
 import cu.z17.views.form.Z17Form
 import cu.z17.views.utils.FileUtils
 import cu.z17.views.utils.Z17BasePictureHeaders
@@ -105,7 +107,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Escoge una imagen",
                                 description = "Utiliza una imagen para reconocerte.",
                                 value = "",
-                                nonErrorCondition = { true },
+                                okRegex = CAN_BE_EMPTY,
                                 errorLabel = "",
                             ),
                             FormItemRequest(
@@ -114,7 +116,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Prueba tu nombre",
                                 description = "Aqui tienes que poner tu nombre completo",
                                 value = "",
-                                nonErrorCondition = { it.isNotBlank() },
+                                okRegex = CANNOT_BE_EMPTY,
                                 errorLabel = "No puede estar en blanco",
                                 limit = 100
                             ),
@@ -124,7 +126,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Pon tu edad",
                                 description = "",
                                 value = "",
-                                nonErrorCondition = { it.isNotBlank() },
+                                okRegex = CANNOT_BE_EMPTY,
                                 errorLabel = "Introduce tu edad por favor",
                                 limit = 3
                             ),
@@ -134,7 +136,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Biografía",
                                 description = "Resume un poco de tu experiencia laboral",
                                 value = "",
-                                nonErrorCondition = { true },
+                                okRegex = CAN_BE_EMPTY,
                                 errorLabel = "",
                                 limit = 1000
                             ),
@@ -144,7 +146,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Selecciona una tecnología",
                                 description = "Estas son las tecnologías con plazas abiertas",
                                 value = "",
-                                nonErrorCondition = { it.isNotBlank() },
+                                okRegex = CANNOT_BE_EMPTY,
                                 errorLabel = "Debes seleccionar una para aplicar",
                                 limit = 1,
                                 selectionList = listOf(
@@ -159,7 +161,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Pon tus años de experiencia",
                                 description = "",
                                 value = "0",
-                                nonErrorCondition = { true },
+                                okRegex = CAN_BE_EMPTY,
                                 errorLabel = "",
                                 limit = 2,
                                 displaySize = 0.5F
@@ -170,7 +172,7 @@ class MainActivity : ComponentActivity() {
                                 label = "Selecciona una tecnología",
                                 description = "Estas son las tecnologías con plazas abiertas",
                                 value = "",
-                                nonErrorCondition = { it.isNotBlank() },
+                                okRegex = CANNOT_BE_EMPTY,
                                 errorLabel = "Debes seleccionar una para aplicar",
                                 limit = 1,
                                 selectionList = listOf(
