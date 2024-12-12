@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.MenuAnchorType.Companion.PrimaryNotEditable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -36,7 +37,7 @@ fun Z17Spinner(
             text = selectedOptionText.value,
             style = style.copy(textAlign = TextAlign.Center),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(PrimaryNotEditable, true)
                 .fillMaxWidth()
         )
 
@@ -48,17 +49,6 @@ fun Z17Spinner(
                 expanded = false
             }) {
             options.forEachIndexed { index, selectionOption ->
-                val shape =
-                    if (options.size == 1) RoundedCornerShape(15.dp) else
-                        when (index) {
-                            0 -> RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
-                            options.size - 1 -> RoundedCornerShape(
-                                bottomStart = 15.dp,
-                                bottomEnd = 15.dp
-                            )
-
-                            else -> RectangleShape
-                        }
                 DropdownMenuItem(
                     modifier = Modifier
                         .defaultMinSize(1.dp)
@@ -66,7 +56,7 @@ fun Z17Spinner(
                         .border(
                             width = 0.5.dp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            shape = shape
+                            shape = RectangleShape
                         ),
                     onClick = {
                         selectedOptionText.value = selectionOption.text
@@ -108,7 +98,7 @@ fun <T> Z17Spinner2(
             text = getTitle(selectedOption),
             style = style.copy(textAlign = TextAlign.Center),
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(PrimaryNotEditable, true)
                 .fillMaxWidth()
         )
 
@@ -120,17 +110,6 @@ fun <T> Z17Spinner2(
                 expanded = false
             }) {
             options.forEachIndexed { index, selectionOption ->
-                val shape =
-                    if (options.size == 1) RoundedCornerShape(15.dp) else
-                        when (index) {
-                            0 -> RoundedCornerShape(topStart = 15.dp, topEnd = 15.dp)
-                            options.size - 1 -> RoundedCornerShape(
-                                bottomStart = 15.dp,
-                                bottomEnd = 15.dp
-                            )
-
-                            else -> RectangleShape
-                        }
                 DropdownMenuItem(
                     modifier = Modifier
                         .defaultMinSize(1.dp)
@@ -138,7 +117,7 @@ fun <T> Z17Spinner2(
                         .border(
                             width = 0.5.dp,
                             color = MaterialTheme.colorScheme.onBackground,
-                            shape = shape
+                            shape = RectangleShape
                         ),
                     onClick = {
                         expanded = false

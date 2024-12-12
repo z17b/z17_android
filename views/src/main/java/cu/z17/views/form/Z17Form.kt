@@ -31,7 +31,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Z17Form(
     modifier: Modifier = Modifier,
@@ -132,7 +131,7 @@ fun Z17Form(
                 ) { index ->
                     FormItemView(
                         modifier = Modifier
-                            .animateItemPlacement()
+                            .animateItem()
                             .padding(vertical = 10.dp),
                         formItemRequest = request[index],
                         isChecked = isChecked,
