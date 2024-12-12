@@ -6,15 +6,15 @@ compileSdk = "35"
 buildTools = "35.0.0"
 minSdk = "21"
 targetSdk = "34"
-versionCode = "50"
-versionName = "0.5.0"
+versionCode = "51"
+versionName = "0.5.1"
 
 ksp = "2.0.0-1.0.24"
 
-agp = "8.7.3"
+agp = "8.7.0"
 
 # Libraries
-kotlin = "2.0.20"
+kotlin = "2.0.0"
 
 activity = "1.9.3"
 coreKtx = "1.15.0"
@@ -27,10 +27,10 @@ coroutines = "1.9.0-RC.2"
 
 kotlinSerialization = "1.7.1"
 
-composeBom = "2024.11.00"
+composeBom = "2024.12.01"
 composeCompiler = "1.5.15"
-composePaging = "3.3.4"
-composeNavigation = "2.8.4"
+composePaging = "3.3.5"
+composeNavigation = "2.8.5"
 composeViewModel = "2.8.7"
 composeActivity = "1.9.3"
 composeThemeAdapter = "1.2.1"
@@ -50,7 +50,7 @@ paging = "3.2.1"
 
 markdown = "4.6.2"
 
-camera2 = "1.4.0"
+camera2 = "1.4.1"
 
 gson = "2.10.1"
 
