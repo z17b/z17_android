@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.foundation.layout.consumeWindowInsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,7 +54,10 @@ fun Z17BaseScaffold(
                 backgroundColor = backgroundColor,
                 drawerGesturesEnabled = true,
             ) {
-                content(Modifier.padding(it))
+                content(
+                    Modifier.padding(it)
+                        .consumedWindowInsets(it)
+                )
             }
         else
             Scaffold(
@@ -79,7 +83,10 @@ fun Z17BaseScaffold(
                 drawerGesturesEnabled = true,
                 bottomBar = bottomBar ?: {}
             ) {
-                content(Modifier.padding(it))
+                content(
+                    Modifier.padding(it)
+                        .consumeWindowInsets(it)
+                )
             }
     }
 }
