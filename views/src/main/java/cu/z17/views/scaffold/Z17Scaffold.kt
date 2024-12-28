@@ -56,7 +56,7 @@ fun Z17BaseScaffold(
             ) {
                 content(
                     Modifier.padding(it)
-                        .consumedWindowInsets(it)
+                        .consumeWindowInsets(it)
                 )
             }
         else
