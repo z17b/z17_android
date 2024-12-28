@@ -45,6 +45,7 @@ fun Z17Form(
         )
     },
     onComplete: (HashMap<String, String>) -> Unit,
+    onUpdated: (HashMap<String, String>) -> Unit,
     onRequestRealPath: (String) -> String = { it },
     configs: Z17FormConfigs = Z17FormConfigs()
 ) {
@@ -66,6 +67,9 @@ fun Z17Form(
 
     fun handleChange(index: Int, newFormItemRequest: FormItemRequest) {
         request[index] = newFormItemRequest
+        onUpdated(
+            request.associate { it.id to it.value } as HashMap
+        )
     }
 
     var isChecked by remember {
