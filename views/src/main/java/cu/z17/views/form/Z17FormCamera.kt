@@ -47,7 +47,10 @@ fun Z17FormCamera(
     onRequestRealPath: (String) -> String,
     onSelected: (String) -> Unit
 ) {
-    Box(modifier.safeContentPadding()) {
+    Box(modifier
+        .background(MaterialTheme.colorScheme.background)
+        .safeContentPadding()
+    ) {
         var state by remember {
             mutableStateOf(Z17FormCameraState(value = initialValue, type = type))
         }
