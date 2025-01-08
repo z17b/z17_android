@@ -167,6 +167,7 @@ fun Z17PrimaryDialogButton(
     leading: @Composable () -> Unit = {},
     maxWidth: Boolean = false,
     simple: Boolean = false,
+    enabled: Boolean = true,
 ) {
     if (simple) {
         Z17Label(
@@ -177,7 +178,9 @@ fun Z17PrimaryDialogButton(
         )
     } else
         Z17BaseDialogButton(
-            onClick = onClick, modifier = if (maxWidth) modifier.fillMaxWidth() else modifier
+            enabled = enabled,
+            onClick = onClick,
+            modifier = if (maxWidth) modifier.fillMaxWidth() else modifier
         ) {
             leading()
 
@@ -199,6 +202,7 @@ fun Z17SecondaryDialogButton(
     leading: @Composable () -> Unit = {},
     maxWidth: Boolean = false,
     simple: Boolean = false,
+    enabled: Boolean = true,
 ) {
     if (simple) {
         Z17Label(
@@ -212,6 +216,7 @@ fun Z17SecondaryDialogButton(
             onClick = onClick,
             modifier = if (maxWidth) modifier.fillMaxWidth()
             else modifier,
+            enabled = enabled,
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 1.dp),
             border = BorderStroke(1.dp, color = MaterialTheme.colorScheme.onSurface),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)

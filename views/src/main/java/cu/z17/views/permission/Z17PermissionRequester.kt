@@ -14,7 +14,10 @@ import android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
 import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,18 +53,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import cu.z17.views.R
+import cu.z17.views.button.Z17PrimaryDialogButton
 import cu.z17.views.dialogs.Z17CustomDialog
 import cu.z17.views.dialogs.Z17DialogWithActions
 import cu.z17.views.label.Z17Label
 import cu.z17.views.label.Z17MarkdownLabel
 import cu.z17.views.picture.Z17BasePicture
-import cu.z17.views.textToggle.Z17TextToggle
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -572,7 +576,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = contactPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -604,7 +608,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = storagePermissionState.allPermissionsGranted && mediaPermissionsState.allPermissionsGranted && storageForApi30OrAbove,
                     onChange = {
                         if (it) {
@@ -655,7 +659,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = locationPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -687,7 +691,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = readSmsPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -719,7 +723,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = callPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -751,7 +755,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = recordPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -783,7 +787,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = cameraPermissionsState.allPermissionsGranted,
                     onChange = {
                         if (it) {
@@ -815,7 +819,7 @@ fun Z17PermissionContainer(
                         drawCircle(color = Color.Red)
                     }
             }) {
-                Z17TextToggle(
+                PermissionButton(
                     state = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         notificationsPermissionsState.allPermissionsGranted
                     } else true,
@@ -962,6 +966,42 @@ fun Z17PermissionContainer(
             else onResult(PermissionsResult.notGranted())
 
         Log.i("PERMISSIONS", "===================================")
+    }
+}
+
+@Composable
+fun PermissionButton(
+    modifier: Modifier = Modifier,
+    state: Boolean,
+    onChange: (Boolean) -> Unit,
+    leading: @Composable (() -> Unit)? = null,
+    label: String = "",
+    labelStyle: TextStyle = MaterialTheme.typography.bodyLarge
+) {
+    Row(
+        modifier = modifier.clickable {
+            onChange(!state)
+        },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        leading?.let {
+            leading()
+        }
+
+        Z17Label(
+            modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 10.dp),
+            text = label,
+            style = labelStyle
+        )
+
+        Z17PrimaryDialogButton(
+            enabled = !state,
+            onClick = { onChange(true) },
+            text = stringResource(R.string.open)
+        )
     }
 }
 
