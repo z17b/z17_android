@@ -43,6 +43,7 @@ fun Z17RowVideoAlbum(
         key = "1"
     ),
     size: Dp = AlbumDimens.Ten,
+    onRequestRealPath: (String) -> String = { it },
 ) {
     val gridState: LazyGridState = rememberLazyGridState()
 
@@ -93,7 +94,8 @@ fun Z17RowVideoAlbum(
                                 onVideoSelected(albumViewModel.selectedList.add(item))
                             }
                         }
-                    }
+                    },
+                    onRequestRealPath = onRequestRealPath
                 )
             }
         }

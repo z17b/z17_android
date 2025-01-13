@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import cu.z17.android.ui.theme.AppTheme
 import cu.z17.compress.compressFormat
 import cu.z17.views.camera.Z17CameraModule
+import cu.z17.views.permission.PermissionNeedIt
+import cu.z17.views.permission.Z17PermissionCheckerAndRequester
 import cu.z17.views.spinner.Z17Spinner2
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
@@ -62,35 +64,35 @@ class MainActivity : ComponentActivity() {
 
                     val context = LocalContext.current
 
-//                if (permissionsAccepted) {
-//                    Camera(
-//                        modifier = Modifier
-//                            .fillMaxSize(),
-//                        sendImages = { files, content ->
-//
-//                        },
-//                        sendVideos = { files, content ->
-//
-//                        },
-//                        onClose = {},
-//                        onError = {},
-//                        // TODO REMOVE
-//                        showVideoOption = true
-//                    )
-////                }
-//
-//                    Z17PermissionCheckerAndRequester(
-//                        initialPermissions = listOf(
-//                            PermissionNeedIt.CAMERA,
-//                            PermissionNeedIt.RECORD_AUDIO,
-//                            PermissionNeedIt.STORAGE
-//                        ),
-//                        onGranted = {
-//                            permissionsAccepted = true
-//                        },
-//                        packageName = context.packageName,
-//                        stringContent = null
-//                    )
+                if (permissionsAccepted) {
+                    Camera(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        sendImages = { files, content ->
+
+                        },
+                        sendVideos = { files, content ->
+
+                        },
+                        onClose = {},
+                        onError = {},
+                        // TODO REMOVE
+                        showVideoOption = true
+                    )
+                }
+
+                    Z17PermissionCheckerAndRequester(
+                        initialPermissions = listOf(
+                            PermissionNeedIt.CAMERA,
+                            PermissionNeedIt.RECORD_AUDIO,
+                            PermissionNeedIt.STORAGE
+                        ),
+                        onGranted = {
+                            permissionsAccepted = true
+                        },
+                        packageName = context.packageName,
+                        stringContent = null
+                    )
 
 //                    Z17Form(
 //                        modifier = Modifier
@@ -205,15 +207,15 @@ class MainActivity : ComponentActivity() {
 //                        }
 //                    )
 
-                    var selectedI by remember { mutableIntStateOf(1) }
-                    Z17Spinner2(
-                        options = listOf(1, 2, 3, 4, 5, 6),
-                        handleSelection = {
-                            selectedI = it
-                        },
-                        selectedOption = selectedI,
-                        getTitle = { it.toString() }
-                    )
+//                    var selectedI by remember { mutableIntStateOf(1) }
+//                    Z17Spinner2(
+//                        options = listOf(1, 2, 3, 4, 5, 6),
+//                        handleSelection = {
+//                            selectedI = it
+//                        },
+//                        selectedOption = selectedI,
+//                        getTitle = { it.toString() }
+//                    )
                 }
             }
         }

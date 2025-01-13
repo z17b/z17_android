@@ -43,6 +43,7 @@ fun Z17FullSizeVideoAlbum(
         key = "1"
     ),
     size: Dp = AlbumDimens.Ten,
+    onRequestRealPath: (String) -> String = { it },
 ) {
     val listState = rememberLazyGridState()
 
@@ -94,7 +95,8 @@ fun Z17FullSizeVideoAlbum(
                                 onVideoSelected(albumViewModel.selectedList.add(item))
                             }
                         }
-                    }
+                    },
+                    onRequestRealPath = onRequestRealPath
                 )
             }
         }

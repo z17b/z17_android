@@ -14,8 +14,8 @@ import android.provider.MediaStore
 
 object FileUtils {
     fun getRealPath(context: Context, fileUri: Uri): String? {
+        println("!!!! $fileUri")
         // SDK < API11
-
         var realPath: String? = if (Build.VERSION.SDK_INT < 11) {
             getRealPathFromURI_BelowAPI11(context, fileUri)
         } else if (Build.VERSION.SDK_INT < 19) {
@@ -70,12 +70,10 @@ object FileUtils {
      */
     @SuppressLint("NewApi")
     private fun getRealPathFromURI_API19(context: Context, uri: Uri): String? {
-        val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
-
         // DocumentProvider
-        if (isKitKat && DocumentsContract.isDocumentUri(context, uri)) {
+        if (DocumentsContract.isDocumentUri(context, uri)) {
             // ExternalStorageProvider
-            if (isExternalStorageDocument(uri)) {
+            if (isExternalStorageDocument(uri) || isPlainExternal(uri)) {
                 val docId = DocumentsContract.getDocumentId(uri)
                 val split = docId.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 val type = split[0]
@@ -113,15 +111,21 @@ object FileUtils {
 
                 return getDataColumn(context, contentUri, selection, selectionArgs)
             }
-        } else if ("content".equals(uri.scheme, ignoreCase = true)) {
+        }
+        //
+        else if ("content".equals(uri.scheme, ignoreCase = true)) {
             // Return the remote address
 
             if (isGooglePhotosUri(uri)) return uri.lastPathSegment
 
             return getDataColumn(context, uri, null, null)
-        } else if ("file".equals(uri.scheme, ignoreCase = true)) {
+        }
+        //
+        else if ("file".equals(uri.scheme, ignoreCase = true)) {
             return uri.path
-        } else if (isPickerUri(uri)) {
+        }
+        //
+        else if (isPickerUri(uri)) {
             // Extrae el ID del recurso
             val segments = uri.pathSegments
             val mediaId = segments.last() // Obtén el último segmento como ID
@@ -141,6 +145,29 @@ object FileUtils {
                 it.getString(columnIndex)
             }// Retorna null si no se encuentra el path
         }
+        //
+        else if (isPlainExternal(uri)) {
+            val type = uri.pathSegments[uri.pathSegments.size - 3]
+
+            var contentUri: Uri? = null
+            when (type) {
+                "image" -> {
+                    contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                }
+                "video" -> {
+                    contentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+                }
+                "audio" -> {
+                    contentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                }
+            }
+
+            val selection = "_id=?"
+            val selectionArgs = arrayOf(
+                uri.pathSegments.last()
+            )
+            return getDataColumn(context, contentUri, selection, selectionArgs)
+        }
 
         return null
     }
@@ -156,7 +183,8 @@ object FileUtils {
      * @return The value of the _data column, which is typically a file path.
      */
     private fun getDataColumn(
-        context: Context, uri: Uri?, selection: String?,
+        context: Context, uri: Uri?,
+        selection: String?,
         selectionArgs: Array<String>?
     ): String? {
         var cursor: Cursor? = null
@@ -219,5 +247,13 @@ object FileUtils {
      */
     private fun isPickerUri(uri: Uri): Boolean {
         return uri.toString().startsWith("/picker_get_content")
+    }
+
+    /**
+     * @param uri The Uri to check.
+     * @return Whether the Uri starts with external.
+     */
+    private fun isPlainExternal(uri: Uri): Boolean {
+        return uri.toString().startsWith("/external")
     }
 }

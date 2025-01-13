@@ -49,6 +49,7 @@ internal suspend fun Context.createVideoCursor(limit: Int, offset: Int): Cursor?
                 )
             }
         } catch (e: Exception) {
+            e.printStackTrace()
             return@withContext null
         }
     }
@@ -103,6 +104,7 @@ internal suspend fun Context.fetchPageVideo(limit: Int, offset: Int): List<Video
         cursor?.close()
         return pictures
     } catch (e: Exception) {
+        e.printStackTrace()
         return ArrayList()
     }
 }

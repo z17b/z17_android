@@ -74,6 +74,7 @@ import cu.z17.views.picturesAlbum.data.AlbumConfiguration
 import cu.z17.views.picturesAlbum.data.AlbumOption
 import cu.z17.views.picturesAlbum.ui.Z17FullSizeAlbum
 import cu.z17.views.picturesAlbum.ui.Z17RowAlbum
+import cu.z17.views.utils.FileUtils
 import cu.z17.views.videoEditor.VideoEditorConfigurations
 import cu.z17.views.videoEditor.Z17VideoEditor
 import cu.z17.views.videosAlbum.data.VideoAlbumConfiguration
@@ -309,7 +310,7 @@ fun CameraPager(
                     imagePathToSave = imagePathToSave,
                     enableDeleteImage = enableDeleteImage,
                     videoPathToSave = videoPathToSave,
-                    onResult = { path, resultType, duration, rotation->
+                    onResult = { path, resultType, duration, rotation ->
                         initialRotation = rotation
                         when (resultType) {
                             ResultType.VIDEO -> {
@@ -515,7 +516,11 @@ fun CameraViewPage(
                                 AlbumOption(preview = Icons.Outlined.Folder) {
                                     videoPickerLauncher.launch("video/*")
                                 }
-                            )
+                            ),
+                            onRequestRealPath = {
+                                val result = FileUtils.getRealPath(context, Uri.parse(it))
+                                result ?: ""
+                            }
                         )
                     else
                         Z17RowAlbum(
@@ -572,6 +577,10 @@ fun CameraViewPage(
                                     it.first().duration!!,
                                     0F
                                 )
+                            },
+                            onRequestRealPath = {
+                                val result = FileUtils.getRealPath(context, Uri.parse(it))
+                                result ?: ""
                             }
                         )
                     else
