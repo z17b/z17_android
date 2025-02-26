@@ -14,7 +14,6 @@ import android.provider.MediaStore
 
 object FileUtils {
     fun getRealPath(context: Context, fileUri: Uri): String? {
-        println("!!!! $fileUri")
         // SDK < API11
         var realPath: String? = if (Build.VERSION.SDK_INT < 11) {
             getRealPathFromURI_BelowAPI11(context, fileUri)

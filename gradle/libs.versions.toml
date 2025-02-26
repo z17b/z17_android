@@ -16,32 +16,32 @@ agp = "8.7.0"
 # Libraries
 kotlin = "2.0.0"
 
-activity = "1.9.3"
+activity = "1.10.0"
 coreKtx = "1.15.0"
 material = "1.12.0"
 appCompat = "1.7.0"
 
 lifecycle = "2.8.7"
 
-coroutines = "1.9.0-RC.2"
+coroutines = "1.9.0"
 
-kotlinSerialization = "1.7.1"
+kotlinSerialization = "1.7.3"
 
-composeBom = "2024.12.01"
+composeBom = "2025.01.01"
 composeCompiler = "1.5.15"
 composePaging = "3.3.5"
-composeNavigation = "2.8.5"
+composeNavigation = "2.8.6"
 composeViewModel = "2.8.7"
-composeActivity = "1.9.3"
+composeActivity = "1.10.0"
 composeThemeAdapter = "1.2.1"
 
 composeCoil = "2.6.0"
 
-accompanist = "0.32.0"
+accompanist = "0.34.0"
 
 constraintlayout = "1.1.0"
 
-dataStore = "1.1.1"
+dataStore = "1.1.2"
 crypto = "1.1.0-alpha06"
 
 lottie = "6.4.0"
@@ -57,7 +57,7 @@ gson = "2.10.1"
 zxingEmbedded = "4.3.0"
 zxingCore = "3.5.0"
 
-media3 = "1.5.0"
+media3 = "1.5.1"
 
 osmdroid = "6.1.13"
 

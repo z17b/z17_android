@@ -59,48 +59,54 @@ internal suspend fun Context.fetchPageVideo(limit: Int, offset: Int): List<Video
     try {
         val pictures = ArrayList<VideoAlbum>()
         val cursor = createVideoCursor(limit, offset)
-        cursor?.use {
-            val idColumn = it.getColumnIndexOrThrow(videoProjection[0])
-            val displayNameColumn = it.getColumnIndexOrThrow(videoProjection[1])
-            val dateTakenColumn = it.getColumnIndexOrThrow(videoProjection[2])
-            val bucketDisplayName = it.getColumnIndexOrThrow(videoProjection[3])
-            val bucketDuration = it.getColumnIndexOrThrow(videoProjection[4])
+        try {
+            cursor?.use {
+                val idColumn = it.getColumnIndexOrThrow(videoProjection[0])
+                val displayNameColumn = it.getColumnIndexOrThrow(videoProjection[1])
+                val dateTakenColumn = it.getColumnIndexOrThrow(videoProjection[2])
+                val bucketDisplayName = it.getColumnIndexOrThrow(videoProjection[3])
+                val bucketDuration = it.getColumnIndexOrThrow(videoProjection[4])
 
-            while (it.moveToNext()) {
-                val id = it.getLong(idColumn)
-                val dateTaken = it.getLong(dateTakenColumn)
-                val displayName = it.getString(displayNameColumn)
-                val contentUri = ContentUris.withAppendedId(
-                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    id
-                )
-                val folderName = it.getString(bucketDisplayName)
-                var duration = it.getLong(bucketDuration)
-
-                if (duration == 0L) {
-                    try {
-                        val mmr = MediaMetadataRetriever()
-                        mmr.setDataSource(this, contentUri)
-                        val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                        val millSecond = Integer.parseInt(durationStr)
-                        duration = millSecond.toLong()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-
-                pictures.add(
-                    VideoAlbum(
-                        uri = contentUri,
-                        dateTaken = dateTaken,
-                        displayName = displayName,
-                        id = id,
-                        folderName = folderName.toString(),
-                        duration = duration
+                while (it.moveToNext()) {
+                    val id = it.getLong(idColumn)
+                    val dateTaken = it.getLong(dateTakenColumn)
+                    val displayName = it.getString(displayNameColumn)
+                    val contentUri = ContentUris.withAppendedId(
+                        MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                        id
                     )
-                )
+                    val folderName = it.getString(bucketDisplayName)
+                    var duration = it.getLong(bucketDuration)
+
+                    if (duration == 0L) {
+                        try {
+                            val mmr = MediaMetadataRetriever()
+                            mmr.setDataSource(this, contentUri)
+                            val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                            val millSecond = Integer.parseInt(durationStr)
+                            duration = millSecond.toLong()
+                            mmr.release()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    pictures.add(
+                        VideoAlbum(
+                            uri = contentUri,
+                            dateTaken = dateTaken,
+                            displayName = displayName,
+                            id = id,
+                            folderName = folderName.toString(),
+                            duration = duration
+                        )
+                    )
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
         cursor?.close()
         return pictures
     } catch (e: Exception) {

@@ -11,6 +11,9 @@
   limitations under the License.
   -->
 <paths>
+    <external-path
+        name="external_files"
+        path="." />
     <cache-path
         name="cache"
         path="/" />
@@ -22,8 +25,5 @@
         path="/" />
     <external-path
         name="my_files"
-        path="." />
-    <external-path
-        name="external_files"
         path="." />
 </paths>

@@ -375,6 +375,7 @@ object MediaUtil {
         mmr.setDataSource(context, uri)
         val durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
         val millSecond = Integer.parseInt(durationStr ?: "0")
+        mmr.release()
         return TimeUnit.MILLISECONDS.toSeconds(millSecond.toLong())
     }
 

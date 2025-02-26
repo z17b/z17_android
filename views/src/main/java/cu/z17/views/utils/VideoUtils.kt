@@ -43,6 +43,7 @@ object VideoUtils {
 
                 val result = myBitmap ?: return@withContext null
 
+                mmr.release()
                 return@withContext generateImageThumbnail(result, File(path), size)
             } catch (ex: java.lang.Exception) {
                 ex.printStackTrace()

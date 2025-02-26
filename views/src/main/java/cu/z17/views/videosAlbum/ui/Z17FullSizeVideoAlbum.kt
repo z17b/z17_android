@@ -47,7 +47,7 @@ fun Z17FullSizeVideoAlbum(
 ) {
     val listState = rememberLazyGridState()
 
-    val lazyAlbumImages: LazyPagingItems<VideoAlbum> =
+    val lazyAlbumVideos: LazyPagingItems<VideoAlbum> =
         albumViewModel.getVideos().collectAsLazyPagingItems()
 
     val selectedList by albumViewModel.selectedList.value.collectAsState(initial = emptyList())
@@ -76,8 +76,8 @@ fun Z17FullSizeVideoAlbum(
             }
         }
 
-        items(lazyAlbumImages.itemCount) { index ->
-            lazyAlbumImages[index]?.let { item ->
+        items(lazyAlbumVideos.itemCount) { index ->
+            lazyAlbumVideos[index]?.let { item ->
                 AlbumVideoItem(
                     modifier = Modifier
                         .padding(HalfQuarter),

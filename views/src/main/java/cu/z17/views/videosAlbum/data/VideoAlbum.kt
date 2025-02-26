@@ -1,5 +1,6 @@
 package cu.z17.views.videosAlbum.data
 
+import android.graphics.Bitmap
 import android.net.Uri
 
 data class VideoAlbum(
@@ -9,4 +10,5 @@ data class VideoAlbum(
     internal val id: Long?,
     internal val folderName: String?,
     val duration: Long?,
+    val thumbnail: Bitmap? = null,
 )

@@ -1,6 +1,5 @@
 package cu.z17.views.videosAlbum.ui
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,12 +30,10 @@ import cu.z17.views.check.Z17Check
 import cu.z17.views.label.Z17Label
 import cu.z17.views.picture.Z17BasePicture
 import cu.z17.views.picturesAlbum.theme.AlbumDimens
-import cu.z17.views.utils.ThumbnailGenerator
 import cu.z17.views.utils.convertToMS
 import cu.z17.views.videosAlbum.data.VideoAlbum
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
 fun AlbumVideoItem(
@@ -59,14 +56,9 @@ fun AlbumVideoItem(
         contentAlignment = Alignment.Center,
     ) {
         val scope = rememberCoroutineScope()
-        val context = LocalContext.current
-
-        var thumbnailPath by remember {
-            mutableStateOf<String?>(null)
-        }
 
         Z17BasePicture(
-            source = if (thumbnailPath != null) Uri.fromFile(File(thumbnailPath!!)) else null,
+            source = videoAlbum.thumbnail,
             placeholder = Icons.Default.VideoFile,
             description = "video from gallery",
             contentScale = ContentScale.Crop,
@@ -95,26 +87,6 @@ fun AlbumVideoItem(
             color = Color.White,
             style = MaterialTheme.typography.bodySmall
         )
-
-        DisposableEffect(Unit) {
-            val job = scope.launch(Dispatchers.IO) {
-                val path = onRequestRealPath(videoAlbum.uri.path ?: "/")
-
-                val possibleThumbnail =
-                    ThumbnailGenerator.generateVideoThumbnailInFile(
-                        videoPath = Uri.fromFile(
-                            File(path)
-                        ).path ?: "/",
-                        context = context
-                    )
-
-                thumbnailPath = possibleThumbnail?.path
-            }
-
-            onDispose {
-                job.cancel()
-            }
-        }
     }
 }
 
