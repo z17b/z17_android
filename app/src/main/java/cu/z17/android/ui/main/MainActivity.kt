@@ -9,25 +9,21 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import cu.z17.android.ui.theme.AppTheme
 import cu.z17.compress.compressFormat
 import cu.z17.views.camera.Z17CameraModule
-import cu.z17.views.permission.PermissionNeedIt
-import cu.z17.views.permission.Z17PermissionCheckerAndRequester
-import cu.z17.views.spinner.Z17Spinner2
+import cu.z17.views.label.Z17ClickableLabel
+import cu.z17.views.label.Z17ClickableLabelClickType
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.videoPlayer.Z17VideoModule
@@ -57,42 +53,80 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AppTheme {
-                Surface(modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.background).safeContentPadding(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = MaterialTheme.colorScheme.background)
+                        .safeContentPadding(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     var permissionsAccepted by remember {
                         mutableStateOf(false)
                     }
 
                     val context = LocalContext.current
 
-                if (permissionsAccepted) {
-                    Camera(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        sendImages = { files, content ->
+                    if (permissionsAccepted) {
+                        Camera(
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            sendImages = { files, content ->
 
-                        },
-                        sendVideos = { files, content ->
+                            },
+                            sendVideos = { files, content ->
 
+                            },
+                            onClose = {},
+                            onError = {},
+                            // TODO REMOVE
+                            showVideoOption = true
+                        )
+                    }
+
+                    Z17ClickableLabel(
+                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 9218-555-1234 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234-5678-9012 enim ad minim veniam, quis nostrud exercitation ullamco 8888-7777-6666 laboris nisi.\n" +
+                                "\n" +
+                                "Curabitur 2025-05-13 pretium 9999 -0000-1234-ABCD (Nota: Este último no es válido según el regex, se incluye como contraste). Suspendisse 5555-3333 potenti. 6789-01-23-45-67 et justo vitae, ultricies 4815-26-37-48-59.",
+                        onClick = { type, value ->
+                            when (type) {
+                                Z17ClickableLabelClickType.LINK -> {
+                                    println("${MessageAction.LINK_CLICK} ${value}")
+                                }
+
+                                Z17ClickableLabelClickType.NUMBER -> {
+                                    println("${MessageAction.NUMBER_CLICK} ${value}")
+                                }
+
+                                Z17ClickableLabelClickType.TAG -> {
+                                    println("${MessageAction.TAG_CLICK} ${value}")
+                                }
+
+                                Z17ClickableLabelClickType.MENTION -> {
+                                    println("${MessageAction.MENTION_CLICK} ${value}")
+                                }
+
+                                else -> {
+                                    println("${MessageAction.REGULAR_CLICK} ${0}")
+                                }
+                            }
                         },
-                        onClose = {},
-                        onError = {},
-                        // TODO REMOVE
-                        showVideoOption = true
+                        onLongClick = {
+
+                        }
                     )
-                }
 
-                    Z17PermissionCheckerAndRequester(
-                        initialPermissions = listOf(
-                            PermissionNeedIt.CAMERA,
-                            PermissionNeedIt.RECORD_AUDIO,
-                            PermissionNeedIt.STORAGE
-                        ),
-                        onGranted = {
-                            permissionsAccepted = true
-                        },
-                        packageName = context.packageName,
-                        stringContent = null
-                    )
+//                    Z17PermissionCheckerAndRequester(
+//                        initialPermissions = listOf(
+//                            PermissionNeedIt.CAMERA,
+//                            PermissionNeedIt.RECORD_AUDIO,
+//                            PermissionNeedIt.STORAGE
+//                        ),
+//                        onGranted = {
+//                            permissionsAccepted = true
+//                        },
+//                        packageName = context.packageName,
+//                        stringContent = null
+//                    )
 
 //                    Z17Form(
 //                        modifier = Modifier

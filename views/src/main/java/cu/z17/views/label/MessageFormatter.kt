@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 
 // Regex containing the syntax tokens
 val symbolPattern by lazy {
-    Regex("""(https?://[^\s\t\n]+)|(`[^`]+`)|(@\w+)|(#\w+)|(\*[\w]+\*)|(_[\w]+_)|(~[\w]+~)|(\d{4,})""")
+    Regex("""(https?://[^\s\t\n]+)|(`[^`]+`)|(@\w+)|(#\w+)|(\*[\w]+\*)|(_[\w]+_)|(~[\w]+~)|((?!(^-|.*--|.*-$))(?=.*\d{4})[\d-]+)""")
 }
 
 // Accepted annotations for the ClickableTextWrapper
@@ -179,7 +179,7 @@ private fun getSymbolAnnotation(
             )
         )
 
-        matchResult.value.toLongOrNull() != null -> SymbolAnnotation(
+        matchResult.value.replace("-", "").toLongOrNull() != null -> SymbolAnnotation(
             AnnotatedString(
                 text = matchResult.value,
                 spanStyle = SpanStyle(fontStyle = FontStyle.Italic, fontWeight = FontWeight.SemiBold)
