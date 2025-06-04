@@ -51,52 +51,11 @@ fun Z17ClickableLabel(
                 .getStringAnnotations(start = it, end = it)
                 .firstOrNull()
                 ?.let { annotation ->
-                    when (annotation.tag) {
-                        Z17ClickableLabelClickType.LINK.name -> {
-                            onClick(
-                                Z17ClickableLabelClickType.LINK,
-                                annotation.item
-                            )
+                    val clickType = Z17ClickableLabelClickType.entries.firstOrNull { it.name == annotation.tag }
+                        ?: Z17ClickableLabelClickType.REGULAR
 
-                            return@LongClickableText
-                        }
-
-                        Z17ClickableLabelClickType.MENTION.name -> {
-                            onClick(
-                                Z17ClickableLabelClickType.MENTION,
-                                annotation.item
-                            )
-
-                            return@LongClickableText
-                        }
-
-                        Z17ClickableLabelClickType.NUMBER.name -> {
-                            onClick(
-                                Z17ClickableLabelClickType.NUMBER,
-                                annotation.item
-                            )
-
-                            return@LongClickableText
-                        }
-
-                        Z17ClickableLabelClickType.TAG.name -> {
-                            onClick(
-                                Z17ClickableLabelClickType.TAG,
-                                annotation.item
-                            )
-
-                            return@LongClickableText
-                        }
-
-                        else -> {
-                            onClick(
-                                Z17ClickableLabelClickType.REGULAR,
-                                annotation.item
-                            )
-
-                            return@LongClickableText
-                        }
-                    }
+                    onClick(clickType, annotation.item)
+                    return@LongClickableText
                 }
 
             onClick(

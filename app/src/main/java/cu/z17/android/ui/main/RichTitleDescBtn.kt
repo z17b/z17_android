@@ -172,7 +172,8 @@ enum class MessageAction {
     MENTION_CLICK,
     TAG_CLICK,
     NUMBER_CLICK,
-    LINK_CLICK
+    LINK_CLICK,
+    COMMAND_CLICK
 }
 
 @Composable

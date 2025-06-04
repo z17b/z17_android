@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.sp
 
 // Regex containing the syntax tokens
 val symbolPattern by lazy {
-    Regex("""(https?://[^\s\t\n]+)|(`[^`]+`)|(@\w+)|(#\w+)|(\*[\w]+\*)|(_[\w]+_)|(~[\w]+~)|((?!(^-|.*--|.*-$))(?=.*\d{4})[\d-]+)""")
+    Regex("""(https?://[^\s\t\n]+)|(`[^`]+`)|(@\w+)|(#\w+)|(\*[\w]+\*)|(_[\w]+_)|(~[\w]+~)|((?!(^-|.*--|.*-$))(?=.*\d{4})[\d-]+)|(/[^\s\t\n/]+)""")
 }
 
 // Accepted annotations for the ClickableTextWrapper
@@ -23,7 +23,8 @@ enum class Z17ClickableLabelClickType {
     MENTION,
     LINK,
     NUMBER,
-    TAG
+    TAG,
+    COMMAND
 }
 
 typealias StringAnnotation = AnnotatedString.Range<String>
@@ -189,6 +190,21 @@ private fun getSymbolAnnotation(
                 start = matchResult.range.first,
                 end = matchResult.range.last,
                 tag = Z17ClickableLabelClickType.NUMBER.name
+            )
+        )
+
+        matchResult.value.first() == '/' -> SymbolAnnotation(
+            AnnotatedString(
+                text = matchResult.value,
+                spanStyle = SpanStyle(
+                    color = linkColor
+                )
+            ),
+            StringAnnotation(
+                item = matchResult.value,
+                start = matchResult.range.first,
+                end = matchResult.range.last,
+                tag = Z17ClickableLabelClickType.COMMAND.name
             )
         )
 

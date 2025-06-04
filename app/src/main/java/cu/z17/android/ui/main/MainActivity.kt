@@ -84,29 +84,33 @@ class MainActivity : ComponentActivity() {
                     }
 
                     Z17ClickableLabel(
-                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. 9218-555-1234 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234-5678-9012 enim ad minim veniam, quis nostrud exercitation ullamco 8888-7777-6666 laboris nisi.\n" +
+                        text = "Lorem ipsum dolor sit amet, consectetur adipiscing \n\n asda /elit. 9218-555-1234 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234-5678-9012 enim ad minim veniam, quis nostrud exercitation ullamco 8888-7777-6666 laboris nisi.\n" +
                                 "\n" +
                                 "Curabitur 2025-05-13 pretium 9999 -0000-1234-ABCD (Nota: Este último no es válido según el regex, se incluye como contraste). Suspendisse 5555-3333 potenti. 6789-01-23-45-67 et justo vitae, ultricies 4815-26-37-48-59.",
                         onClick = { type, value ->
                             when (type) {
                                 Z17ClickableLabelClickType.LINK -> {
-                                    println("${MessageAction.LINK_CLICK} ${value}")
+                                    println("${MessageAction.LINK_CLICK} $value")
                                 }
 
                                 Z17ClickableLabelClickType.NUMBER -> {
-                                    println("${MessageAction.NUMBER_CLICK} ${value}")
+                                    println("${MessageAction.NUMBER_CLICK} $value")
                                 }
 
                                 Z17ClickableLabelClickType.TAG -> {
-                                    println("${MessageAction.TAG_CLICK} ${value}")
+                                    println("${MessageAction.TAG_CLICK} $value")
                                 }
 
                                 Z17ClickableLabelClickType.MENTION -> {
-                                    println("${MessageAction.MENTION_CLICK} ${value}")
+                                    println("${MessageAction.MENTION_CLICK} $value")
+                                }
+
+                                Z17ClickableLabelClickType.COMMAND -> {
+                                    println("${MessageAction.COMMAND_CLICK} $value")
                                 }
 
                                 else -> {
-                                    println("${MessageAction.REGULAR_CLICK} ${0}")
+                                    println("${MessageAction.REGULAR_CLICK} $value")
                                 }
                             }
                         },
