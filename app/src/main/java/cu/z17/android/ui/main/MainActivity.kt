@@ -10,6 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeContentPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -17,13 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import cu.z17.android.ui.theme.AppTheme
 import cu.z17.compress.compressFormat
 import cu.z17.views.camera.Z17CameraModule
 import cu.z17.views.label.Z17ClickableLabel
 import cu.z17.views.label.Z17ClickableLabelClickType
+import cu.z17.views.qr.Z17QRView
 import cu.z17.views.utils.Z17BasePictureHeaders
 import cu.z17.views.utils.Z17CoilDecoders
 import cu.z17.views.videoPlayer.Z17VideoModule
@@ -82,6 +86,12 @@ class MainActivity : ComponentActivity() {
                             showVideoOption = true
                         )
                     }
+
+                    Z17QRView(
+                        data = "asdasd",
+                        modifier = Modifier
+                            .size(200.dp)
+                    )
 
                     Z17ClickableLabel(
                         text = "Lorem ipsum dolor sit amet, consectetur adipiscing \n\n asda /elit. 9218-555-1234 sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 1234-5678-9012 enim ad minim veniam, quis nostrud exercitation ullamco 8888-7777-6666 laboris nisi.\n" +

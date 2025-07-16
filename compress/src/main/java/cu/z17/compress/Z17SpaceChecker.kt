@@ -79,10 +79,6 @@ class Z17SpaceChecker(private val context: Context) {
                     volumeStats.mStorageVolume.getDescription(context)
                 }
             sb
-                .appendln("$volumeDescription$uuidToDisplay")
-                .appendln(" Used space: ${usedSpace.nice()} $usedSizeUnits")
-                .appendln("Total space: ${totalSpace.nice()} $totalSizeUnits")
-                .appendln("----------------")
         }
     }
 
