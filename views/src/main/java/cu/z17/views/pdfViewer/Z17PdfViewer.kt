@@ -61,13 +61,12 @@ fun Z17PdfViewer(
             mutableStateOf<Pair<Int, Bitmap?>>(Pair(0, null))
         }
 
+        val context = LocalContext.current
+        val imageLoadingScope = rememberCoroutineScope()
+
         BoxWithConstraints(modifier = Modifier.weight(1F)) {
-            val context = LocalContext.current
-
-            val width = with(LocalDensity.current) { maxWidth.toPx() }.toInt()
-            val height = (width * sqrt(2f)).toInt()
-
-            val imageLoadingScope = rememberCoroutineScope()
+            val width = this.maxWidth
+            val height = (width * sqrt(2f))
 
             if (horizontal) {
                 PagePdfViewer(
@@ -90,7 +89,7 @@ fun Z17PdfViewer(
                 else if (pageCount > actualPage.first) {
                     val job = imageLoadingScope.launch(Dispatchers.IO) {
                         val destinationBitmap =
-                            Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                            Bitmap.createBitmap(width.value.toInt(), height.value.toInt(), Bitmap.Config.ARGB_8888)
 
                         mutex.withLock {
                             if (!coroutineContext.isActive) return@launch

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
@@ -24,14 +25,14 @@ internal fun PagePdfViewer(
     modifier: Modifier = Modifier,
     actualPage: Pair<Int, Bitmap?>,
     cacheKey: String,
-    width: Int,
-    height: Int,
+    width: Dp,
+    height: Dp,
     context: Context,
     zoomable: Boolean,
 ) {
     if (actualPage.second != null) {
         val request = ImageRequest.Builder(context)
-            .size(width, height)
+            .size(width.value.toInt(), height.value.toInt())
             .memoryCacheKey(cacheKey)
             .data(actualPage.second)
             .build()
@@ -55,6 +56,6 @@ internal fun PagePdfViewer(
             contentDescription = "Page ${actualPage.first + 1}"
         )
     } else {
-        Z17Shimmer(modifier = Modifier.size(width.dp, height.dp))
+        Z17Shimmer(modifier = Modifier.size(width, height))
     }
 }
